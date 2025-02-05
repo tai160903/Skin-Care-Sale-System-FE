@@ -4,13 +4,11 @@ function Home() {
   const [searchParams] = useSearchParams();
   const accessToken = searchParams.get("access_token");
 
-  console.log("accessToken", accessToken);
-
   if (accessToken) {
     localStorage.setItem("accessToken", `Bearer ${accessToken}`);
   }
 
-  return <div className="h-screen bg-slate-100"></div>;
+  return <div className="h-screen bg-slate-100">home</div>;
 }
 
 export default Home;

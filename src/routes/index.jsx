@@ -17,39 +17,30 @@ const Router = createBrowserRouter([
         path: "",
         element: <Home />,
         errorElement: <Error />,
-        context: { showHeader: true, showFooter: true },
       },
       {
         path: "signin",
         element: <Signin />,
-        context: { showHeader: false, showFooter: true },
       },
       {
         path: "signup",
         element: <Signup />,
-        context: { showHeader: true, showFooter: true },
       },
       {
         path: "verify-email",
         element: <Verify />,
-        context: { showHeader: true, showFooter: true },
       },
       {
         path: "forgot-password",
         element: <ForgotPassword />,
-        context: { showHeader: false, showFooter: false },
       },
       {
         path: "verify-reset-password",
         element: <ResetPass />,
       },
       {
-        path: "",
-      },
-      {
         path: "*",
         element: <Error />,
-        context: { showHeader: false, showFooter: false },
       },
     ],
   },

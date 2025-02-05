@@ -2,20 +2,28 @@ import authService from "../services/authService";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loading from "../components/Loading";
-import OtpModal from "../components/OtpModal";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IoEyeSharp } from "react-icons/io5";
 import { FaEyeSlash, FaArrowLeftLong } from "react-icons/fa6";
 import { Link, useNavigate } from "react-router-dom";
 function Signin() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [otpModal, setOtpModal] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [data, setData] = useState({
     email: "",
     password: "",
   });
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get("access_token");
+
+    if (token) {
+      localStorage.setItem("authToken", token);
+      navigate("/"); // Redirect to home
+    }
+  }, [navigate]);
 
   const handleChange = (e) => {
     setData({ ...data, [e.target.name]: e.target.value });
@@ -28,20 +36,16 @@ function Signin() {
     if (response.status === 200) {
       toast.success(response.message);
       setLoading(false);
-      setOtpModal(true);
     } else {
       setLoading(false);
       toast.error(response.message);
     }
   };
 
-  const closeModal = () => setOtpModal(false);
-
   const handleLoginGoogle = async () => {
     try {
+      // Redirect to backend Google OAuth URL
       window.location.href = "http://localhost:8080/api/auth/google";
-      navigate("/");
-      toast.success("Login with Google");
     } catch (error) {
       toast.error(error.message);
     }
@@ -162,7 +166,6 @@ function Signin() {
           </div>
         </div>
       )}
-      {otpModal && <OtpModal closeModal={closeModal} email={data.email} />}
     </div>
   );
 }
