@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import authService from "../services/authService";
 import Loading from "../components/Loading";
@@ -16,6 +16,16 @@ function Signup() {
     password: "",
     confirmPassword: "",
   });
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get("access_token");
+
+    if (token) {
+      localStorage.setItem("authToken", token);
+      navigate("/"); // Redirect to home
+    }
+  }, [navigate]);
 
   const handleChange = (event) =>
     setData({ ...data, [event.target.name]: event.target.value });
@@ -35,8 +45,8 @@ function Signup() {
 
   const handleLoginGoogle = async () => {
     try {
+      // Redirect to backend Google OAuth URL
       window.location.href = "http://localhost:8080/api/auth/google";
-      navigate("/");
     } catch (error) {
       toast.error(error.message);
     }
