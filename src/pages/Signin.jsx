@@ -36,6 +36,7 @@ function Signin() {
     if (response.status === 200) {
       toast.success(response.message);
       setLoading(false);
+      navigate("/");
     } else {
       setLoading(false);
       toast.error(response.message);

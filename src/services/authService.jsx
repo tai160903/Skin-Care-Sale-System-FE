@@ -2,9 +2,7 @@ import axios from "axios";
 
 const authService = {
   signin: async (data) => {
-    return await axios.post(`http://localhost:8080/api/auth/signin`, data, {
-      withCredentials: true,
-    });
+    return await axios.post(`http://localhost:8080/api/auth/login`, data);
   },
 
   signup: async (data) => {
