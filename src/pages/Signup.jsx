@@ -36,6 +36,7 @@ function Signup() {
     try {
       const response = await authService.signup(data);
       toast.success(response.message);
+      navigate("/signin");
     } catch (error) {
       toast.error(error.message);
     } finally {
@@ -124,8 +125,10 @@ function Signup() {
             <div className="my-5 flex justify-center  ">
               <button
                 type="submit"
-                className={`w-1/2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg ${!(data.email && data.password) ? "cursor-not-allowed bg-slate-500" : "transition "}`}
-                disabled={!data.email && !data.password}
+                className={`w-1/2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg ${!(data.email && data.password && data.confirmPassword) ? "cursor-not-allowed bg-slate-500" : "transition "}`}
+                disabled={
+                  !(data.email && data.password && data.confirmPassword)
+                }
               >
                 Submit
               </button>
