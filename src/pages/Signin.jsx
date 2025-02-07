@@ -1,4 +1,6 @@
 import authService from "../services/authService";
+import { useDispatch } from "react-redux";
+
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loading from "../components/Loading";
@@ -6,7 +8,10 @@ import { useEffect, useState } from "react";
 import { IoEyeSharp } from "react-icons/io5";
 import { FaEyeSlash, FaArrowLeftLong } from "react-icons/fa6";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { login } from "../redux/slices/userSlice";
 function Signin() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -32,14 +37,30 @@ function Signin() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    const response = await authService.signin(data);
-    if (response.status === 200) {
-      toast.success(response.message);
+    try {
+      const response = await axios.post(
+        `http://localhost:8080/api/auth/login`,
+        data,
+      );
+      if (response.status === 200) {
+        console.log("response.data", response.data.data.user);
+        dispatch(
+          login({
+            user: response.data.data.user,
+            token: response.data.data.token, // Assuming token is returned
+          }),
+        );
+        toast.success(response.data.message);
+        navigate("/");
+      } else {
+        toast.error("Login failed. Please check your credentials.");
+      }
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || "An error occurred during login.",
+      );
+    } finally {
       setLoading(false);
-      navigate("/");
-    } else {
-      setLoading(false);
-      toast.error(response.message);
     }
   };
 
