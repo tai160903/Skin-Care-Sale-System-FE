@@ -1,4 +1,4 @@
-import authService from "../services/authService";
+// import authService from "../services/authService";
 import { useDispatch } from "react-redux";
 
 import { toast, ToastContainer } from "react-toastify";
@@ -23,10 +23,9 @@ function Signin() {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get("access_token");
-
     if (token) {
       localStorage.setItem("authToken", token);
-      navigate("/"); // Redirect to home
+      navigate("/");
     }
   }, [navigate]);
 
@@ -43,15 +42,31 @@ function Signin() {
         data,
       );
       if (response.status === 200) {
-        console.log("response.data", response.data.data.user);
+        const user = response.data.data.user;
+        console.log(user);
+        const accessToken = response.data.data.accessToken;
         dispatch(
           login({
-            user: response.data.data.user,
-            token: response.data.data.token, // Assuming token is returned
+            user,
+            token: accessToken,
           }),
         );
         toast.success(response.data.message);
-        navigate("/");
+        console.log(
+          "response.data.data.accessToken",
+          response.data.data.accessToken,
+        );
+        if (user.role === "customer") {
+          navigate("/");
+        } else if (user.role === "manager") {
+          navigate("/manager");
+        } else if (user.role === "staff") {
+          navigate("/staff");
+        } else if (user.role === "admin") {
+          navigate("/admin");
+        } else {
+          navigate("/");
+        }
       } else {
         toast.error("Login failed. Please check your credentials.");
       }

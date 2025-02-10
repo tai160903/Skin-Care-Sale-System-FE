@@ -11,6 +11,7 @@ import CustomerDashboard from "../pages/CustomerDashboard";
 import StaffDashboard from "../pages/StaffDashboard";
 import ManagerDashboard from "../pages/ManagerDashboard";
 import ProtectedRoute from "./ProtectedRoute";
+import AdminDashboard from "../pages/AdminDashboard";
 
 const Router = createBrowserRouter([
   {
@@ -30,6 +31,7 @@ const Router = createBrowserRouter([
         path: "signup",
         element: <Signup />,
       },
+
       {
         path: "verify-email",
         element: <Verify />,
@@ -67,6 +69,30 @@ const Router = createBrowserRouter([
             element={<ManagerDashboard />}
             allowedRoles={["manager"]}
           />
+        ),
+      },
+      //   {
+      //   path: "manager",
+      //   element: (
+      //     <ProtectedRoute role="manager">
+      //       <ManagerDashboard />
+      //     </ProtectedRoute>
+      //   ),
+      // },
+      // {
+      //   path: "staff",
+      //   element: (
+      //     <ProtectedRoute role="staff">
+      //       <StaffDashboard />
+      //     </ProtectedRoute>
+      //   ),
+      // },
+      {
+        path: "admin",
+        element: (
+          <ProtectedRoute role="admin">
+            <AdminDashboard />
+          </ProtectedRoute>
         ),
       },
       {

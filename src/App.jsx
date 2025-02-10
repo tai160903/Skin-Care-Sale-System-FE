@@ -3,14 +3,13 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import Router from "./routes";
+import { selectUser } from "./redux/slices/userSlice";
 
 function App() {
-  const user = useSelector((state) => state.user.user);
+  const user = useSelector(selectUser);
   const navigate = useNavigate();
-
   useEffect(() => {
     if (user) {
-      // Redirect to a role-based route after login
       switch (user.role) {
         case "customer":
           navigate("/customer-dashboard");
