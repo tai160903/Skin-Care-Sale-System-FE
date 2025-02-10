@@ -7,7 +7,6 @@ import Verify from "../pages/Verify";
 import ForgotPassword from "../pages/ForgotPassword";
 import ResetPass from "../pages/ResetPass";
 import Layout from "../components/Layout";
-import CustomerDashboard from "../pages/CustomerDashboard";
 import StaffDashboard from "../pages/StaffDashboard";
 import ManagerDashboard from "../pages/ManagerDashboard";
 import ProtectedRoute from "./ProtectedRoute";
@@ -30,6 +29,7 @@ const Router = createBrowserRouter([
         path: "signup",
         element: <Signup />,
       },
+
       {
         path: "verify-email",
         element: <Verify />,
@@ -43,30 +43,19 @@ const Router = createBrowserRouter([
         element: <ResetPass />,
       },
       {
-        path: "customer-dashboard",
+        path: "manager",
         element: (
-          <ProtectedRoute
-            element={<CustomerDashboard />}
-            allowedRoles={["customer"]}
-          />
+          <ProtectedRoute role="manager">
+            <ManagerDashboard />
+          </ProtectedRoute>
         ),
       },
       {
-        path: "staff-dashboard",
+        path: "staff",
         element: (
-          <ProtectedRoute
-            element={<StaffDashboard />}
-            allowedRoles={["staff"]}
-          />
-        ),
-      },
-      {
-        path: "manager-dashboard",
-        element: (
-          <ProtectedRoute
-            element={<ManagerDashboard />}
-            allowedRoles={["manager"]}
-          />
+          <ProtectedRoute role="staff">
+            <StaffDashboard />
+          </ProtectedRoute>
         ),
       },
       {

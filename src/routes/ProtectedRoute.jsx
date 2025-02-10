@@ -1,18 +1,25 @@
-import { Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { Navigate } from "react-router-dom";
+import { selectUser } from "../redux/slices/userSlice";
 
-const ProtectedRoute = ({ element, allowedRoles }) => {
-  const user = useSelector((state) => state.user.user);
+function ProtectedRoute({ children, role }) {
+  const user = useSelector(selectUser);
+  console.log("user.user.role", user.user.role);
 
-  if (!user) {
-    return <Navigate to="/signin" />;
+  if (!user || user.user.role !== role) {
+    switch (user.user.role) {
+      case "customer":
+        return <Navigate to="/" />;
+      case "manager":
+        return <Navigate to="/manager" />;
+      case "staff":
+        return <Navigate to="/staff" />;
+      default:
+        return <Navigate to="/" />;
+    }
   }
 
-  if (allowedRoles && !allowedRoles.includes(user.role)) {
-    return <Navigate to="/error" />;
-  }
-
-  return element;
-};
+  return children;
+}
 
 export default ProtectedRoute;

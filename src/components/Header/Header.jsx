@@ -4,9 +4,12 @@ import authService from "../../services/authService";
 import Navbar from "./Navbar";
 import { FaCartShopping, FaHeart, FaUser } from "react-icons/fa6";
 import { useEffect } from "react";
+import { useSelector } from "react-redux";
 function Header() {
-  const token = localStorage.getItem("accessToken");
+  // const token = localStorage.getItem("accessToken");
   const navigate = useNavigate();
+  const token = useSelector((state) => state.user.token);
+  console.log("token22", token);
 
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
