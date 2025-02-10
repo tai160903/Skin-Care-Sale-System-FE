@@ -10,6 +10,7 @@ import Layout from "../components/Layout";
 import StaffDashboard from "../pages/StaffDashboard";
 import ManagerDashboard from "../pages/ManagerDashboard";
 import ProtectedRoute from "./ProtectedRoute";
+import AdminDashboard from "../pages/AdminDashboard";
 
 const Router = createBrowserRouter([
   {
@@ -55,6 +56,14 @@ const Router = createBrowserRouter([
         element: (
           <ProtectedRoute role="staff">
             <StaffDashboard />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "admin",
+        element: (
+          <ProtectedRoute role="admin">
+            <AdminDashboard />
           </ProtectedRoute>
         ),
       },

@@ -1,15 +1,14 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
-import authService from "../../services/authService";
 import Navbar from "./Navbar";
 import { FaCartShopping, FaHeart, FaUser } from "react-icons/fa6";
 import { useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../../redux/slices/userSlice";
 function Header() {
   // const token = localStorage.getItem("accessToken");
   const navigate = useNavigate();
   const token = useSelector((state) => state.user.token);
-  console.log("token22", token);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
@@ -17,24 +16,11 @@ function Header() {
       navigate(0);
     }
   }, [token, navigate]);
-  const handleLogout = async () => {
-    if (!token || token === null) {
-      toast.error("You are not logged in!");
-      return;
-    }
-    try {
-      const response = await authService.logout();
-      if (response.status === 200) {
-        localStorage.removeItem("accessToken");
-        toast.success("You are logged out!");
-        navigate("/signin");
-      } else {
-        toast.error(response.message);
-      }
-    } catch (error) {
-      toast.error("An error occurred during logout.");
-      console.error(error);
-    }
+
+  const handleLogout = () => {
+    dispatch(logout());
+    // Optionally clear localStorage/sessionStorage as well
+    localStorage.removeItem("persist:root"); // Removes persisted state
   };
 
   return (

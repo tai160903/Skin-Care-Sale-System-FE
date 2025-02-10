@@ -43,6 +43,7 @@ function Signin() {
       );
       if (response.status === 200) {
         const user = response.data.data.user;
+        console.log(user);
         const accessToken = response.data.data.accessToken;
         dispatch(
           login({
@@ -61,6 +62,8 @@ function Signin() {
           navigate("/manager");
         } else if (user.role === "staff") {
           navigate("/staff");
+        } else if (user.role === "admin") {
+          navigate("/admin");
         } else {
           navigate("/");
         }
