@@ -41,10 +41,11 @@ function Signin() {
         `http://localhost:8080/api/auth/login`,
         data,
       );
+      console.log("response", response);
+
       if (response.status === 200) {
-        const user = response.data.data.user;
-        console.log(user);
-        const accessToken = response.data.data.accessToken;
+        const user = response.data.user;
+        const accessToken = response.data.accessToken;
         dispatch(
           login({
             user,
@@ -52,10 +53,7 @@ function Signin() {
           }),
         );
         toast.success(response.data.message);
-        console.log(
-          "response.data.data.accessToken",
-          response.data.data.accessToken,
-        );
+
         if (user.role === "customer") {
           navigate("/");
         } else if (user.role === "manager") {
