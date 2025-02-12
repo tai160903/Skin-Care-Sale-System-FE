@@ -5,7 +5,6 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../redux/slices/userSlice";
 function Header() {
-  // const token = localStorage.getItem("accessToken");
   const navigate = useNavigate();
   const token = useSelector((state) => state.user.token);
   const dispatch = useDispatch();
@@ -19,8 +18,7 @@ function Header() {
 
   const handleLogout = () => {
     dispatch(logout());
-    // Optionally clear localStorage/sessionStorage as well
-    localStorage.removeItem("persist:root"); // Removes persisted state
+    localStorage.removeItem("persist:root");
   };
 
   return (

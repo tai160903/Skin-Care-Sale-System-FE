@@ -9,6 +9,7 @@ const axiosClient = axios.create({
   },
 });
 
+// Xử lý trước khi gửi request
 const handleRequestSuccess = async (config) => {
   const token = Cookies.get("token");
 
@@ -20,49 +21,72 @@ const handleRequestSuccess = async (config) => {
 };
 
 const handleRequestErr = (err) => {
+  console.error("Request Error:", err);
   return Promise.reject(err);
 };
 
-const handleResponseSuccess = (res) => {
-  return res;
-};
+// Xử lý response thành công
+const handleResponseSuccess = (res) => res;
 
+// Xử lý response lỗi
 const handleResponseErr = async (err) => {
+  if (!err.response || !err.response.status) {
+    console.error("Unknown error:", err);
+    return Promise.reject(err);
+  }
+
   const originalRequest = err.config;
 
+  // Xử lý lỗi 401 (Unauthorized) và thực hiện refresh token
   if (err.response.status === 401 && !originalRequest._retry) {
     originalRequest._retry = true;
     const refreshToken = Cookies.get("refreshToken");
 
-    if (!refreshToken) return Promise.reject(err);
+    if (!refreshToken) {
+      console.warn("No refresh token available");
+      Cookies.remove("token");
+      Cookies.remove("refreshToken");
+      return Promise.reject(err);
+    }
 
     try {
-      const res = await axiosClient.post("/refresh-token", {
-        token: refreshToken,
-      });
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/refresh-token`,
+        {
+          token: refreshToken,
+        },
+      );
 
       const newAccessToken = res.data.accessToken;
-      Cookies.set("refreshToken", newAccessToken);
+      Cookies.set("token", newAccessToken); // Lưu token mới vào Cookies
       originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
 
-      return axiosClient(originalRequest);
+      return axiosClient(originalRequest); // Gửi lại request ban đầu
     } catch (error) {
+      console.error("Failed to refresh token:", error);
       Cookies.remove("token");
       Cookies.remove("refreshToken");
 
       return Promise.reject(error);
     }
   }
+
+  return Promise.reject(err);
 };
 
+// Thêm interceptor để tự động gắn token vào headers
 axiosClient.interceptors.request.use(
-  (config) => handleRequestSuccess(config),
-  (err) => handleRequestErr(err),
+  (config) => {
+    const token = Cookies.get("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error),
 );
 
-axiosClient.interceptors.response.use(
-  (config) => handleResponseSuccess(config),
-  (err) => handleResponseErr(err),
-);
+axiosClient.interceptors.request.use(handleRequestSuccess, handleRequestErr);
+axiosClient.interceptors.response.use(handleResponseSuccess, handleResponseErr);
 
 export default axiosClient;
