@@ -1,26 +1,19 @@
-/* eslint-disable no-undef */
-import axios from "axios";
+import axiosClient from "./api.config";
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 const authService = {
-  signin: async (data) => {
-    return await axios.post(`http://localhost:8080/api/auth/login`, data);
-  },
-  logout: async () => {
-    return await axios.post(
-      `${process.env.REACT_APP_BACKEND_API_URL}/api/auth/logout`,
-    );
-  },
-  verifyEmail: async (data) => {
-    return await axios.post(
-      `${process.env.REACT_APP_BACKEND_API_URL}/api/auth/verify`,
-      data,
-    );
-  },
-  verifyEmailResetPassword: async (data) => {
-    return await axios.post(
-      `${process.env.REACT_APP_BACKEND_API_URL}/api/auth/verify-reset-password`,
-      data,
-    );
+  signin: (data) => axiosClient.post("/api/auth/login", data),
+
+  logout: () => axiosClient.post("/api/auth/logout"),
+
+  verifyEmail: (data) => axiosClient.post("/api/auth/verify", data),
+
+  verifyEmailResetPassword: (data) =>
+    axiosClient.post("/api/auth/verify-reset-password", data),
+
+  loginWithGoogle: () => {
+    window.location.href = `${API_URL}/api/auth/google`; // Chuyển hướng tới OAuth Google
   },
 };
 

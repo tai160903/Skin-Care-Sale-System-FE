@@ -1,32 +1,39 @@
-import { useSearchParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { logout, selectUser } from "../redux/slices/userSlice";
+// import { useEffect } from "react";
+// import { useSearchParams, useNavigate } from "react-router-dom";
+// import { useDispatch } from "react-redux";
+// import { login } from "../redux/slices/userSlice";
+// import axios from "axios";
+
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { login } from "../redux/slices/userSlice";
 
 function Home() {
-  const user = useSelector(selectUser);
-  const [searchParams] = useSearchParams();
-  const accessToken = searchParams.get("access_token");
   const dispatch = useDispatch();
-  if (accessToken) {
-    localStorage.setItem("accessToken", `Bearer ${accessToken}`);
-  }
-  const handleLogout = () => {
-    dispatch(logout());
-    // Optionally clear localStorage/sessionStorage as well
-    localStorage.removeItem("persist:root"); // Removes persisted state
-  };
-  return (
-    <div className="h-screen bg-slate-100">
-      {user ? (
-        <div>
-          <h1>{JSON.stringify(user, null, 2)}</h1>
-          <button onClick={handleLogout}>logout</button>
-        </div>
-      ) : (
-        <p>No user data found</p>
-      )}
-    </div>
-  );
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get("access_token");
+    const user = JSON.parse(urlParams.get("user"));
+
+    if (token && user) {
+      dispatch(
+        login({
+          user: {
+            id: user.id,
+            email: user.email,
+            role: user.role,
+          },
+          token,
+        }),
+      );
+    }
+    setTimeout(() => {
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }, 1000);
+  }, [dispatch]);
+
+  return <div>Home Page</div>;
 }
 
 export default Home;

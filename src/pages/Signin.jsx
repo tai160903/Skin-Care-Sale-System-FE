@@ -1,15 +1,14 @@
-// import authService from "../services/authService";
 import { useDispatch } from "react-redux";
-
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loading from "../components/Loading";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { IoEyeSharp } from "react-icons/io5";
 import { FaEyeSlash, FaArrowLeftLong } from "react-icons/fa6";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
 import { login } from "../redux/slices/userSlice";
+import authService from "../services/authService";
+
 function Signin() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -20,15 +19,6 @@ function Signin() {
     password: "",
   });
 
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get("access_token");
-    if (token) {
-      localStorage.setItem("authToken", token);
-      navigate("/");
-    }
-  }, [navigate]);
-
   const handleChange = (e) => {
     setData({ ...data, [e.target.name]: e.target.value });
   };
@@ -37,15 +27,9 @@ function Signin() {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await axios.post(
-        `http://localhost:8080/api/auth/login`,
-        data,
-      );
-      console.log("response", response);
-
-      if (response.status === 200) {
-        const user = response.data.user;
-        const accessToken = response.data.accessToken;
+      const response = await authService.signin(data);
+      if (response.data.status === 200) {
+        const { user, accessToken } = response.data;
         dispatch(
           login({
             user,
@@ -54,19 +38,24 @@ function Signin() {
         );
         toast.success(response.data.message);
 
-        if (user.role === "customer") {
-          navigate("/");
-        } else if (user.role === "manager") {
-          navigate("/manager");
-        } else if (user.role === "staff") {
-          navigate("/staff");
-        } else if (user.role === "admin") {
-          navigate("/admin");
-        } else {
-          navigate("/");
+        switch (user.role) {
+          case "customer":
+            navigate("/");
+            break;
+          case "manager":
+            navigate("/manager");
+            break;
+          case "staff":
+            navigate("/staff");
+            break;
+          case "admin":
+            navigate("/admin");
+            break;
+          default:
+            navigate("/");
         }
       } else {
-        toast.error("Login failed. Please check your credentials.");
+        toast.error(response.data.message);
       }
     } catch (error) {
       toast.error(
@@ -79,8 +68,7 @@ function Signin() {
 
   const handleLoginGoogle = async () => {
     try {
-      // Redirect to backend Google OAuth URL
-      window.location.href = "http://localhost:8080/api/auth/google";
+      await authService.loginWithGoogle();
     } catch (error) {
       toast.error(error.message);
     }
@@ -204,4 +192,5 @@ function Signin() {
     </div>
   );
 }
+
 export default Signin;
