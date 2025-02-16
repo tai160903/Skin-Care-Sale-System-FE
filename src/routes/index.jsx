@@ -12,6 +12,11 @@ import StaffDashboard from "../pages/StaffDashboard";
 import ManagerDashboard from "../pages/ManagerDashboard";
 import ProtectedRoute from "./ProtectedRoute";
 import AdminDashboard from "../pages/AdminDashboard";
+import Question from "../components/Header/Question";
+import OrTrack from "../components/Header/OrTrack";
+import Map from "../components/Header/Map";
+import Blog from "../components/Header/Blog";
+import Cart from "../components/Header/Cart";
 
 const Router = createBrowserRouter([
   {
@@ -101,6 +106,26 @@ const Router = createBrowserRouter([
       },
     ],
   },
+  {
+    path: "order-tracking",
+    element: <OrTrack/>,
+  },
+  {
+    path: "question",
+    element: <Question/>,
+  },
+  {
+    path: "store-location",
+    element: <Map/>
+  },
+  {
+    path: "blog",
+    element: <Blog/>
+  },
+  {
+    path: "cart",
+    element: <Cart/>
+  }
 ]);
 
 export default Router;

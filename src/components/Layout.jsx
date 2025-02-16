@@ -9,6 +9,7 @@ function Layout() {
       <header>
         <Banner />
         <Header />
+        <Nav />
       </header>
       <main>
         <Outlet />

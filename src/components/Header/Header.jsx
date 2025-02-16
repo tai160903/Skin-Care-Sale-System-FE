@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { TextField, InputAdornment } from "@mui/material";
-import { Search as SearchIcon, AccountCircleRounded as AccountIcon } from "@mui/icons-material";
+import {
+  Search as SearchIcon,
+  AccountCircleRounded as AccountIcon,
+} from "@mui/icons-material";
 import { FaCartShopping, FaHeart } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../redux/slices/userSlice";
-// import Cart from "./Headers/Cart";
-// import Question from "./Headers/Question";
-// import Map from "./Headers/Map";
-// import Blog from "./Headers/Blog";
-// import OrTrack from "./Headers/OrTrack";
+import Cart from "./Cart";
+import Question from "./Question";
+import Map from "./Map";
+import Blog from "./Blog";
+import OrTrack from "./OrTrack";
 
 const Header = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -65,34 +68,24 @@ const Header = () => {
 
       {/* Navigation */}
       <nav className="flex items-center space-x-6">
-        {/* <OrTrack />
+        <OrTrack />
         <Map />
         <Blog />
-        <Question /> */}
+        <Question />
       </nav>
 
       {/* Cart, Wishlist & User */}
       <div className="flex items-center space-x-6 relative">
-        {/* <Cart /> */}
-        <div className="relative">
-          <FaHeart className="cursor-pointer text-xl text-gray-700" />
-          <p className="absolute top-[-0.5rem] right-[-0.5rem] bg-red-600 text-white w-4 h-4 flex items-center justify-center rounded-full">
-            0
-          </p>
-        </div>
-        <div className="relative">
-          <FaCartShopping className="cursor-pointer text-xl text-gray-700" />
-          <p className="absolute top-[-0.5rem] right-[-0.5rem] bg-red-600 text-white w-4 h-4 flex items-center justify-center rounded-full">
-            0
-          </p>
-        </div>
+        <Cart /> 
         <div className="relative">
           <div
             className="flex items-center cursor-pointer space-x-2"
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
           >
             <AccountIcon className="text-[#326f51] text-4xl" />
-            <span className="text-gray-700 hover:text-green-700">Tài khoản</span>
+            <span className="text-gray-700 hover:text-green-700">
+              Tài khoản
+            </span>
           </div>
           {isDropdownOpen && (
             <div className="absolute right-0 mt-2 w-40 bg-white text-black rounded-lg shadow-lg border z-10">
