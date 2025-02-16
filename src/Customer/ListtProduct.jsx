@@ -1,16 +1,13 @@
-import React from "react";
 import { List, ListItem, ListItemText, Paper } from "@mui/material";
+import { useEffect, useState } from "react";
+import productSerivce from "../services/productService";
 
-const ListItems = ({ items, onItemClick }) => {
+const ListProduct = () => {
   return (
     <Paper elevation={3} sx={{ maxWidth: 400, margin: "auto", padding: 2 }}>
       <List>
-        {items.map((item, index) => (
-          <ListItem
-            key={index}
-            button
-            onClick={() => onItemClick && onItemClick(item)}
-          >
+        {data.map((item, index) => (
+          <ListItem key={index}>
             <ListItemText primary={item} />
           </ListItem>
         ))}
@@ -19,4 +16,4 @@ const ListItems = ({ items, onItemClick }) => {
   );
 };
 
-export default ListItems;
+export default ListProduct;

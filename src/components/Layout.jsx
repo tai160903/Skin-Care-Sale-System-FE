@@ -11,7 +11,7 @@ function Layout() {
         <Header />
         <Nav />
       </header>
-      <main>
+      <main className="min-h-screen">
         <Outlet />
       </main>
       <footer>
