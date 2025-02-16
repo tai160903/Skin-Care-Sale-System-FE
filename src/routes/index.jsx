@@ -18,6 +18,7 @@ import Map from "../components/Header/Map";
 import Blog from "../components/Header/Blog";
 import Cart from "../components/Header/Cart";
 
+
 const Router = createBrowserRouter([
   {
     path: "/",
@@ -92,14 +93,14 @@ const Router = createBrowserRouter([
       //     </ProtectedRoute>
       //   ),
       // },
-      {
-        path: "admin",
-        element: (
-          <ProtectedRoute role="admin">
-            <AdminDashboard />
-          </ProtectedRoute>
-        ),
-      },
+      // {
+      //   path: "admin",
+      //   element: (
+      //     <ProtectedRoute role="admin">
+      //       <AdminDashboard />
+      //     </ProtectedRoute>
+      //   ),
+      // },
       {
         path: "*",
         element: <Error />,
