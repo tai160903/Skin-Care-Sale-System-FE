@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { Link } from "react-router-dom";
 import { TextField, InputAdornment } from "@mui/material";
 import {
   Search as SearchIcon,
   AccountCircleRounded as AccountIcon,
 } from "@mui/icons-material";
-import { FaCartShopping, FaHeart } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../redux/slices/userSlice";
 import Cart from "./Cart";
@@ -16,16 +15,8 @@ import OrTrack from "./OrTrack";
 
 const Header = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const navigate = useNavigate();
   const dispatch = useDispatch();
   const token = useSelector((state) => state.user.token);
-
-  useEffect(() => {
-    const accessToken = localStorage.getItem("accessToken");
-    if (accessToken && accessToken !== token) {
-      navigate(0);
-    }
-  }, [token, navigate]);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -76,7 +67,7 @@ const Header = () => {
 
       {/* Cart, Wishlist & User */}
       <div className="flex items-center space-x-6 relative">
-        <Cart /> 
+        <Cart />
         <div className="relative">
           <div
             className="flex items-center cursor-pointer space-x-2"
