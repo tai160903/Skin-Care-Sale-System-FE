@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { TextField, InputAdornment } from "@mui/material";
-import { Search as SearchIcon, AccountCircleRounded as AccountIcon } from "@mui/icons-material";
+import {
+  Search as SearchIcon,
+  AccountCircleRounded as AccountIcon,
+} from "@mui/icons-material";
 import { FaCartShopping, FaHeart } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../redux/slices/userSlice";
@@ -92,7 +95,9 @@ const Header = () => {
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
           >
             <AccountIcon className="text-[#326f51] text-4xl" />
-            <span className="text-gray-700 hover:text-green-700">Tài khoản</span>
+            <span className="text-gray-700 hover:text-green-700">
+              Tài khoản
+            </span>
           </div>
           {isDropdownOpen && (
             <div className="absolute right-0 mt-2 w-40 bg-white text-black rounded-lg shadow-lg border z-10">

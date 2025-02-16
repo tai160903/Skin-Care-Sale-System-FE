@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css';
+import "react-toastify/dist/ReactToastify.css";
 import authService from "../services/authService";
 import Loading from "../components/Loading";
 import { useNavigate } from "react-router-dom";

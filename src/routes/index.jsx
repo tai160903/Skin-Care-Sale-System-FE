@@ -11,7 +11,7 @@ import CustomerDashboard from "../pages/CustomerDashboard";
 import StaffDashboard from "../pages/StaffDashboard";
 import ManagerDashboard from "../pages/ManagerDashboard";
 import ProtectedRoute from "./ProtectedRoute";
-import AdminDashboard from "../pages/AdminDashboard";
+// import AdminDashboard from "../pages/AdminDashboard";
 
 const Router = createBrowserRouter([
   {
@@ -87,14 +87,14 @@ const Router = createBrowserRouter([
       //     </ProtectedRoute>
       //   ),
       // },
-      {
-        path: "admin",
-        element: (
-          <ProtectedRoute role="admin">
-            <AdminDashboard />
-          </ProtectedRoute>
-        ),
-      },
+      // {
+      //   path: "admin",
+      //   element: (
+      //     <ProtectedRoute role="admin">
+      //       <AdminDashboard />
+      //     </ProtectedRoute>
+      //   ),
+      // },
       {
         path: "*",
         element: <Error />,
