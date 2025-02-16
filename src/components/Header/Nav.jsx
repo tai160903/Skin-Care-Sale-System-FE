@@ -40,7 +40,10 @@ const Nav = () => {
   // Hàm xử lý click bên ngoài dropdown
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (!event.target.closest(".nav-menu") && !event.target.closest(".nav-item")) {
+      if (
+        !event.target.closest(".nav-menu") &&
+        !event.target.closest(".nav-item")
+      ) {
         setOpenDropdown(null);
         setIsDropdownClicked(false);
       }

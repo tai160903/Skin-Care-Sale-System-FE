@@ -9,8 +9,8 @@ const Banner = () => {
       </div>
 
       {/* Phần 2: Nội dung chính (Nhấp nháy) */}
-      <div 
-        className="text-center" 
+      <div
+        className="text-center"
         style={{ animation: "blink 1s infinite" }} // Thêm animation vào style
       >
         <h2 className="text-lg font-bold">Special Offer Just for You!</h2>
