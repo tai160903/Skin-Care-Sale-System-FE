@@ -5,6 +5,8 @@ const API_URL = import.meta.env.VITE_API_URL;
 const authService = {
   signin: (data) => axiosClient.post("/api/auth/login", data),
 
+  signup: (data) => axiosClient.post("/api/auth/register", data),
+
   logout: () => axiosClient.post("/api/auth/logout"),
 
   verifyEmail: (data) => axiosClient.post("/api/auth/verify", data),

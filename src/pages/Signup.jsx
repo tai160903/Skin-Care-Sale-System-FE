@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 import authService from "../services/authService";
 import Loading from "../components/Loading";
 import { useNavigate } from "react-router-dom";
@@ -35,9 +36,11 @@ function Signup() {
     setLoading(true);
     try {
       const response = await authService.signup(data);
-      toast.success(response.message);
+      console.log(response.data?.message);
+      toast.success(response.data?.message);
     } catch (error) {
-      toast.error(error.message);
+      console.log(error);
+      toast.error(error.response.data.message);
     } finally {
       setLoading(false);
     }
