@@ -1,33 +1,16 @@
-import React from "react";
 import { Box, Paper, Typography, Stack } from "@mui/material";
 import { MonetizationOn, ShoppingCart, People } from "@mui/icons-material";
-import Sidebar from "../Admin/Sidebar";
-import Navbar from "../Admin/Navbar";
-import StatsCard from "../Admin/StatsCard";
-import SalesChart from "../Admin/SalesChart";
-import OrdersTable from "../Admin/OrdersTable";
+// import Sidebar from "../Admin/Sidebar";
+// import Navbar from "../Admin/Navbar";
+import StatsCard from "../components/Admin/StatsCard";
+import SalesChart from "../components/Admin/SalesChart";
+import OrdersTable from "../components/Admin/OrdersTable";
 
 const AdminDashboard = () => {
   return (
-    <Box
-      sx={{
-        display: "flex",
-        position: "fixed",
-        top: 0,
-        left: 0,
-        width: "100vw",
-        height: "100vh",
-        bgcolor: "#f4f6f8",
-        overflow: "auto", // Cho phép cuộn nội dung bên trong Box
-      }}
-    >
-      {/* Sidebar */}
-      <Sidebar />
-
+    <>
       {/* Main Content */}
       <Box sx={{ flex: 1, p: 3, display: "flex", flexDirection: "column" }}>
-        <Navbar />
-
         {/* Overview Statistics - Sử dụng Stack để căn chỉnh cân đối hơn */}
         <Stack
           direction="row"
@@ -106,7 +89,7 @@ const AdminDashboard = () => {
           <OrdersTable />
         </Paper>
       </Box>
-    </Box>
+    </>
   );
 };
 

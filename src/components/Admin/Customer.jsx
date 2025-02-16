@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Table,
   TableBody,
@@ -14,7 +14,7 @@ import {
   Button,
   Avatar,
 } from "@mui/material";
-import { Search, Person } from "@mui/icons-material";
+import { Search } from "@mui/icons-material";
 
 // Dữ liệu khách hàng
 const customers = [
