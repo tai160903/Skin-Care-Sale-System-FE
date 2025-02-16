@@ -7,7 +7,7 @@ import {
 } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../redux/slices/userSlice";
-import Cart from "./Cart";
+import CartA from "./CartA";
 import Question from "./Question";
 import Map from "./Map";
 import Blog from "./Blog";
@@ -67,7 +67,7 @@ const Header = () => {
 
       {/* Cart, Wishlist & User */}
       <div className="flex items-center space-x-6 relative">
-        <Cart />
+        <CartA />
         <div className="relative">
           <div
             className="flex items-center cursor-pointer space-x-2"

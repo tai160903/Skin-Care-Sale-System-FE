@@ -4,20 +4,23 @@ import { selectUser } from "../redux/slices/userSlice";
 
 function ProtectedRoute({ children, role }) {
   const user = useSelector(selectUser);
-  console.log("user.user.role", user.user.role);
 
-  if (!user || user.user.role !== role) {
+  if (!user || !user.user || !user.user.role) {
+    return <Navigate to="/signin" />;
+  }
+
+  if (user.user.role !== role) {
     switch (user.user.role) {
       case "customer":
-        return <Navigate to="/" />;
+        return <Navigate to="/" replace />;
       case "manager":
-        return <Navigate to="/manager" />;
+        return <Navigate to="/manager" replace />;
       case "staff":
-        return <Navigate to="/staff" />;
+        return <Navigate to="/staff" replace />;
       case "admin":
-        return <Navigate to="/admin" />;
+        return <Navigate to="/admin" replace />;
       default:
-        return <Navigate to="/" />;
+        return <Navigate to="/" replace />;
     }
   }
 

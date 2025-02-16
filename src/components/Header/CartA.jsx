@@ -1,9 +1,8 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import { Badge } from "@mui/material";
 import { ShoppingCartRounded as CartIcon } from "@mui/icons-material";
 
-const Cart = () => {
+const CartA = () => {
   return (
     <Link
       to="/cart"
@@ -17,4 +16,4 @@ const Cart = () => {
   );
 };
 
-export default Cart;
+export default CartA;
