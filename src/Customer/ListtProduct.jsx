@@ -29,7 +29,9 @@ function ListProduct() {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get("access_token");
-    const user = urlParams.get("user") ? JSON.parse(urlParams.get("user")) : null;
+    const user = urlParams.get("user")
+      ? JSON.parse(urlParams.get("user"))
+      : null;
 
     if (token && user) {
       dispatch(
@@ -40,7 +42,7 @@ function ListProduct() {
             role: user.role,
           },
           token,
-        })
+        }),
       );
     }
 
@@ -50,10 +52,9 @@ function ListProduct() {
   }, [dispatch]);
 
   const handleProductClick = (id) => {
-    console.log("Navigating to product:", id); 
+    console.log("Navigating to product:", id);
     navigate(`/product/${id}`);
   };
-  
 
   return (
     <div className="p-6">
@@ -81,9 +82,18 @@ function ListProduct() {
                 />
                 <CardContent className="p-5 text-center">
                   <h2 className="text-xl font-semibold">{item.name}</h2>
-                  <Rating name="read-only" value={5} readOnly className="my-2" />
-                  <p className="text-gray-500 text-sm truncate">{item.description}</p>
-                  <p className="text-lg font-bold text-green-600 mt-3">${price.toFixed(2)}</p>
+                  <Rating
+                    name="read-only"
+                    value={5}
+                    readOnly
+                    className="my-2"
+                  />
+                  <p className="text-gray-500 text-sm truncate">
+                    {item.description}
+                  </p>
+                  <p className="text-lg font-bold text-green-600 mt-3">
+                    ${price.toFixed(2)}
+                  </p>
                 </CardContent>
               </Card>
             );

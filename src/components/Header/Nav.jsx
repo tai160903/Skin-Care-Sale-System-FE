@@ -37,7 +37,7 @@ const Nav = () => {
   const [openDropdown, setOpenDropdown] = useState(null);
   const [isDropdownClicked, setIsDropdownClicked] = useState(false);
 
-  // Hàm xử lý click bên ngoài dropdown
+  // Xử lý click ngoài dropdown để đóng
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -55,7 +55,7 @@ const Nav = () => {
 
   return (
     <header className="bg-[#61c694] text-white py-4 px-6 flex justify-between items-center relative">
-      {/* Menu cấp 1 */}
+      {/* Menu chính */}
       <div className="nav-menu relative">
         <div
           className="menu-button flex items-center space-x-2 cursor-pointer"
@@ -66,10 +66,10 @@ const Nav = () => {
           <span className="font-bold text-lg">Danh Mục Sản Phẩm</span>
         </div>
 
-        {/* Dropdown Chính */}
+        {/* Dropdown chính */}
         {(openDropdown === "DanhMuc" || isDropdownClicked) && (
           <div
-            className="dropdown-menu absolute left-0 top-full mt-2 bg-white text-black shadow-lg w-auto rounded-md flex p-4 gap-2 justify-center"
+            className="dropdown-menu absolute left-0 top-full mt-2 bg-white text-black shadow-lg w-auto rounded-md flex p-4 gap-2 justify-center z-50"
             onMouseEnter={() => setOpenDropdown("DanhMuc")}
           >
             {categories.map((category, index) => (
@@ -102,15 +102,15 @@ const Nav = () => {
             key={index}
             className="nav-item relative"
             onMouseEnter={() => setOpenDropdown(category.title)}
-            onClick={() => setIsDropdownClicked(!isDropdownClicked)}
+            onMouseLeave={() => setOpenDropdown(null)}
           >
             <span className="nav-link cursor-pointer hover:underline">
               {category.title}
             </span>
 
             {/* Dropdown menu cấp 2 */}
-            {(openDropdown === category.title || isDropdownClicked) && (
-              <div className="dropdown-secondary absolute left-1/2 transform -translate-x-1/2 top-full mt-2 bg-white text-black shadow-lg w-48 rounded-md text-center">
+            {openDropdown === category.title && (
+              <div className="dropdown-secondary absolute left-1/2 transform -translate-x-1/2 top-full mt-2 bg-white text-black shadow-lg w-48 rounded-md text-center z-50">
                 {category.subcategories.map((sub, idx) => (
                   <Link
                     key={idx}

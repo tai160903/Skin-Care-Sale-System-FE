@@ -202,10 +202,12 @@ const Router = createBrowserRouter([
       //   ),
       // },
     ],
-  }, {
+  },
+  {
     path: "product/:id",
-    element: <Detail/>,
-  }, {
+    element: <Detail />,
+  },
+  {
     path: "cart",
     element: <Cart />,
   },

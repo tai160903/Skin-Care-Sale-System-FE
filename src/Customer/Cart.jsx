@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 function Cart({ customerId }) {
   const [cart, setCart] = useState([]);
   const [loading, setLoading] = useState(false);
-  
+
   useEffect(() => {
     fetchCart();
   }, []);
