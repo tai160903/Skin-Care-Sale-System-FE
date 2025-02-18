@@ -145,10 +145,12 @@ function Detail() {
             <h3 className="text-orange-600 font-bold">🎁 Quà tặng:</h3>
             <ul className="list-disc pl-5 text-sm text-gray-600">
               <li>
-                FG ZA KEMLOT 02 PURPLE 4G - <span className="text-green-600">0đ</span>
+                FG ZA KEMLOT 02 PURPLE 4G -{" "}
+                <span className="text-green-600">0đ</span>
               </li>
               <li>
-                KEM LÓT ZA TRUE WHITE DAY PROTECTOR EX 4G - <span className="text-green-600">0đ</span>
+                KEM LÓT ZA TRUE WHITE DAY PROTECTOR EX 4G -{" "}
+                <span className="text-green-600">0đ</span>
               </li>
             </ul>
           </div>
