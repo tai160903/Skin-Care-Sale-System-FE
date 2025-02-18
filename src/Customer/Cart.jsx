@@ -10,10 +10,42 @@ import {
 import { useSelector } from "react-redux";
 import cartService from "../services/cartService";
 
+
 const Cart = () => {
   const userId = useSelector((state) => state.user.user._id); // Get user ID from Redux
   console.log(userId);
   const [cartItems, setCartItems] = useState([]);
+
+// function Cart({ customerId }) {
+//   const [cart, setCart] = useState([]);
+//   const [loading, setLoading] = useState(false);
+
+//   useEffect(() => {
+//     fetchCart();
+//   }, []);
+
+//   const fetchCart = async () => {
+//     setLoading(true);
+//     try {
+//       const response = await cartService.getCart(customerId);
+//       setCart(response.data);
+//     } catch (error) {
+//       console.error("Lỗi khi lấy giỏ hàng:", error);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   const handleRemove = async (productId) => {
+//     try {
+//       await cartService.removeItem(customerId, productId);
+//       toast.info("🛒 Đã xóa sản phẩm khỏi giỏ hàng");
+//       fetchCart();
+//     } catch (error) {
+//       console.error("Lỗi khi xóa sản phẩm:", error);
+//     }
+//   };
+
 
   useEffect(() => {
     const fetchCartItems = async () => {

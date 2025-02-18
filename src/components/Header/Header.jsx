@@ -27,7 +27,10 @@ const Header = () => {
     <header className="bg-white text-black py-4 px-8 flex justify-between items-center shadow-md">
       {/* Logo & Search */}
       <div className="flex items-center space-x-12 pl-8 w-3xl">
-        <h1 className="text-4xl font-bold text-green-700">SkinCare</h1>
+      <Link to="/" className="text-4xl font-bold text-green-700 cursor-pointer">
+  SkinCare
+</Link>
+
         <TextField
           variant="outlined"
           placeholder="Bạn cần tìm gì?"
