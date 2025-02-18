@@ -127,7 +127,6 @@ import AdminLayout from "../components/AdminLayout";
 import AdminDashboard from "../pages/AdminDashboard";
 import Detail from "../Customer/Detail";
 import Cart from "../Customer/Cart";
-import SkinTypeQuiz from "../pages/quiz";
 const Router = createBrowserRouter([
   {
     path: "/",
@@ -158,10 +157,6 @@ const Router = createBrowserRouter([
       {
         path: "verify-reset-password",
         element: <ResetPass />,
-      },
-      {
-        path: "quiz",
-        element: <SkinTypeQuiz />,
       },
       {
         path: "customer-dashboard",
@@ -207,12 +202,10 @@ const Router = createBrowserRouter([
       //   ),
       // },
     ],
-  },
-  {
+  }, {
     path: "product/:id",
-    element: <Detail />,
-  },
-  {
+    element: <Detail/>,
+  }, {
     path: "cart",
     element: <Cart />,
   },
