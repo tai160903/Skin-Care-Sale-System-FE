@@ -1,41 +1,90 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { persistReducer } from "redux-persist";
-import storage from "redux-persist/lib/storage"; // Lưu vào localStorage
 
-const initialState = []; // Không cần lấy từ localStorage vì đã có Redux Persist
+const initialState = {
+  items: [],
+  total: 0,
+  discount: 0, // Giảm giá (nếu có)
+};
 
 const cartSlice = createSlice({
   name: "cart",
   initialState,
   reducers: {
-    addToCart: (state, action) => {
-      const { productId, quantity } = action.payload;
-      const existingItem = state.find((item) => item.productId === productId);
+    setCart: (state, action) => {
+      state.items = action.payload.items;
+      state.total = action.payload.total;
+      state.discount = action.payload.discount;
+    },
 
-      if (existingItem) {
-        existingItem.quantity += quantity;
+    addToCart: (state, action) => {
+      const { product_id, product, quantity = 1 } = action.payload;
+      const item = state.items.find((i) => i.product_id._id === product_id);
+      if (item) {
+        item.quantity += quantity; // Cộng thêm số lượng được chọn
       } else {
-        state.push({ productId, quantity });
+        state.items.push({ ...product, quantity });
       }
+
+      state.total = state.items.reduce(
+        (sum, item) => sum + item.product_id.price * item.quantity,
+        0,
+      );
+    },
+
+    increaseQuantity: (state, action) => {
+      const item = state.items.find((i) => i.product_id._id === action.payload);
+      if (item) {
+        item.quantity += 1;
+      }
+
+      state.total = state.items.reduce(
+        (sum, item) => sum + item.product_id.price * item.quantity,
+        0,
+      );
+    },
+
+    decreaseQuantity: (state, action) => {
+      const item = state.items.find((i) => i.product_id._id === action.payload);
+      if (item && item.quantity > 1) {
+        item.quantity -= 1;
+      }
+
+      state.total = state.items.reduce(
+        (sum, item) => sum + item.product_id.price * item.quantity,
+        0,
+      );
     },
 
     removeFromCart: (state, action) => {
-      return state.filter((item) => item.productId !== action.payload);
+      state.items = state.items.filter(
+        (i) => i.product_id._id !== action.payload,
+      );
+      state.total = state.items.reduce(
+        (sum, item) => sum + item.product_id.price * item.quantity,
+        0,
+      );
     },
 
-    clearCart: () => {
-      return [];
+    clearCart: (state) => {
+      state.items = [];
+      state.total = 0;
+      state.discount = 0;
+    },
+
+    applyDiscount: (state, action) => {
+      state.discount = action.payload;
     },
   },
 });
 
-// Cấu hình Redux-Persist
-const persistConfig = {
-  key: "cart",
-  storage,
-};
+export const {
+  setCart,
+  addToCart,
+  increaseQuantity,
+  decreaseQuantity,
+  removeFromCart,
+  clearCart,
+  applyDiscount,
+} = cartSlice.actions;
 
-const persistedCartReducer = persistReducer(persistConfig, cartSlice.reducer);
-
-export const { addToCart, removeFromCart, clearCart } = cartSlice.actions;
-export default persistedCartReducer;
+export default cartSlice.reducer;

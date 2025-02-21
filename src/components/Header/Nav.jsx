@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { MenuRounded } from "@mui/icons-material";
 
@@ -69,7 +69,7 @@ const Nav = () => {
         {/* Dropdown chính */}
         {(openDropdown === "DanhMuc" || isDropdownClicked) && (
           <div
-            className="dropdown-menu absolute left-0 top-full mt-2 bg-white text-black shadow-lg w-auto rounded-md flex p-4 gap-2 justify-center z-50"
+            className="dropdown-menu absolute left-0 top-9 mt-2 shadow-md bg-white text-black shadow-lg w-auto rounded-md flex p-4 gap-2 justify-center z-50"
             onMouseEnter={() => setOpenDropdown("DanhMuc")}
           >
             {categories.map((category, index) => (

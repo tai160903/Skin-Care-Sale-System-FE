@@ -1,17 +1,19 @@
 import axiosClient from "./api.config";
 
 const cartService = {
-  addToCart: (data) => axiosClient.post("/cart/add", data),
+  getCart: (customerId) => axiosClient.get(`/api/cart/${customerId}`),
 
-  applyPromotion: (data) => axiosClient.post("/cart/apply-promotion", data),
+  addToCart: (data) => axiosClient.post("/api/cart/add", data),
+
+  applyPromotion: (data) => axiosClient.post("/api/cart/apply-promotion", data),
 
   removeItem: (customerId, productId) =>
     axiosClient.put(
-      `/cart/remove-item?customerId=${customerId}&productId=${productId}`,
+      `/api/cart/remove-item?customerId=${customerId}&productId=${productId}`,
     ),
 
   clearCart: (customerId) =>
-    axiosClient.delete(`/cart/clear?customerId=${customerId}`),
+    axiosClient.delete(`/api/cart/clear?customerId=${customerId}`),
 };
 
 export default cartService;

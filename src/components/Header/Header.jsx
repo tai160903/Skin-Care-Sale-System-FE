@@ -12,24 +12,32 @@ import Question from "./Question";
 import Map from "./Map";
 import Blog from "./Blog";
 import OrTrack from "./OrTrack";
+import { clearCart } from "../../redux/slices/cartSlice";
 
 const Header = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dispatch = useDispatch();
   const token = useSelector((state) => state.user.token);
+  const cart = useSelector((state) => state.cart.items);
+  console.log(cart.length);
 
   const handleLogout = () => {
     dispatch(logout());
-    localStorage.removeItem("persist:root");
+    dispatch(clearCart());
+    localStorage.removeItem("user"); // Xóa dữ liệu user trong localStorage
+    localStorage.removeItem("cart"); // Xóa giỏ hàng trong localStorage (nếu đang lưu)
   };
 
   return (
     <header className="bg-white text-black py-4 px-8 flex justify-between items-center shadow-md">
       {/* Logo & Search */}
-      <div className="flex items-center space-x-12 pl-8 w-3xl">
-      <Link to="/" className="text-4xl font-bold text-green-700 cursor-pointer">
-  SkinCare
-</Link>
+      <div className="flex items-center space-x-10  w-1/2 pl-8 w-3xl">
+        <Link
+          to="/"
+          className="text-4xl font-bold text-green-700 cursor-pointer"
+        >
+          SkinCare
+        </Link>
 
         <TextField
           variant="outlined"
@@ -42,19 +50,19 @@ const Header = () => {
                 <SearchIcon className="text-gray-500" />
               </InputAdornment>
             ),
-            sx: {
-              "& .MuiOutlinedInput-notchedOutline": {
-                border: "1px solid black",
-                borderRadius: "999px",
-              },
-              "&:hover .MuiOutlinedInput-notchedOutline": {
-                borderColor: "#326f51",
-                borderWidth: "2px",
-              },
-              "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                borderColor: "#326f51",
-                borderWidth: "2px",
-              },
+          }}
+          sx={{
+            "& .MuiOutlinedInput-notchedOutline": {
+              border: "1px solid black",
+              borderRadius: "999px",
+            },
+            "&:hover .MuiOutlinedInput-notchedOutline": {
+              borderColor: "#326f51",
+              borderWidth: "2px",
+            },
+            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+              borderColor: "#326f51",
+              borderWidth: "2px",
             },
           }}
         />
@@ -70,7 +78,8 @@ const Header = () => {
 
       {/* Cart, Wishlist & User */}
       <div className="flex items-center space-x-6 relative">
-        <CartA />
+        <CartA number={cart.length} />
+
         <div className="relative">
           <div
             className="flex items-center cursor-pointer space-x-2"
