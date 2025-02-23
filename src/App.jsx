@@ -3,7 +3,6 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Router from "./routes";
 import { selectUser } from "./redux/slices/userSlice";
-import { ToastContainer } from "react-toastify";
 
 function App() {
   const user = useSelector(selectUser);
@@ -32,7 +31,6 @@ function App() {
   return (
     <>
       <Router />
-      <ToastContainer limit={4} autoClose={1000} stacked />
     </>
   );
 }

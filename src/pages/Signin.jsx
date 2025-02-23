@@ -1,8 +1,8 @@
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loading from "../components/Loading";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { IoEyeSharp } from "react-icons/io5";
 import { FaEyeSlash, FaArrowLeftLong } from "react-icons/fa6";
 import { Link, useNavigate } from "react-router-dom";
@@ -10,6 +10,7 @@ import { login } from "../redux/slices/userSlice";
 import authService from "../services/authService";
 
 function Signin() {
+  const token = useSelector((state) => state.user.token);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -18,6 +19,10 @@ function Signin() {
     email: "",
     password: "",
   });
+
+  useEffect(() => {
+    if (token) navigate("/");
+  }, [token, navigate]);
 
   const handleChange = (e) => {
     setData({ ...data, [e.target.name]: e.target.value });
@@ -29,15 +34,22 @@ function Signin() {
     try {
       const response = await authService.signin(data);
       if (response.data.status === 200) {
-        const { user, accessToken } = response.data;
+        const { user, accessToken, customer } = response.data;
+
         dispatch(
           login({
             user,
             token: accessToken,
+            customer: customer,
           }),
         );
         toast.success(response.data.message);
-
+        const redirectUrl = localStorage.getItem("redirectAfterLogin");
+        localStorage.removeItem("redirectAfterLogin");
+        if (redirectUrl) {
+          navigate(redirectUrl);
+          return;
+        }
         switch (user.role) {
           case "customer":
             navigate("/");
@@ -85,9 +97,9 @@ function Signin() {
             className="flex justify-between items-center"
             onClick={() => navigate("/")}
           >
-            <p className="cursor-pointer text-white hover:text-slate-200">
+            <button onClick={() => navigate("/")}>
               <FaArrowLeftLong className="inline" /> Back to home
-            </p>
+            </button>
             <h1 className="text-center text-2xl font-bold">Signin</h1>
           </div>
           <form onSubmit={handleSubmit} className="">
@@ -130,7 +142,7 @@ function Signin() {
               <button
                 type="submit"
                 className={`w-1/2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg ${!(data.email && data.password) ? "cursor-not-allowed bg-slate-500" : "transition "}`}
-                disabled={!data.email && !data.password}
+                disabled={!data.email || !data.password}
               >
                 Submit
               </button>

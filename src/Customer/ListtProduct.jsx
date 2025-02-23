@@ -52,7 +52,6 @@ function ListProduct() {
   }, [dispatch]);
 
   const handleProductClick = (id) => {
-    console.log("Navigating to product:", id);
     navigate(`/product/${id}`);
   };
 
@@ -83,10 +82,10 @@ function ListProduct() {
                 <CardContent className="p-5 text-center">
                   <h2 className="text-xl font-semibold">{item.name}</h2>
                   <Rating
-                    name="read-only"
-                    value={5}
+                    name="half-rating-read"
+                    defaultValue={item.rating}
+                    precision={0.5}
                     readOnly
-                    className="my-2"
                   />
                   <p className="text-gray-500 text-sm truncate">
                     {item.description}

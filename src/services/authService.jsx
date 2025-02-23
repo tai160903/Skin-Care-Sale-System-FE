@@ -9,13 +9,17 @@ const authService = {
 
   logout: () => axiosClient.post("/api/auth/logout"),
 
-  verifyEmail: (data) => axiosClient.post("/api/auth/verify", data),
+  verifyEmail: (id, token) =>
+    axiosClient.get(`/api/auth/verify-email/${token}/${id}`),
 
-  verifyEmailResetPassword: (data) =>
-    axiosClient.post("/api/auth/verify-reset-password", data),
+  forgotPassword: (email) =>
+    axiosClient.post("/api/auth/reset-password", { email }),
+
+  verifyEmailResetPassword: (id, token, data) =>
+    axiosClient.post(`/api/auth/change-password/${id}/${token}`, data),
 
   loginWithGoogle: () => {
-    window.location.href = `${API_URL}/api/auth/google`; // Chuyển hướng tới OAuth Google
+    window.location.href = `${API_URL}/api/auth/google`;
   },
 };
 

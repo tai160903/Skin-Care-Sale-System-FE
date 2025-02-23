@@ -61,6 +61,10 @@ const SkinTypeQuiz = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    if (Object.keys(selectedAnswers).length !== questions.length) {
+      toast.error("Vui lòng trả lời tất cả các câu hỏi trước khi nộp!");
+      return;
+    }
     const answersArray = Object.entries(selectedAnswers).map(
       ([questionId, answerId]) => ({
         questionId,
@@ -74,7 +78,6 @@ const SkinTypeQuiz = () => {
         answers: answersArray,
       });
 
-      console.log("Quiz submitted successfully:", response.data);
       toast.success(response.data.message);
       setResult(response.data.result); // Store the result
     } catch (error) {

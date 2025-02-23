@@ -11,6 +11,7 @@ function ResetPass() {
   const params = new URLSearchParams(window.location.search);
   const token = params.get("token");
   const userId = params.get("userId");
+
   const [loading, setLoading] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmNewPassword, setShowConfirmNewPassword] = useState(false);
@@ -26,11 +27,11 @@ function ResetPass() {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await authService.verifyEmailResetPassword({
+      const response = await authService.verifyEmailResetPassword(
         userId,
         token,
         data,
-      });
+      );
 
       if (response.status === 200) {
         toast.success(response.message);
@@ -38,13 +39,10 @@ function ResetPass() {
         navigate("/signin");
       } else {
         setLoading(false);
-        console.log(response.message);
         toast.error(response.message);
       }
     } catch (error) {
       setLoading(false);
-      console.log(error);
-
       toast.error(error.message);
     }
   };

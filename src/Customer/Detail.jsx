@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { CircularProgress, Rating, Button } from "@mui/material";
+import { CircularProgress, Rating, Button, IconButton } from "@mui/material";
 import { FiShoppingCart } from "react-icons/fi";
+import { FaPlus, FaMinus } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
 import productService from "../services/productService";
 import cartService from "../services/cartService";
 import { addToCart } from "../redux/slices/cartSlice";
+
 import Content from "./Content";
 
 function Detail() {
@@ -15,71 +17,69 @@ function Detail() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [product, setProduct] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [quantity, setQuantity] = useState(1);
 
-  // Lấy customerId từ Redux
-  const customerId = useSelector((state) => state.user.customerId);
+  const customerId = useSelector((state) => state.user.customer?._id);
 
   useEffect(() => {
-    let isMounted = true; // Để tránh lỗi memory leak
-
     const fetchProduct = async () => {
+      setIsLoading(true);
       try {
-        setLoading(true);
         const response = await productService.getProductById(id);
-        if (isMounted) setProduct(response.data);
+        setProduct(response.data);
       } catch (error) {
-        console.error("Error fetching product details:", error);
+        toast.error("Error fetching product:", error);
       } finally {
-        if (isMounted) setLoading(false);
+        setIsLoading(false);
       }
     };
 
-    if (id) fetchProduct();
-
-    return () => {
-      isMounted = false; // Cleanup function
-    };
+    if (id) {
+      fetchProduct();
+      setQuantity(1);
+    }
   }, [id]);
 
+  const handleIncreaseQuantity = () => setQuantity((prev) => prev + 1);
+  const handleDecreaseQuantity = () =>
+    setQuantity((prev) => (prev > 1 ? prev - 1 : prev));
+
   const handleAddToCart = async () => {
-    if (!product) {
-      toast.error("❌ Không tìm thấy sản phẩm!");
+    if (!customerId) {
+      toast.error("You must be logged in!");
+      localStorage.setItem("redirectAfterLogin", window.location.pathname);
+      setTimeout(() => navigate("/signin"), 1000);
       return;
     }
 
-    if (!customerId) {
-      toast.error("❌ Bạn chưa đăng nhập!");
+    if (!product) {
+      toast.error("Product not found!");
       return;
     }
 
     try {
-      // Cập nhật Redux ngay lập tức
-      dispatch(addToCart({ productId: product.id, quantity: 1 }));
+      dispatch(addToCart({ product, quantity }));
 
-      // Gửi request lên server
       await cartService.addToCart({
+        product_id: product._id,
+        quantity,
         customerId,
-        productId: product.id,
-        quantity: 1,
       });
 
-      toast.success("✅ Thêm vào giỏ hàng thành công!");
-
-      setTimeout(() => navigate("/cart"), 1000);
+      toast.success("Product added to cart!");
     } catch (error) {
-      console.error("Lỗi khi thêm vào giỏ:", error);
-      toast.error("❌ Thêm vào giỏ hàng thất bại!");
+      toast.error("Error adding product to cart:", error);
     }
   };
 
   const handleBuyNow = async () => {
     await handleAddToCart();
-    navigate("/cart");
+    if (customerId) navigate("/cart");
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">
         <CircularProgress />
@@ -88,14 +88,13 @@ function Detail() {
   }
 
   if (!product) {
-    return <p className="text-center text-gray-500">⚠️ Product not found</p>;
+    return <p className="text-center text-gray-500">Product not found</p>;
   }
 
   return (
     <div className="container mx-auto p-6">
-      {/* Grid layout */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Ảnh sản phẩm */}
+        {/* Product image */}
         <motion.div
           className="relative"
           initial={{ opacity: 0, x: -50 }}
@@ -117,7 +116,7 @@ function Detail() {
           />
         </motion.div>
 
-        {/* Thông tin sản phẩm */}
+        {/* Product information */}
         <motion.div
           className="flex flex-col"
           initial={{ opacity: 0, x: 50 }}
@@ -125,52 +124,58 @@ function Detail() {
           transition={{ duration: 0.5 }}
         >
           <h2 className="text-2xl font-bold">{product.name}</h2>
-          <Rating value={5} readOnly className="my-2" />
+          <Rating
+            name="half-rating-read"
+            defaultValue={product.rating || 0}
+            precision={0.5}
+            readOnly
+          />
           <p className="text-gray-500 text-sm">{product.description}</p>
 
-          {/* Giá sản phẩm */}
           <div className="mt-3">
-            {product.originalPrice && (
+            {product.originalPrice && product.originalPrice > product.price && (
               <span className="text-gray-400 line-through text-lg mr-2">
-                {product.originalPrice}đ
+                {new Intl.NumberFormat("vi-VN", {
+                  style: "currency",
+                  currency: "VND",
+                }).format(product.originalPrice)}
               </span>
             )}
             <span className="text-red-500 text-2xl font-bold">
-              {product.price ? `${product.price}đ` : "100.000đ"}
+              {new Intl.NumberFormat("vi-VN", {
+                style: "currency",
+                currency: "VND",
+              }).format(product.price)}
             </span>
           </div>
 
-          {/* Quà tặng */}
-          <div className="mt-4 bg-orange-100 p-4 rounded-lg">
-            <h3 className="text-orange-600 font-bold">🎁 Quà tặng:</h3>
-            <ul className="list-disc pl-5 text-sm text-gray-600">
-              <li>
-                FG ZA KEMLOT 02 PURPLE 4G -{" "}
-                <span className="text-green-600">0đ</span>
-              </li>
-              <li>
-                KEM LÓT ZA TRUE WHITE DAY PROTECTOR EX 4G -{" "}
-                <span className="text-green-600">0đ</span>
-              </li>
-            </ul>
+          {/* Quantity */}
+          <div className="flex items-center mt-4 space-x-4">
+            <IconButton onClick={handleDecreaseQuantity} color="error">
+              <FaMinus />
+            </IconButton>
+            <span className="text-lg font-semibold">{quantity}</span>
+            <IconButton onClick={handleIncreaseQuantity} color="primary">
+              <FaPlus />
+            </IconButton>
           </div>
 
-          {/* Nút CTA */}
+          {/* Buttons */}
           <div className="mt-6 flex gap-4">
             <Button
               variant="contained"
               color="warning"
-              className="flex-1 text-white font-bold py-3 rounded-lg"
               startIcon={<FiShoppingCart />}
               onClick={handleAddToCart}
+              className="bg-orange-500"
             >
               Thêm vào giỏ
             </Button>
             <Button
               variant="contained"
-              color="error"
-              className="flex-1 text-white font-bold py-3 rounded-lg"
+              color="success"
               onClick={handleBuyNow}
+              className="bg-green-500"
             >
               Mua ngay
             </Button>
@@ -178,7 +183,7 @@ function Detail() {
         </motion.div>
       </div>
 
-      {/* Nội dung chi tiết */}
+      {/* Additional content */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
