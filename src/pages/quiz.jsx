@@ -78,7 +78,6 @@ const SkinTypeQuiz = () => {
         answers: answersArray,
       });
 
-      console.log("Quiz submitted successfully:", response.data);
       toast.success(response.data.message);
       setResult(response.data.result); // Store the result
     } catch (error) {

@@ -8,7 +8,7 @@ import { motion } from "framer-motion";
 import { toast } from "react-toastify";
 import productService from "../services/productService";
 import cartService from "../services/cartService";
-import { addToCart, setCart } from "../redux/slices/cartSlice";
+import { addToCart } from "../redux/slices/cartSlice";
 
 import Content from "./Content";
 
@@ -17,78 +17,69 @@ function Detail() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [product, setProduct] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [quantity, setQuantity] = useState(1);
-  const cartItems = useSelector((state) => state.cart.items);
 
-  const customerId = useSelector((state) => state?.user?.customer?._id);
+  const customerId = useSelector((state) => state.user.customer?._id);
 
   useEffect(() => {
     const fetchProduct = async () => {
+      setIsLoading(true);
       try {
-        setLoading(true);
         const response = await productService.getProductById(id);
         setProduct(response.data);
-      } catch {
-        toast.error("❌ Không thể tải sản phẩm!");
+      } catch (error) {
+        toast.error("Error fetching product:", error);
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     };
 
     if (id) {
       fetchProduct();
-      setQuantity(1); // Reset số lượng khi chuyển sang sản phẩm khác
+      setQuantity(1);
     }
   }, [id]);
 
-  useEffect(() => {
-    console.log("Cart updated:", cartItems);
-  }, [cartItems]); // 🔥 Component sẽ re-render khi giỏ hàng thay đổi
-
-  const increaseQuantity = () => setQuantity((prev) => prev + 1);
-  const decreaseQuantityLocal = () =>
+  const handleIncreaseQuantity = () => setQuantity((prev) => prev + 1);
+  const handleDecreaseQuantity = () =>
     setQuantity((prev) => (prev > 1 ? prev - 1 : prev));
 
   const handleAddToCart = async () => {
     if (!customerId) {
-      toast.error("❌ Bạn chưa đăng nhập!");
+      toast.error("You must be logged in!");
       localStorage.setItem("redirectAfterLogin", window.location.pathname);
       setTimeout(() => navigate("/signin"), 1000);
       return;
     }
 
     if (!product) {
-      toast.error("❌ Không tìm thấy sản phẩm!");
+      toast.error("Product not found!");
       return;
     }
 
     try {
-      dispatch(addToCart({ product_id: product._id, product, quantity }));
+      dispatch(addToCart({ product, quantity }));
 
       await cartService.addToCart({
-        customerId,
-        productId: product._id,
+        product_id: product._id,
         quantity,
+        customerId,
       });
 
-      const updatedCart = await cartService.getCart(customerId);
-      dispatch(setCart(updatedCart));
-
-      toast.success("✅ Đã thêm vào giỏ hàng!");
+      toast.success("Product added to cart!");
     } catch (error) {
-      console.error("❌ Lỗi khi thêm vào giỏ:", error);
-      toast.error("Lỗi khi thêm sản phẩm vào giỏ hàng!");
+      toast.error("Error adding product to cart:", error);
     }
   };
 
-  const buyNow = async () => {
+  const handleBuyNow = async () => {
     await handleAddToCart();
     if (customerId) navigate("/cart");
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">
         <CircularProgress />
@@ -97,13 +88,13 @@ function Detail() {
   }
 
   if (!product) {
-    return <p className="text-center text-gray-500">⚠️ Product not found</p>;
+    return <p className="text-center text-gray-500">Product not found</p>;
   }
 
   return (
     <div className="container mx-auto p-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Ảnh sản phẩm */}
+        {/* Product image */}
         <motion.div
           className="relative"
           initial={{ opacity: 0, x: -50 }}
@@ -125,7 +116,7 @@ function Detail() {
           />
         </motion.div>
 
-        {/* Thông tin sản phẩm */}
+        {/* Product information */}
         <motion.div
           className="flex flex-col"
           initial={{ opacity: 0, x: 50 }}
@@ -158,18 +149,18 @@ function Detail() {
             </span>
           </div>
 
-          {/* Chỉnh số lượng */}
+          {/* Quantity */}
           <div className="flex items-center mt-4 space-x-4">
-            <IconButton onClick={decreaseQuantityLocal} color="error">
+            <IconButton onClick={handleDecreaseQuantity} color="error">
               <FaMinus />
             </IconButton>
             <span className="text-lg font-semibold">{quantity}</span>
-            <IconButton onClick={increaseQuantity} color="primary">
+            <IconButton onClick={handleIncreaseQuantity} color="primary">
               <FaPlus />
             </IconButton>
           </div>
 
-          {/* Nút thao tác */}
+          {/* Buttons */}
           <div className="mt-6 flex gap-4">
             <Button
               variant="contained"
@@ -183,7 +174,7 @@ function Detail() {
             <Button
               variant="contained"
               color="success"
-              onClick={buyNow}
+              onClick={handleBuyNow}
               className="bg-green-500"
             >
               Mua ngay
@@ -192,7 +183,7 @@ function Detail() {
         </motion.div>
       </div>
 
-      {/* Nội dung thêm */}
+      {/* Additional content */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}

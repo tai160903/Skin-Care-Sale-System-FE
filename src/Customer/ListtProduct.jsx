@@ -16,7 +16,6 @@ function ListProduct() {
     const fetchData = async () => {
       try {
         const response = await productService.getAllProduct();
-        console.log("Data:", response.data);
         setData(response.data);
       } catch (error) {
         console.error("Error fetching products:", error);
@@ -53,7 +52,6 @@ function ListProduct() {
   }, [dispatch]);
 
   const handleProductClick = (id) => {
-    console.log("Navigating to product:", id);
     navigate(`/product/${id}`);
   };
 

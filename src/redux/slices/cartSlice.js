@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   items: [],
   total: 0,
-  discount: 0, // Giảm giá (nếu có)
+  discount: 0,
 };
 
 const cartSlice = createSlice({
@@ -17,12 +17,18 @@ const cartSlice = createSlice({
     },
 
     addToCart: (state, action) => {
-      const { product_id, product, quantity = 1 } = action.payload;
-      const item = state.items.find((i) => i.product_id._id === product_id);
-      if (item) {
-        item.quantity += quantity; // Cộng thêm số lượng được chọn
+      const item = action.payload;
+      const existingItem = state.items.find(
+        (i) => i.product_id._id === item.product._id,
+      );
+
+      if (existingItem) {
+        existingItem.quantity += item.quantity;
       } else {
-        state.items.push({ ...product, quantity });
+        state.items.push({
+          product_id: item.product,
+          quantity: item.quantity,
+        });
       }
 
       state.total = state.items.reduce(

@@ -20,7 +20,7 @@ function ForgotPassword() {
     event.preventDefault();
     setLoading(true);
     try {
-      const response = await authService.forgotPassword({ email: data.email });
+      const response = await authService.forgotPassword(data.email);
       toast.success(response.message);
       setStatus(response.status);
     } catch (error) {

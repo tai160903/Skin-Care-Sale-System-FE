@@ -3,7 +3,9 @@ import axiosClient from "./api.config";
 const cartService = {
   getCart: (customerId) => axiosClient.get(`/api/cart/${customerId}`),
 
-  addToCart: (data) => axiosClient.post("/api/cart/add", data),
+  addToCart: (data) => {
+    axiosClient.post("/api/cart/add", data);
+  },
 
   applyPromotion: (data) => axiosClient.post("/api/cart/apply-promotion", data),
 

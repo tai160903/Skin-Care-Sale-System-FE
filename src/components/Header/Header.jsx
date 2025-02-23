@@ -19,7 +19,6 @@ const Header = () => {
   const dispatch = useDispatch();
   const token = useSelector((state) => state.user.token);
   const cart = useSelector((state) => state.cart.items);
-  console.log(cart.length);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -30,7 +29,6 @@ const Header = () => {
 
   return (
     <header className="bg-white text-black py-4 px-8 flex justify-between items-center shadow-md">
-      {/* Logo & Search */}
       <div className="flex items-center space-x-10  w-1/2 pl-8 w-3xl">
         <Link
           to="/"
@@ -68,7 +66,6 @@ const Header = () => {
         />
       </div>
 
-      {/* Navigation */}
       <nav className="flex items-center space-x-6">
         <OrTrack />
         <Map />
@@ -76,7 +73,6 @@ const Header = () => {
         <Question />
       </nav>
 
-      {/* Cart, Wishlist & User */}
       <div className="flex items-center space-x-6 relative">
         <CartA number={cart.length} />
 

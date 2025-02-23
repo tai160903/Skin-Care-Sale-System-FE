@@ -36,10 +36,8 @@ function Signup() {
     setLoading(true);
     try {
       const response = await authService.signup(data);
-      console.log(response.data?.message);
       toast.success(response.data?.message);
     } catch (error) {
-      console.log(error);
       toast.error(error.response.data.message);
     } finally {
       setLoading(false);

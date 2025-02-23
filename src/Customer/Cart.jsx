@@ -17,6 +17,7 @@ import {
   Paper,
 } from "@mui/material";
 import { Add, Remove, Delete } from "@mui/icons-material";
+import { Link } from "react-router-dom";
 
 const Cart = () => {
   const dispatch = useDispatch();
@@ -150,13 +151,14 @@ const Cart = () => {
           }).format(finalPrice)}
         </Typography>
       </div>
-
-      <Button
-        variant="contained"
-        className="mt-6 w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg"
-      >
-        🏦 Thanh toán ngay
-      </Button>
+      <Link to="/checkout">
+        <Button
+          variant="contained"
+          className="mt-6 w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg"
+        >
+          🏦 Thanh toán ngay
+        </Button>
+      </Link>
     </div>
   );
 };

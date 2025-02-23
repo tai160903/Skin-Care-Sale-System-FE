@@ -17,6 +17,7 @@ import Detail from "../Customer/Detail";
 import Cart from "../Customer/Cart";
 import SkinTypeQuiz from "../pages/quiz";
 import DraftOrder from "../pages/DraftOrder";
+import SuccessPayment from "../pages/SuccessPayment";
 const Router = createBrowserRouter([
   {
     path: "/",
@@ -89,12 +90,7 @@ const Router = createBrowserRouter([
       },
       {
         path: "checkout",
-        element: (
-          <ProtectedRoute
-            element={<DraftOrder />}
-            allowedRoles={["customer"]}
-          />
-        ),
+        element: <DraftOrder />,
       },
     ],
   },
@@ -119,6 +115,10 @@ const Router = createBrowserRouter([
         element: <AdminDashboard />,
       },
     ],
+  },
+  {
+    path: "success",
+    element: <SuccessPayment />,
   },
   {
     path: "*",
