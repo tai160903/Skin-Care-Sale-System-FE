@@ -16,6 +16,9 @@ import {
   TableHead,
   TableRow,
   Paper,
+  Box,
+  Card,
+  CardContent,
 } from "@mui/material";
 import { Add, Remove, Delete } from "@mui/icons-material";
 import cartService from "../services/cartService";
@@ -83,7 +86,7 @@ const Cart = () => {
   };
 
   return (
-    <div className="container mx-auto p-6">
+    <div className="container mx-auto p-6 max-w-5xl">
       <Typography
         variant="h5"
         className="text-center font-bold text-gray-800 mb-6"
@@ -93,14 +96,14 @@ const Cart = () => {
 
       {cartItems.length === 0 ? (
         <Typography className="text-center text-gray-600">
+          {" "}
           🛍️ Giỏ hàng của bạn đang trống!
         </Typography>
       ) : (
         <TableContainer component={Paper} className="shadow-lg rounded-lg">
-          <Table>
+          <Table sx={{ minWidth: 650 }}>
             <TableHead>
-              <TableRow>
-                <TableCell>Hình ảnh</TableCell>
+              <TableRow className="bg-gray-100">
                 <TableCell>Sản phẩm</TableCell>
                 <TableCell align="center">Giá</TableCell>
                 <TableCell align="center">Số lượng</TableCell>
@@ -112,18 +115,22 @@ const Cart = () => {
               {cartItems.map((item) => (
                 <TableRow key={item.product_id._id}>
                   <TableCell>
-                    <img
-                      src={item.product_id.image}
-                      alt={item.product_id.name}
-                      className="w-16 h-16 rounded-md"
-                    />
+                    <Box display="flex" alignItems="center" gap={2}>
+                      <img
+                        src={item.product_id.image}
+                        alt={item.product_id.name}
+                        className="w-20 h-20 rounded-md object-cover"
+                      />
+                      <Typography variant="body1" className="font-medium">
+                        {item.product_id.name}
+                      </Typography>
+                    </Box>
                   </TableCell>
-                  <TableCell>{item.product_id.name}</TableCell>
-                  <TableCell align="center">
-                    {formatCurrency(
-                      item.product_id.price *
-                        (1 - item.product_id.purchaseCount / 100),
-                    )}
+                  <TableCell align="right">
+                    {new Intl.NumberFormat("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    }).format(item.product_id.price)}
                   </TableCell>
                   <TableCell align="center">
                     <IconButton
@@ -131,15 +138,17 @@ const Cart = () => {
                         handleDecreaseQuantity(item.product_id._id)
                       }
                       color="error"
+                      size="small"
                     >
                       <Remove />
                     </IconButton>
-                    {item.quantity}
+                    <strong>{item.quantity}</strong>
                     <IconButton
                       onClick={() =>
                         handleIncreaseQuantity(item.product_id._id)
                       }
                       color="primary"
+                      size="small"
                     >
                       <Add />
                     </IconButton>
@@ -166,41 +175,35 @@ const Cart = () => {
         </TableContainer>
       )}
 
-      {/* Tổng tiền và Mã giảm giá */}
-      <div className="mt-6 bg-gray-100 p-4 rounded-lg shadow-sm">
-        <Typography variant="h6" className="text-gray-700">
-          Tổng tiền: <strong>{formatCurrency(totalPrice)}</strong>
-        </Typography>
-        <div className="flex mt-2">
-          <input
-            type="text"
-            placeholder="Nhập mã giảm giá"
-            className="p-2 border rounded-l-lg w-full"
-            value={coupon}
-            onChange={(e) => setCoupon(e.target.value)}
-          />
-          <button
-            className="bg-blue-500 text-white px-4 rounded-r-lg hover:bg-blue-600"
-            onClick={handleApplyCoupon}
-          >
-            Áp dụng
-          </button>
-        </div>
-        <Typography variant="h6" className="text-gray-700 mt-3">
-          Giảm giá: <strong>- {formatCurrency(discountAmount)}</strong>
-        </Typography>
-        <hr className="my-2 border-gray-300" />
-        <Typography variant="h5" className="font-bold text-green-600">
-          Thành tiền: {formatCurrency(totalPrice - discountAmount)}
-        </Typography>
-      </div>
-      <Button
-        variant="contained"
-        className="mt-6 w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg"
-        onClick={handleCheckout}
-      >
-        🏦 Thanh toán ngay
-      </Button>
+      {/* Tổng tiền */}
+      {cartItems.length > 0 && (
+        <Card className="mt-6 shadow-lg">
+          <CardContent>
+            <Typography variant="h6" className="text-gray-700">
+              Tổng tiền:{" "}
+              <strong>{totalPrice.toLocaleString("vi-VN")} VND</strong>
+            </Typography>
+            <Typography variant="h6" className="text-gray-700">
+              Giảm giá:{" "}
+              <strong>
+                -{(discount * totalPrice).toLocaleString("vi-VN")} VND
+              </strong>
+            </Typography>
+            <hr className="my-2 border-gray-300" />
+            <Typography variant="h5" className="font-bold text-green-600">
+              Thành tiền: {totalAmount.toLocaleString("vi-VN")} VND
+            </Typography>
+            <Link to="/checkout">
+              <Button
+                variant="contained"
+                className="mt-4 w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg"
+              >
+                🏦 Thanh toán ngay
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };
