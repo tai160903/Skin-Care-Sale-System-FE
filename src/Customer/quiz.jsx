@@ -41,7 +41,7 @@ const SkinTypeQuiz = () => {
                 label: a.text,
               })),
             };
-          })
+          }),
         );
 
         setQuestions(questionWithAnswers);
@@ -70,7 +70,7 @@ const SkinTypeQuiz = () => {
     }
 
     const answersArray = Object.entries(selectedAnswers).map(
-      ([questionId, answerId]) => ({ questionId, answerId })
+      ([questionId, answerId]) => ({ questionId, answerId }),
     );
 
     try {
@@ -129,13 +129,16 @@ const SkinTypeQuiz = () => {
                     component="legend"
                     className="text-lg font-medium text-gray-700"
                   >
-                    Câu {currentQuestion + 1}/{questions.length}: {" "}
+                    Câu {currentQuestion + 1}/{questions.length}:{" "}
                     {questions[currentQuestion].text}
                   </FormLabel>
                   <RadioGroup
                     value={selectedAnswers[questions[currentQuestion].id] || ""}
                     onChange={(e) =>
-                      handleChange(questions[currentQuestion].id, e.target.value)
+                      handleChange(
+                        questions[currentQuestion].id,
+                        e.target.value,
+                      )
                     }
                   >
                     {questions[currentQuestion].options.map((option) => (

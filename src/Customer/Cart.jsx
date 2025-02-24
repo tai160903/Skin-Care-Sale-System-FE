@@ -15,6 +15,9 @@ import {
   TableHead,
   TableRow,
   Paper,
+  Box,
+  Card,
+  CardContent,
 } from "@mui/material";
 import { Add, Remove, Delete } from "@mui/icons-material";
 import { Link } from "react-router-dom";
@@ -39,24 +42,18 @@ const Cart = () => {
   };
 
   return (
-    <div className="container mx-auto p-6">
-      <Typography
-        variant="h5"
-        className="text-center font-bold text-gray-800 mb-6"
-      >
+    <div className="container mx-auto p-6 max-w-5xl">
+      <Typography variant="h5" className="text-center font-bold text-gray-800 mb-6">
         🛒 Giỏ Hàng Của Bạn
       </Typography>
 
       {cartItems.length === 0 ? (
-        <Typography className="text-center text-gray-600">
-          🛍️ Giỏ hàng của bạn đang trống!
-        </Typography>
+        <Typography className="text-center text-gray-600"> 🛍️ Giỏ hàng của bạn đang trống!</Typography>
       ) : (
         <TableContainer component={Paper} className="shadow-lg rounded-lg">
-          <Table sx={{ minWidth: 650 }} aria-label="cart table">
+          <Table sx={{ minWidth: 650 }}>
             <TableHead>
-              <TableRow>
-                <TableCell>Hình ảnh</TableCell>
+              <TableRow className="bg-gray-100">
                 <TableCell>Sản phẩm</TableCell>
                 <TableCell align="right">Giá</TableCell>
                 <TableCell align="center">Số lượng</TableCell>
@@ -68,13 +65,17 @@ const Cart = () => {
               {cartItems.map((item) => (
                 <TableRow key={item.product_id._id}>
                   <TableCell>
-                    <img
-                      src={item.product_id.image}
-                      alt={item.product_id.name}
-                      className="w-16 h-16 rounded-md"
-                    />
+                    <Box display="flex" alignItems="center" gap={2}>
+                      <img
+                        src={item.product_id.image}
+                        alt={item.product_id.name}
+                        className="w-20 h-20 rounded-md object-cover"
+                      />
+                      <Typography variant="body1" className="font-medium">
+                        {item.product_id.name}
+                      </Typography>
+                    </Box>
                   </TableCell>
-                  <TableCell>{item.product_id.name}</TableCell>
                   <TableCell align="right">
                     {new Intl.NumberFormat("vi-VN", {
                       style: "currency",
@@ -83,19 +84,17 @@ const Cart = () => {
                   </TableCell>
                   <TableCell align="center">
                     <IconButton
-                      onClick={() =>
-                        handleDecreaseQuantity(item.product_id._id)
-                      }
+                      onClick={() => handleDecreaseQuantity(item.product_id._id)}
                       color="error"
+                      size="small"
                     >
                       <Remove />
                     </IconButton>
-                    {item.quantity}
+                    <strong>{item.quantity}</strong>
                     <IconButton
-                      onClick={() =>
-                        handleIncreaseQuantity(item.product_id._id)
-                      }
+                      onClick={() => handleIncreaseQuantity(item.product_id._id)}
                       color="primary"
+                      size="small"
                     >
                       <Add />
                     </IconButton>
@@ -122,43 +121,30 @@ const Cart = () => {
       )}
 
       {/* Tổng tiền */}
-      <div className="mt-6 bg-gray-100 p-4 rounded-lg shadow-sm">
-        <Typography variant="h6" className="text-gray-700">
-          Tổng tiền:{" "}
-          <strong>
-            {new Intl.NumberFormat("vi-VN", {
-              style: "currency",
-              currency: "VND",
-            }).format(totalPrice)}
-          </strong>
-        </Typography>
-        <Typography variant="h6" className="text-gray-700">
-          Giảm giá:{" "}
-          <strong>
-            -
-            {new Intl.NumberFormat("vi-VN", {
-              style: "currency",
-              currency: "VND",
-            }).format(discount * totalPrice)}
-          </strong>
-        </Typography>
-        <hr className="my-2 border-gray-300" />
-        <Typography variant="h5" className="font-bold text-green-600">
-          Thành tiền:{" "}
-          {new Intl.NumberFormat("vi-VN", {
-            style: "currency",
-            currency: "VND",
-          }).format(finalPrice)}
-        </Typography>
-      </div>
-      <Link to="/checkout">
-        <Button
-          variant="contained"
-          className="mt-6 w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg"
-        >
-          🏦 Thanh toán ngay
-        </Button>
-      </Link>
+      {cartItems.length > 0 && (
+        <Card className="mt-6 shadow-lg">
+          <CardContent>
+            <Typography variant="h6" className="text-gray-700">
+              Tổng tiền: <strong>{totalPrice.toLocaleString("vi-VN")} VND</strong>
+            </Typography>
+            <Typography variant="h6" className="text-gray-700">
+              Giảm giá: <strong>-{(discount * totalPrice).toLocaleString("vi-VN")} VND</strong>
+            </Typography>
+            <hr className="my-2 border-gray-300" />
+            <Typography variant="h5" className="font-bold text-green-600">
+              Thành tiền: {finalPrice.toLocaleString("vi-VN")} VND
+            </Typography>
+            <Link to="/checkout">
+              <Button
+                variant="contained"
+                className="mt-4 w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg"
+              >
+                🏦 Thanh toán ngay
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };
