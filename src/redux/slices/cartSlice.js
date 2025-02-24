@@ -32,7 +32,9 @@ const cartSlice = createSlice({
       }
 
       state.total = state.items.reduce(
-        (sum, item) => sum + item.product_id.price * item.quantity,
+        (sum, item) =>
+          sum +
+          item.product_id.price * item.quantity * (1 - state.discount / 100),
         0,
       );
     },
@@ -62,11 +64,13 @@ const cartSlice = createSlice({
     },
 
     removeFromCart: (state, action) => {
+      const productId = action.payload;
       state.items = state.items.filter(
-        (i) => i.product_id._id !== action.payload,
+        (item) => item.product_id._id !== productId,
       );
+
       state.total = state.items.reduce(
-        (sum, item) => sum + item.product_id.price * item.quantity,
+        (total, item) => total + item.product_id.price * item.quantity,
         0,
       );
     },
