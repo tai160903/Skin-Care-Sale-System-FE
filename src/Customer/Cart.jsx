@@ -45,7 +45,10 @@ const Cart = () => {
 
   return (
     <div className="container mx-auto p-6 max-w-6xl">
-      <Typography variant="h4" className="text-center font-bold text-gray-800 mb-6">
+      <Typography
+        variant="h4"
+        className="text-center font-bold text-gray-800 mb-6"
+      >
         🛒 Giỏ Hàng Của Bạn
       </Typography>
 
@@ -64,7 +67,7 @@ const Cart = () => {
                     <TableCell>Sản phẩm</TableCell>
                     <TableCell align="right">Giá</TableCell>
                     <TableCell align="center">Số lượng</TableCell>
-                    <TableCell align="right">Tổng</TableCell>
+                    <TableCell align="right">Tạm Tính</TableCell>
                     <TableCell align="center">Xóa</TableCell>
                   </TableRow>
                 </TableHead>
@@ -91,7 +94,9 @@ const Cart = () => {
                       </TableCell>
                       <TableCell align="center">
                         <IconButton
-                          onClick={() => handleDecreaseQuantity(item.product_id._id)}
+                          onClick={() =>
+                            handleDecreaseQuantity(item.product_id._id)
+                          }
                           color="error"
                           size="small"
                         >
@@ -99,7 +104,9 @@ const Cart = () => {
                         </IconButton>
                         <strong>{item.quantity}</strong>
                         <IconButton
-                          onClick={() => handleIncreaseQuantity(item.product_id._id)}
+                          onClick={() =>
+                            handleIncreaseQuantity(item.product_id._id)
+                          }
                           color="primary"
                           size="small"
                         >
@@ -132,10 +139,14 @@ const Cart = () => {
             <Card className="shadow-lg p-4">
               <CardContent>
                 <Typography variant="h6" className="text-gray-700">
-                  Tổng tiền: <strong>{totalPrice.toLocaleString("vi-VN")} VND</strong>
+                  Tạm tính:{" "}
+                  <strong>{totalPrice.toLocaleString("vi-VN")} VND</strong>
                 </Typography>
                 <Typography variant="h6" className="text-gray-700">
-                  Giảm giá: <strong>-{(discount * totalPrice).toLocaleString("vi-VN")} VND</strong>
+                  Giảm giá:{" "}
+                  <strong>
+                    -{(discount * totalPrice).toLocaleString("vi-VN")} VND
+                  </strong>
                 </Typography>
                 <hr className="my-3 border-gray-300" />
                 <Typography variant="h5" className="font-bold text-green-600">
