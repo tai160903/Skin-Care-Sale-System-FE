@@ -15,8 +15,8 @@ import AdminLayout from "../components/AdminLayout";
 import AdminDashboard from "../pages/AdminDashboard";
 import Detail from "../Customer/Detail";
 import Cart from "../Customer/Cart";
-import SkinTypeQuiz from "../pages/quiz";
-import DraftOrder from "../pages/DraftOrder";
+import SkinTypeQuiz from "../Customer/quiz";
+import DraftOrder from "../Customer/DraftOrder";
 import SuccessPayment from "../pages/SuccessPayment";
 const Router = createBrowserRouter([
   {
