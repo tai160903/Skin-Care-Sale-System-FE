@@ -5,6 +5,7 @@ import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
 import { FaMoneyBill1Wave, FaPaypal } from "react-icons/fa6";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { formatCurrency } from "../utils/formatCurrency.js";
 
 const DraftOrder = () => {
   const dispatch = useDispatch();
@@ -15,10 +16,12 @@ const DraftOrder = () => {
   const [address, setAddress] = useState(user?.address || "");
   const [phone, setPhone] = useState(user?.phone || "");
 
-  const totalAmount = cart.reduce(
-    (sum, item) => sum + item.product_id.price * item.quantity,
-    0
-  );
+  const totalAmount = cart.reduce((sum, item) => {
+    const originalPrice = Number(item.product_id?.price) || 0;
+    const discountRate = Number(item.product_id?.purchaseCount) || 0;
+    const discountedPrice = originalPrice * (1 - discountRate / 100);
+    return sum + discountedPrice * item.quantity;
+  }, 0);
 
   const handleOrder = async (paymentType) => {
     if (!address || !phone) {
@@ -43,7 +46,7 @@ const DraftOrder = () => {
         navigate("/success");
       }
     } catch (error) {
-      toast.error("Lỗi khi tạo đơn hàng!");
+      toast.error("Lỗi khi tạo đơn hàng!", error);
     }
   };
 
@@ -56,17 +59,23 @@ const DraftOrder = () => {
         <div className="border p-4 rounded-lg shadow-md bg-white">
           <h3 className="font-semibold mb-3">Giỏ hàng của bạn</h3>
           <div className="space-y-2">
-            {cart.map((item) => (
-              <div key={item.product_id._id} className="flex justify-between">
-                <span>
-                  {item.product_id.name} (x{item.quantity})
-                </span>
-                <span>{item.product_id.price * item.quantity} VND</span>
-              </div>
-            ))}
+            {cart.map((item) => {
+              const originalPrice = Number(item.product_id?.price) || 0;
+              const discountRate = Number(item.product_id?.purchaseCount) || 0;
+              const discountedPrice = originalPrice * (1 - discountRate / 100);
+
+              return (
+                <div key={item.product_id._id} className="flex justify-between">
+                  <span>
+                    {item.product_id.name} (x{item.quantity})
+                  </span>
+                  <span>{formatCurrency(discountedPrice * item.quantity)}</span>
+                </div>
+              );
+            })}
           </div>
           <p className="font-bold mt-3 text-right text-lg">
-            Tổng tiền: {totalAmount.toLocaleString()} VND
+            Tổng tiền: {formatCurrency(totalAmount)}
           </p>
         </div>
 

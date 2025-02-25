@@ -23,7 +23,7 @@ import {
 import { Add, Remove, Delete } from "@mui/icons-material";
 import cartService from "../services/cartService";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { formatCurrency } from "../utils/formatCurrency";
 
 const Cart = () => {
@@ -96,7 +96,6 @@ const Cart = () => {
 
       {cartItems.length === 0 ? (
         <Typography className="text-center text-gray-600">
-          {" "}
           🛍️ Giỏ hàng của bạn đang trống!
         </Typography>
       ) : (
@@ -126,11 +125,11 @@ const Cart = () => {
                       </Typography>
                     </Box>
                   </TableCell>
-                  <TableCell align="right">
-                    {new Intl.NumberFormat("vi-VN", {
-                      style: "currency",
-                      currency: "VND",
-                    }).format(item.product_id.price)}
+                  <TableCell align="center">
+                    {formatCurrency(
+                      item.product_id.price *
+                        (1 - item.product_id.purchaseCount / 100),
+                    )}
                   </TableCell>
                   <TableCell align="center">
                     <IconButton
@@ -175,28 +174,40 @@ const Cart = () => {
         </TableContainer>
       )}
 
-      {/* Tổng tiền */}
       {cartItems.length > 0 && (
         <Card className="mt-6 shadow-lg">
           <CardContent>
             <Typography variant="h6" className="text-gray-700">
-              Tổng tiền:{" "}
-              <strong>{totalPrice.toLocaleString("vi-VN")} VND</strong>
+              Tổng tiền: <strong>{formatCurrency(totalPrice)}</strong>
             </Typography>
-            <Typography variant="h6" className="text-gray-700">
-              Giảm giá:{" "}
-              <strong>
-                -{(discount * totalPrice).toLocaleString("vi-VN")} VND
-              </strong>
+            <div className="flex mt-2">
+              <input
+                type="text"
+                placeholder="Nhập mã giảm giá"
+                className="p-2 border rounded-l-lg w-full"
+                value={coupon}
+                onChange={(e) => setCoupon(e.target.value)}
+              />
+              <button
+                className="bg-blue-500 text-white px-4 rounded-r-lg hover:bg-blue-600"
+                onClick={handleApplyCoupon}
+              >
+                Áp dụng
+              </button>
+            </div>
+            <Typography variant="h6" className="text-gray-700 mt-3">
+              Giảm giá: <strong>{formatCurrency(discountAmount)}</strong>
             </Typography>
+
             <hr className="my-2 border-gray-300" />
             <Typography variant="h5" className="font-bold text-green-600">
-              Thành tiền: {totalAmount.toLocaleString("vi-VN")} VND
+              Thành tiền: {formatCurrency(totalPrice - discountAmount)}
             </Typography>
             <Link to="/checkout">
               <Button
                 variant="contained"
                 className="mt-4 w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg"
+                onClick={handleCheckout}
               >
                 🏦 Thanh toán ngay
               </Button>
