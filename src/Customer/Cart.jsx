@@ -29,7 +29,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { formatCurrency } from "../utils/formatCurrency";
 import DraftOrder from "./DraftOrder"; // Import DraftOrder
 
-
 const Cart = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -93,7 +92,6 @@ const Cart = () => {
     <div className="container mx-auto p-6 max-w-6xl">
       <Typography
         variant="h4"
-
         className="text-center font-bold text-gray-800 mb-6"
       >
         🛒 Giỏ Hàng Của Bạn
@@ -104,7 +102,6 @@ const Cart = () => {
           🛍️ Giỏ hàng của bạn đang trống!
         </Typography>
       ) : (
-
         <Grid container spacing={4}>
           {/* Phần bảng giỏ hàng */}
           <Grid item xs={12} md={8}>
@@ -113,10 +110,10 @@ const Cart = () => {
                 <TableHead>
                   <TableRow className="bg-gray-100">
                     <TableCell>Sản phẩm</TableCell>
-                      <TableCell align="center">Giá</TableCell>
-                      <TableCell align="center">Số lượng</TableCell>
-                      <TableCell align="center">Tổng</TableCell>
-                      <TableCell align="center">Xóa</TableCell>
+                    <TableCell align="center">Giá</TableCell>
+                    <TableCell align="center">Số lượng</TableCell>
+                    <TableCell align="center">Tổng</TableCell>
+                    <TableCell align="center">Xóa</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -135,11 +132,10 @@ const Cart = () => {
                         </Box>
                       </TableCell>
                       <TableCell align="center">
-                    {formatCurrency(
-                      item.product_id.price *
-                        (1 - item.product_id.purchaseCount / 100),
-                    )}
-                  </TableCell>
+                        {formatCurrency(
+                          item.product_id.price *
+                            (1 - item.product_id.purchaseCount / 100),
+                        )}
                       </TableCell>
                       <TableCell align="center">
                         <IconButton
@@ -162,13 +158,13 @@ const Cart = () => {
                           <Add />
                         </IconButton>
                       </TableCell>
-                          <TableCell align="center">
-                    {formatCurrency(
-                      item.product_id.price *
-                        (1 - item.product_id.purchaseCount / 100) *
-                        item.quantity,
-                    )}
-                  </TableCell>
+                      <TableCell align="center">
+                        {formatCurrency(
+                          item.product_id.price *
+                            (1 - item.product_id.purchaseCount / 100) *
+                            item.quantity,
+                        )}
+                      </TableCell>
                       <TableCell align="center">
                         <IconButton
                           onClick={() => handleRemoveItem(item.product_id._id)}
@@ -189,27 +185,25 @@ const Cart = () => {
             <Card className="shadow-lg p-4">
               <CardContent>
                 <Typography variant="h6" className="text-gray-700">
-                  Tạm tính:{" "}
-                  <strong>{formatCurrency(totalPrice)}</strong>
+                  Tạm tính: <strong>{formatCurrency(totalPrice)}</strong>
                 </Typography>
-                           <div className="flex mt-2">
-              <input
-                type="text"
-                placeholder="Nhập mã giảm giá"
-                className="p-2 border rounded-l-lg w-full"
-                value={coupon}
-                onChange={(e) => setCoupon(e.target.value)}
-              />
-              <button
-                className="bg-blue-500 text-white px-4 rounded-r-lg hover:bg-blue-600"
-                onClick={handleApplyCoupon}
-              >
-                Áp dụng
-              </button>
-            </div>
+                <div className="flex mt-2">
+                  <input
+                    type="text"
+                    placeholder="Nhập mã giảm giá"
+                    className="p-2 border rounded-l-lg w-full"
+                    value={coupon}
+                    onChange={(e) => setCoupon(e.target.value)}
+                  />
+                  <button
+                    className="bg-blue-500 text-white px-4 rounded-r-lg hover:bg-blue-600"
+                    onClick={handleApplyCoupon}
+                  >
+                    Áp dụng
+                  </button>
+                </div>
                 <Typography variant="h6" className="text-gray-700">
-                  Giảm giá:{" "}
-                  <strong>{formatCurrency(discountAmount)}</strong>
+                  Giảm giá: <strong>{formatCurrency(discountAmount)}</strong>
                 </Typography>
                 <hr className="my-3 border-gray-300" />
                 <Typography variant="h5" className="font-bold text-green-600">
@@ -219,6 +213,7 @@ const Cart = () => {
                   <Button
                     variant="contained"
                     className="mt-4 w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg"
+                    onClick={handleCheckout}
                   >
                     🏦 Thanh toán ngay
                   </Button>
@@ -230,7 +225,6 @@ const Cart = () => {
             <DraftOrder />
           </Grid>
         </Grid>
-
       )}
     </div>
   );
