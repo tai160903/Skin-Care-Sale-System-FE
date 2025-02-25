@@ -47,7 +47,7 @@ const SkinTypeQuiz = () => {
         setQuestions(questionWithAnswers);
         setLoading(false);
       } catch (error) {
-        console.error("Error fetching quiz data:", error);
+        toast.error("Error fetching quiz data:", error);
         setLoading(false);
       }
     };
@@ -82,7 +82,7 @@ const SkinTypeQuiz = () => {
       toast.success(response.data.message);
       setResult(response.data.result);
     } catch (error) {
-      toast.error("Lỗi khi gửi câu trả lời!");
+      toast.error("Lỗi khi gửi câu trả lời!", error);
     }
   };
 

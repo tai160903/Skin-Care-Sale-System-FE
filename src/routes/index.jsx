@@ -112,6 +112,10 @@ const Router = createBrowserRouter([
         path: "checkout",
         element: <DraftOrder />,
       },
+      {
+        path: "success",
+        element: <SuccessPayment />,
+      },
     ],
   },
   {
@@ -136,10 +140,7 @@ const Router = createBrowserRouter([
       },
     ],
   },
-  {
-    path: "success",
-    element: <SuccessPayment />,
-  },
+
   {
     path: "*",
     element: <Error />,

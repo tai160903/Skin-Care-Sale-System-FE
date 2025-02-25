@@ -5,6 +5,7 @@ import { login } from "../redux/slices/userSlice";
 import productService from "../services/productService";
 import { Card, CardContent } from "@mui/material";
 import { Rating, CircularProgress } from "@mui/material";
+import { toast } from "react-toastify";
 
 function ListProduct() {
   const dispatch = useDispatch();
@@ -18,7 +19,7 @@ function ListProduct() {
         const response = await productService.getAllProduct();
         setData(response.data);
       } catch (error) {
-        console.error("Error fetching products:", error);
+        toast.error("Error fetching products:", error);
       } finally {
         setLoading(false);
       }
