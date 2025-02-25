@@ -18,6 +18,10 @@ import Cart from "../Customer/Cart";
 import SkinTypeQuiz from "../Customer/quiz";
 import DraftOrder from "../Customer/DraftOrder";
 import SuccessPayment from "../pages/SuccessPayment";
+import Map from "../components/Header/Map";
+import Blog from "../components/Header/Blog";
+import OrTrack from "../components/Header/OrTrack";
+import Profile from "../components/Header/Profile";
 const Router = createBrowserRouter([
   {
     path: "/",
@@ -50,8 +54,24 @@ const Router = createBrowserRouter([
         element: <ResetPass />,
       },
       {
-        path: "quiz",
+        path: "question",
         element: <SkinTypeQuiz />,
+      },
+      {
+        path: "order-tracking",
+        element: <OrTrack />,
+      },
+      {
+        path: "store-location",
+        element: <Map />,
+      },
+      {
+        path: "blog",
+        element: <Blog />,
+      },
+      {
+        path: "profile",
+        element: <Profile />,
       },
       {
         path: "customer-dashboard",
