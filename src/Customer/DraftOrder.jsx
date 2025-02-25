@@ -8,7 +8,6 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { formatCurrency } from "../utils/formatCurrency.js";
 
-
 const DraftOrder = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate(); // FIX: Use useNavigate instead of Navigate()
@@ -18,14 +17,12 @@ const DraftOrder = () => {
   const [address, setAddress] = useState(user?.address || "");
   const [phone, setPhone] = useState(user?.phone || "");
 
-
   const totalAmount = cart.reduce((sum, item) => {
     const originalPrice = Number(item.product_id?.price) || 0;
     const discountRate = Number(item.product_id?.purchaseCount) || 0;
     const discountedPrice = originalPrice * (1 - discountRate / 100);
     return sum + discountedPrice * item.quantity;
   }, 0);
-
 
   const handleOrder = async (paymentType) => {
     console.log("paymentType", paymentType);
@@ -59,30 +56,26 @@ const DraftOrder = () => {
   };
 
   return (
-
     <div className="container mx-auto p-6">
       <h2 className="text-2xl font-bold">Xác nhận đơn hàng</h2>
       <div className="border p-4 rounded-lg shadow-md mt-4">
         <h3 className="font-semibold">Giỏ hàng của bạn</h3>
         {cart.map((item) => {
-              const originalPrice = Number(item.product_id?.price) || 0;
-              const discountRate = Number(item.product_id?.purchaseCount) || 0;
-              const discountedPrice = originalPrice * (1 - discountRate / 100);
+          const originalPrice = Number(item.product_id?.price) || 0;
+          const discountRate = Number(item.product_id?.purchaseCount) || 0;
+          const discountedPrice = originalPrice * (1 - discountRate / 100);
 
-              return (
-                <div key={item.product_id._id} className="flex justify-between">
-                  <span>
-                    {item.product_id.name} (x{item.quantity})
-                  </span>
-                  <span>{formatCurrency(discountedPrice * item.quantity)}</span>
-                </div>
-              );
-            })}
-        <p className="font-bold">
-          Tổng tiền: {formatCurrency(totalAmount)}
-        </p>
+          return (
+            <div key={item.product_id._id} className="flex justify-between">
+              <span>
+                {item.product_id.name} (x{item.quantity})
+              </span>
+              <span>{formatCurrency(discountedPrice * item.quantity)}</span>
+            </div>
+          );
+        })}
+        <p className="font-bold">Tổng tiền: {formatCurrency(totalAmount)}</p>
       </div>
-
 
       <div className="mt-4">
         <h3 className="font-semibold">Thông tin khách hàng</h3>
