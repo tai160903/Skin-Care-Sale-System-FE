@@ -4,20 +4,17 @@ import { createOrder } from "../redux/slices/orderSlice.js";
 import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
 import { FaMoneyBill1Wave, FaPaypal } from "react-icons/fa6";
 import { toast } from "react-toastify";
-
 import { useNavigate } from "react-router-dom";
 import { formatCurrency } from "../utils/formatCurrency.js";
 
-
 const DraftOrder = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate(); // FIX: Use useNavigate instead of Navigate()
+  const navigate = useNavigate();
   const cart = useSelector((state) => state.cart.items);
   const user = useSelector((state) => state.user.user.customer);
   const [paymentMethod, setPaymentMethod] = useState("cash");
   const [address, setAddress] = useState(user?.address || "");
   const [phone, setPhone] = useState(user?.phone || "");
-
 
   const totalAmount = cart.reduce((sum, item) => {
     const originalPrice = Number(item.product_id?.price) || 0;
@@ -26,12 +23,8 @@ const DraftOrder = () => {
     return sum + discountedPrice * item.quantity;
   }, 0);
 
-
   const handleOrder = async (paymentType) => {
-    console.log("paymentType", paymentType);
-    const requiredFields = [address, phone];
-
-    if (requiredFields.includes("")) {
+    if (!address || !phone) {
       toast.error("Vui lòng nhập đầy đủ thông tin giao hàng!");
       return;
     }
@@ -59,30 +52,26 @@ const DraftOrder = () => {
   };
 
   return (
-
     <div className="container mx-auto p-6">
       <h2 className="text-2xl font-bold">Xác nhận đơn hàng</h2>
+
       <div className="border p-4 rounded-lg shadow-md mt-4">
         <h3 className="font-semibold">Giỏ hàng của bạn</h3>
         {cart.map((item) => {
-              const originalPrice = Number(item.product_id?.price) || 0;
-              const discountRate = Number(item.product_id?.purchaseCount) || 0;
-              const discountedPrice = originalPrice * (1 - discountRate / 100);
-
-              return (
-                <div key={item.product_id._id} className="flex justify-between">
-                  <span>
-                    {item.product_id.name} (x{item.quantity})
-                  </span>
-                  <span>{formatCurrency(discountedPrice * item.quantity)}</span>
-                </div>
-              );
-            })}
-        <p className="font-bold">
-          Tổng tiền: {formatCurrency(totalAmount)}
-        </p>
+          const originalPrice = Number(item.product_id?.price) || 0;
+          const discountRate = Number(item.product_id?.purchaseCount) || 0;
+          const discountedPrice = originalPrice * (1 - discountRate / 100);
+          return (
+            <div key={item.product_id._id} className="flex justify-between">
+              <span>
+                {item.product_id.name} (x{item.quantity})
+              </span>
+              <span>{formatCurrency(discountedPrice * item.quantity)}</span>
+            </div>
+          );
+        })}
+        <p className="font-bold">Tổng tiền: {formatCurrency(totalAmount)}</p>
       </div>
-
 
       <div className="mt-4">
         <h3 className="font-semibold">Thông tin khách hàng</h3>
@@ -137,11 +126,7 @@ const DraftOrder = () => {
           <PayPalButtons
             createOrder={(data, actions) => {
               return actions.order.create({
-                purchase_units: [
-                  {
-                    amount: { value: totalAmount.toFixed(0) }, // No decimals for VND
-                  },
-                ],
+                purchase_units: [{ amount: { value: totalAmount.toFixed(0) } }],
               });
             }}
             onApprove={(data, actions) => {
@@ -155,15 +140,16 @@ const DraftOrder = () => {
 
       {paymentMethod === "cash" && (
         <button
-          onClick={() => handleOrder("cash")} // FIX: Pass function reference
+          onClick={() => handleOrder("cash")}
           className="bg-green-500 text-white p-2 mt-4"
         >
           Xác nhận đặt hàng
         </button>
       )}
+
       {paymentMethod === "paypal" && (
         <button
-          onClick={() => handleOrder("paypal")} // FIX: Pass function reference
+          onClick={() => handleOrder("paypal")}
           className="bg-blue-500 text-white p-2 mt-4"
         >
           Xác nhận thanh toán qua PayPal

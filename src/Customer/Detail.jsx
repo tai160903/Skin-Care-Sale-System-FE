@@ -28,6 +28,7 @@ function Detail() {
       setIsLoading(true);
       try {
         const response = await productService.getProductById(id);
+        console.log("response", response.data);
         setProduct(response.data);
       } catch (error) {
         toast.error("Error fetching product:", error);
@@ -133,20 +134,27 @@ function Detail() {
           <p className="text-gray-500 text-sm">{product.description}</p>
 
           <div className="mt-3">
-            {product.originalPrice && product.originalPrice > product.price && (
-              <span className="text-gray-400 line-through text-lg mr-2">
-                {new Intl.NumberFormat("vi-VN", {
-                  style: "currency",
-                  currency: "VND",
-                }).format(product.originalPrice)}
-              </span>
-            )}
-            <span className="text-red-500 text-2xl font-bold">
+            <span
+              className={`mr-5 text-2xl font-bold ${product.purchaseCount > 0 ? "line-through text-gray-500" : "text-red-500"}`}
+            >
               {new Intl.NumberFormat("vi-VN", {
                 style: "currency",
                 currency: "VND",
               }).format(product.price)}
             </span>
+            <span
+              className={` text-2xl p-2 font-bold rounded-md text-white bg-red-500`}
+            >
+              - {product.purchaseCount}%
+            </span>
+            <div>
+              <span className={` text-2xl font-bold text-red-500`}>
+                {new Intl.NumberFormat("vi-VN", {
+                  style: "currency",
+                  currency: "VND",
+                }).format(product.price * (1 - product.purchaseCount / 100))}
+              </span>
+            </div>
           </div>
 
           {/* Quantity */}
