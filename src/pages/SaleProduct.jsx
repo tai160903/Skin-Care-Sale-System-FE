@@ -1,4 +1,5 @@
 import ListProduct from "../Customer/ListtProduct";
+import FilterProduct from "../Customer/FilterProduct";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import cartService from "../services/cartService";
@@ -6,11 +7,9 @@ import { setCart } from "../redux/slices/cartSlice";
 import { toast } from "react-toastify";
 import TopProduct from "../Customer/TopProduct";
 import Category from "../Customer/Category";
-import Blog from "../components/Header/Blog";
-import { Container, Box } from "@mui/material";
-import Adv from "../components/Header/Adv";
+import { Container, Grid, Box } from "@mui/material";
 
-function Home() {
+function SaleProduct() {
   const dispatch = useDispatch();
   const customer = useSelector((state) => state.user.customer);
   const cartItems = useSelector((state) => state.cart.items);
@@ -37,8 +36,6 @@ function Home() {
   }, [customer, cartItems, dispatch]);
 
   return (
-    <Box>
-        <Adv />
     <Container maxWidth="lg" sx={{ mt: 3 }}>
       {/* Top sản phẩm */}
       <Box sx={{ mb: 3 }}>
@@ -50,16 +47,20 @@ function Home() {
         <Category />
       </Box>
 
-      {/* Danh sách sản phẩm */}
-      <Box sx={{ mb: 3 }}>
-        <ListProduct />
-        </Box>
-        <Box sx={{ mb: 3 }}>
-        <Blog />
-      </Box>
-      </Container>
-      </Box>
+      {/* Bố cục trang chính */}
+      <Grid container spacing={3}>
+        {/* Sidebar bộ lọc */}
+        <Grid item xs={12} md={3}>
+          <FilterProduct />
+        </Grid>
+
+        {/* Danh sách sản phẩm */}
+        <Grid item xs={12} md={9}>
+          <ListProduct />
+        </Grid>
+      </Grid>
+    </Container>
   );
 }
 
-export default Home;
+export default SaleProduct;

@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { login } from "../redux/slices/userSlice";
 import productService from "../services/productService";
 import { Card, CardContent } from "@mui/material";
-import { Rating, CircularProgress } from "@mui/material";
+import { Rating, CircularProgress,Typography } from "@mui/material";
 
 function ListProduct() {
   const dispatch = useDispatch();
@@ -57,6 +57,9 @@ function ListProduct() {
 
   return (
     <div className="p-6">
+      <Typography variant="h5" fontWeight="bold" color="green" sx={{ mb: 2 }}>
+    Gợi ý sản phẩm
+      </Typography>
       {loading ? (
         <div className="flex justify-center items-center h-64">
           <CircularProgress />
