@@ -6,7 +6,6 @@ import cartService from "../services/cartService";
 import { setCart } from "../redux/slices/cartSlice";
 import { toast } from "react-toastify";
 import TopProduct from "../Customer/TopProduct";
-
 function Home() {
   const dispatch = useDispatch();
   const customer = useSelector((state) => state.user.customer);
