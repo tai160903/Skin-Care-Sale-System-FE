@@ -1,23 +1,22 @@
 import ListProduct from "../Customer/ListtProduct";
+import FilterProduct from "../Customer/FilterProduct";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import cartService from "../services/cartService";
 import { setCart } from "../redux/slices/cartSlice";
 import { toast } from "react-toastify";
 import TopProduct from "../Customer/TopProduct";
 import Category from "../Customer/Category";
-import Blog from "../components/Header/Blog";
-import { Container, Box } from "@mui/material";
-import Adv from "../components/Header/Adv";
+import { Container, Grid, Box } from "@mui/material";
 
 function Home() {
   const dispatch = useDispatch();
   const customer = useSelector((state) => state.user.customer);
-  const [isFetched, setIsFetched] = useState(false);
-  console.log("customer", customer);
+  const cartItems = useSelector((state) => state.cart.items);
+
   useEffect(() => {
     const fetchCart = async () => {
-      if (customer && !isFetched) {
+      if (customer && cartItems.length === 0) {
         try {
           const response = await cartService.getCart(customer._id);
           dispatch(
@@ -27,39 +26,40 @@ function Home() {
               discount: response.data.discount,
             }),
           );
-          setIsFetched(true); // Prevent multiple fetches
         } catch (error) {
-          toast.error(`Lỗi khi lấy giỏ hàng: ${error.message || error}`);
+          toast.error("Lỗi khi lấy giỏ hàng:", error);
         }
       }
     };
 
     fetchCart();
-  }, [customer, isFetched, dispatch]);
+  }, [customer, cartItems, dispatch]);
 
   return (
-    <Box>
-      <Adv />
-      <Container maxWidth="lg" sx={{ mt: 3 }}>
-        {/* Top sản phẩm */}
-        <Box sx={{ mb: 3 }}>
-          <TopProduct />
-        </Box>
+    <Container maxWidth="lg" sx={{ mt: 3 }}>
+      {/* Top sản phẩm */}
+      <Box sx={{ mb: 3 }}>
+        <TopProduct />
+      </Box>
 
-        {/* Danh mục sản phẩm */}
-        <Box sx={{ mb: 3 }}>
-          <Category />
-        </Box>
+      {/* Danh mục sản phẩm */}
+      <Box sx={{ mb: 3 }}>
+        <Category />
+      </Box>
+
+      {/* Bố cục trang chính */}
+      <Grid container spacing={3}>
+        {/* Sidebar bộ lọc */}
+        <Grid item xs={12} md={3}>
+          <FilterProduct />
+        </Grid>
 
         {/* Danh sách sản phẩm */}
-        <Box sx={{ mb: 3 }}>
+        <Grid item xs={12} md={9}>
           <ListProduct />
-        </Box>
-        <Box sx={{ mb: 3 }}>
-          <Blog />
-        </Box>
-      </Container>
-    </Box>
+        </Grid>
+      </Grid>
+    </Container>
   );
 }
 
