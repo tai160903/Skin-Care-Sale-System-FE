@@ -38,27 +38,27 @@ function Home() {
 
   return (
     <Box>
-        <Adv />
-    <Container maxWidth="lg" sx={{ mt: 3 }}>
-      {/* Top sản phẩm */}
-      <Box sx={{ mb: 3 }}>
-        <TopProduct />
-      </Box>
+      <Adv />
+      <Container maxWidth="lg" sx={{ mt: 3 }}>
+        {/* Top sản phẩm */}
+        <Box sx={{ mb: 3 }}>
+          <TopProduct />
+        </Box>
 
-      {/* Danh mục sản phẩm */}
-      <Box sx={{ mb: 3 }}>
-        <Category />
-      </Box>
+        {/* Danh mục sản phẩm */}
+        <Box sx={{ mb: 3 }}>
+          <Category />
+        </Box>
 
-      {/* Danh sách sản phẩm */}
-      <Box sx={{ mb: 3 }}>
-        <ListProduct />
+        {/* Danh sách sản phẩm */}
+        <Box sx={{ mb: 3 }}>
+          <ListProduct />
         </Box>
         <Box sx={{ mb: 3 }}>
-        <Blog />
-      </Box>
+          <Blog />
+        </Box>
       </Container>
-      </Box>
+    </Box>
   );
 }
 

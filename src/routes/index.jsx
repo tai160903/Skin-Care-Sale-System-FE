@@ -11,7 +11,7 @@ import CustomerDashboard from "../pages/CustomerDashboard";
 import StaffDashboard from "../pages/StaffDashboard";
 import ManagerDashboard from "../pages/ManagerDashboard";
 import ProtectedRoute from "./ProtectedRoute";
-import AdminLayout from "../components/AdminLayout";
+import AdminLayout from "../components/Admin/AdminLayout";
 import AdminDashboard from "../pages/AdminDashboard";
 import Detail from "../Customer/Detail";
 import Cart from "../Customer/Cart";
@@ -23,6 +23,7 @@ import Blog from "../components/Header/Blog";
 import OrTrack from "../components/Header/OrTrack";
 import Profile from "../components/Header/Profile";
 import Customer from "../components/Admin/Customer";
+import Settings from "../components/Admin/Settings";
 const Router = createBrowserRouter([
   {
     path: "/",
@@ -134,6 +135,10 @@ const Router = createBrowserRouter([
       {
         path: "users",
         element: <Customer />,
+      },
+      {
+        path: "settings",
+        element: <Settings />,
       },
     ],
   },

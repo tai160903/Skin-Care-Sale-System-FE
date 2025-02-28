@@ -8,9 +8,9 @@ const Map = () => {
   return (
     <div className="flex justify-center items-center p-6">
       <div className="w-full max-w-4xl shadow-lg rounded-lg overflow-hidden">
-        <MapContainer 
-          center={position} 
-          zoom={15} 
+        <MapContainer
+          center={position}
+          zoom={15}
           style={{ height: "500px", width: "100%" }}
         >
           <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />

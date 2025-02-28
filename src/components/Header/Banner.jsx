@@ -19,10 +19,10 @@ const Banner = () => {
 
       {/* Phần 3: Nút bấm */}
       <div>
-      <Link to="/question">
-       <button className="bg-white text-green-900 px-3 py-1 rounded font-medium shadow hover:bg-gray-200 transition">
-          Learn More
-         </button>
+        <Link to="/question">
+          <button className="bg-white text-green-900 px-3 py-1 rounded font-medium shadow hover:bg-gray-200 transition">
+            Learn More
+          </button>
         </Link>
       </div>
       {/* Định nghĩa CSS animation trong JSX */}

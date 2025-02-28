@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
 import { Outlet } from "react-router-dom";
-import Sidebar from "./Admin/Sidebar";
+import Sidebar from "./Sidebar";
 
 const AdminLayout = () => {
   return (

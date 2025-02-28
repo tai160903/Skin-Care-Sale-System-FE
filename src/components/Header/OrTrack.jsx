@@ -1,7 +1,19 @@
 import React, { useState } from "react";
-import { TextField, Button, Stepper, Step, StepLabel, Box } from "@mui/material";
+import {
+  TextField,
+  Button,
+  Stepper,
+  Step,
+  StepLabel,
+  Box,
+} from "@mui/material";
 
-const steps = ["Đã nhận đơn", "Đang chuẩn bị hàng", "Đang giao", "Đã giao thành công"];
+const steps = [
+  "Đã nhận đơn",
+  "Đang chuẩn bị hàng",
+  "Đang giao",
+  "Đã giao thành công",
+];
 
 const OrTrack = () => {
   const [orderId, setOrderId] = useState("");
@@ -10,8 +22,8 @@ const OrTrack = () => {
 
   // Giả lập dữ liệu đơn hàng
   const mockOrders = {
-    "123456": 2, // Đang giao hàng
-    "789012": 3, // Đã giao thành công
+    123456: 2, // Đang giao hàng
+    789012: 3, // Đã giao thành công
   };
 
   const handleTrackOrder = () => {
