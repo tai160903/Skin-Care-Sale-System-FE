@@ -21,7 +21,6 @@ const SkinTypeQuiz = () => {
   const [result, setResult] = useState(null);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const userId = useSelector((state) => state?.user?.user?._id);
-
   useEffect(() => {
     const fetchQuizData = async () => {
       try {

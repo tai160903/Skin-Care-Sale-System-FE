@@ -9,8 +9,8 @@ import TopProduct from "../Customer/TopProduct";
 function Home() {
   const dispatch = useDispatch();
   const customer = useSelector((state) => state.user.customer);
-  const [isFetched, setIsFetched] = useState(false); // Track if cart is fetched
-
+  const [isFetched, setIsFetched] = useState(false);
+  console.log("customer", customer);
   useEffect(() => {
     const fetchCart = async () => {
       if (customer && !isFetched) {
@@ -37,10 +37,8 @@ function Home() {
     <>
       <TopProduct />
       <div className="flex">
-        {/* Sidebar bên trái */}
         <FilterProduct />
 
-        {/* Danh sách sản phẩm */}
         <div className="flex-1 p-6">
           <ListProduct />
         </div>

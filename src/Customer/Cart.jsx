@@ -48,6 +48,12 @@ const Cart = () => {
   };
 
   const handleRemoveItem = async (productId) => {
+    if (!customerId) {
+      toast.error("You must be logged in!");
+      localStorage.setItem("redirectAfterLogin", window.location.pathname);
+      setTimeout(() => navigate("/signin"), 1000);
+      return;
+    }
     const userConfirmed = window.confirm(
       "Do you really want to remove this product from your cart?",
     );
@@ -66,11 +72,18 @@ const Cart = () => {
   };
 
   const handleCheckout = () => {
-    if (cartItems.length === 0) {
-      toast.error("Your cart is empty!");
-    } else {
-      navigate("/checkout");
+    if (!customerId) {
+      toast.error("Bạn cần đăng nhập để thanh toán!");
+      navigate("/signin"); // Điều hướng đến trang đăng nhập
+      return;
     }
+
+    if (cartItems.length === 0) {
+      toast.error("Giỏ hàng của bạn đang trống!");
+      return;
+    }
+
+    navigate("/checkout");
   };
 
   return (
