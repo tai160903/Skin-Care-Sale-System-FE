@@ -73,6 +73,8 @@ const cartSlice = createSlice({
         (total, item) => total + item.product_id.price * item.quantity,
         0,
       );
+
+      console.log("Cart after removal:", state.items);
     },
 
     clearCart: (state) => {

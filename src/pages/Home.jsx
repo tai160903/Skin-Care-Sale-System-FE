@@ -1,7 +1,7 @@
 import ListProduct from "../Customer/ListtProduct";
 import FilterProduct from "../Customer/FilterProduct";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import cartService from "../services/cartService";
 import { setCart } from "../redux/slices/cartSlice";
 import { toast } from "react-toastify";
@@ -9,11 +9,11 @@ import TopProduct from "../Customer/TopProduct";
 function Home() {
   const dispatch = useDispatch();
   const customer = useSelector((state) => state.user.customer);
-  const cartItems = useSelector((state) => state.cart.items);
-
+  const [isFetched, setIsFetched] = useState(false);
+  console.log("customer", customer);
   useEffect(() => {
     const fetchCart = async () => {
-      if (customer && cartItems.length === 0) {
+      if (customer && !isFetched) {
         try {
           const response = await cartService.getCart(customer._id);
           dispatch(
@@ -23,23 +23,22 @@ function Home() {
               discount: response.data.discount,
             }),
           );
+          setIsFetched(true); // Prevent multiple fetches
         } catch (error) {
-          toast.error("Lỗi khi lấy giỏ hàng:", error);
+          toast.error(`Lỗi khi lấy giỏ hàng: ${error.message || error}`);
         }
       }
     };
 
     fetchCart();
-  }, [customer, cartItems, dispatch]);
+  }, [customer, isFetched, dispatch]);
 
   return (
     <>
       <TopProduct />
       <div className="flex">
-        {/* Sidebar bên trái */}
         <FilterProduct />
 
-        {/* Danh sách sản phẩm */}
         <div className="flex-1 p-6">
           <ListProduct />
         </div>

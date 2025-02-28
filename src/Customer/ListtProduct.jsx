@@ -5,6 +5,8 @@ import { login } from "../redux/slices/userSlice";
 import productService from "../services/productService";
 import { Card, CardContent } from "@mui/material";
 import { Rating, CircularProgress } from "@mui/material";
+import { toast } from "react-toastify";
+import { formatCurrency } from "../utils/formatCurrency";
 
 function ListProduct() {
   const dispatch = useDispatch();
@@ -18,7 +20,7 @@ function ListProduct() {
         const response = await productService.getAllProduct();
         setData(response.data);
       } catch (error) {
-        console.error("Error fetching products:", error);
+        toast.error("Error fetching products:", error);
       } finally {
         setLoading(false);
       }
@@ -64,10 +66,6 @@ function ListProduct() {
       ) : (
         <div className="grid xl:grid-cols-4 md:grid-cols-2 sm:grid-cols-1 gap-6">
           {data.map((item, index) => {
-            const price = item.price
-              ? parseFloat(item.price.$numberDecimal || item.price)
-              : 100.0;
-
             return (
               <Card
                 key={index}
@@ -91,7 +89,11 @@ function ListProduct() {
                     {item.description}
                   </p>
                   <p className="text-lg font-bold text-green-600 mt-3">
-                    ${price.toFixed(2)}
+                    {formatCurrency(item.price)}{" "}
+                    <span>
+                      {item.discountPercentage > 0 &&
+                        `(${item.discountPercent}%)`}
+                    </span>
                   </p>
                 </CardContent>
               </Card>
