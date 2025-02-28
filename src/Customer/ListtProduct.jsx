@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { login } from "../redux/slices/userSlice";
 import productService from "../services/productService";
 import { Card, CardContent } from "@mui/material";
-import { Rating, CircularProgress } from "@mui/material";
+import { Rating, CircularProgress, } from "@mui/material";
 import { toast } from "react-toastify";
 import { formatCurrency } from "../utils/formatCurrency";
 
@@ -59,13 +59,14 @@ function ListProduct() {
 
   return (
     <div className="p-6">
+      
       {loading ? (
         <div className="flex justify-center items-center h-64">
           <CircularProgress />
         </div>
       ) : (
         <div className="grid xl:grid-cols-4 md:grid-cols-2 sm:grid-cols-1 gap-6">
-          {data.map((item, index) => {
+          {data.data.map((item, index) => {
             return (
               <Card
                 key={index}

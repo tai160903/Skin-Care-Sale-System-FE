@@ -22,6 +22,7 @@ import Map from "../components/Header/Map";
 import Blog from "../components/Header/Blog";
 import OrTrack from "../components/Header/OrTrack";
 import Profile from "../components/Header/Profile";
+import Customer from "../components/Admin/Customer";
 const Router = createBrowserRouter([
   {
     path: "/",
@@ -136,7 +137,7 @@ const Router = createBrowserRouter([
       },
       {
         path: "users",
-        element: <AdminDashboard />,
+        element: <Customer />,
       },
     ],
   },

@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { TextField, InputAdornment } from "@mui/material";
+import { LibraryBooksRounded as BlogIcon } from "@mui/icons-material";
+import { RoomRounded as LocationIcon } from "@mui/icons-material";
+import { LocalShippingRounded as ShippingIcon } from "@mui/icons-material";
 import {
   Search as SearchIcon,
   AccountCircleRounded as AccountIcon,
@@ -9,8 +12,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../redux/slices/userSlice";
 import CartA from "./CartA";
 import Question from "./Question";
-import Map from "./Map";
-import Blog from "./Blog";
 import OrTrack from "./OrTrack";
 import { clearCart } from "../../redux/slices/cartSlice";
 
@@ -67,9 +68,27 @@ const Header = () => {
       </div>
 
       <nav className="flex items-center space-x-6">
-        <OrTrack />
-        <Map />
-        <Blog />
+        <Link
+          to="/order-tracking"
+          className="flex items-center text-gray-700 hover:text-green-700 space-x-2"
+        >
+          <ShippingIcon className="text-[#326f51] text-xl" />
+          <span>Tra cứu đơn</span>
+        </Link>
+        <Link
+          to="/store-location"
+          className="flex items-center text-gray-700 hover:text-green-700 space-x-2"
+        >
+          <LocationIcon className="text-[#326f51] text-xl" />
+          <span>Vị trí</span>
+        </Link>
+        <Link
+          to="/blog"
+          className="flex items-center text-gray-700 hover:text-green-700 space-x-2"
+        >
+          <BlogIcon className="text-[#326f51] text-xl" />
+          <span>Tin Tức</span>
+        </Link>
         <Question />
       </nav>
 
