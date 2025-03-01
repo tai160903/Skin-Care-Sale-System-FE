@@ -27,6 +27,9 @@ import BlogList from "../components/Admin/BlogList";
 import QuizList from "../components/Admin/QuizList";
 import PromoList from "../components/Admin/PromoList";
 import ProductList from "../components/Admin/ProductList";
+import OrdersTable from "../components/Admin/OrdersTable";
+import Compare from "../components/Admin/Compare";
+import Review from "../components/Admin/Review";
 const Router = createBrowserRouter([
   {
     path: "/",
@@ -154,6 +157,22 @@ const Router = createBrowserRouter([
       {
         path: "products",
         element: <ProductList />,
+      },
+      {
+        path: "orders",
+        element: <OrdersTable />,
+      },
+      {
+        path: "reports",
+        element: <AdminDashboard />,
+      },
+      {
+        path: "compare",
+        element: <Compare />,
+      },
+      {
+        path: "reviews",
+        element: <Review />,
       },
     ],
   },
