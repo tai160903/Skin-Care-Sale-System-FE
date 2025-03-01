@@ -23,6 +23,13 @@ import Blog from "../components/Header/Blog";
 import OrTrack from "../components/Header/OrTrack";
 import Profile from "../components/Header/Profile";
 import Customer from "../components/Admin/Customer";
+import BlogList from "../components/Admin/BlogList";
+import QuizList from "../components/Admin/QuizList";
+import PromoList from "../components/Admin/PromoList";
+import ProductList from "../components/Admin/ProductList";
+import OrdersTable from "../components/Admin/OrdersTable";
+import Compare from "../components/Admin/Compare";
+import Review from "../components/Admin/Review";
 const Router = createBrowserRouter([
   {
     path: "/",
@@ -132,12 +139,40 @@ const Router = createBrowserRouter([
         element: <AdminDashboard />,
       },
       {
+        path: "users",
+        element: <Customer />,
+      },
+      {
+        path: "blog",
+        element: <BlogList />,
+      },
+      {
+        path: "faqs",
+        element: <QuizList />,
+      },
+      {
+        path: "promotions",
+        element: <PromoList />,
+      },
+      {
         path: "products",
+        element: <ProductList />,
+      },
+      {
+        path: "orders",
+        element: <OrdersTable />,
+      },
+      {
+        path: "reports",
         element: <AdminDashboard />,
       },
       {
-        path: "users",
-        element: <Customer />,
+        path: "compare",
+        element: <Compare />,
+      },
+      {
+        path: "reviews",
+        element: <Review />,
       },
     ],
   },

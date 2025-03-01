@@ -13,6 +13,16 @@ import {
   People,
   ShoppingCart,
   ExitToApp,
+  ListAlt,
+  Star,
+  Article,
+  LiveHelp,
+  LocalOffer,
+  Science,
+  Compare,
+  BarChart,
+  Settings,
+  Group,
 } from "@mui/icons-material";
 import { Link, useLocation } from "react-router-dom";
 
@@ -21,8 +31,24 @@ const Sidebar = () => {
 
   const menuItems = [
     { text: "Dashboard", icon: <Dashboard />, path: "/admin/" },
+    { text: "Blog", icon: <Article />, path: "/admin/blog" },
+    { text: "Reports", icon: <BarChart />, path: "/admin/reports" },
+    { text: "Orders", icon: <ListAlt />, path: "/admin/orders" },
     { text: "Products", icon: <ShoppingCart />, path: "/admin/products" },
-    { text: "Users", icon: <People />, path: "/admin/users" },
+    { text: "Promotions", icon: <LocalOffer />, path: "/admin/promotions" },
+    { text: "Compare Products", icon: <Compare />, path: "/admin/compare" },
+    {
+      text: "Skin Care Plans",
+      icon: <Science />,
+      path: "/admin/skincare-plans",
+    },
+    { text: "Users", icon: <ListAlt />, path: "/admin/users" },
+    { text: "Customers", icon: <People />, path: "/admin/customers" },
+    { text: "Staff", icon: <Group />, path: "/admin/staff" },
+    { text: "Reviews", icon: <Star />, path: "/admin/reviews" },
+
+    { text: "FAQs", icon: <LiveHelp />, path: "/admin/faqs" },
+    { text: "Settings", icon: <Settings />, path: "/admin/settings" },
   ];
 
   return (

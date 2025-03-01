@@ -9,7 +9,7 @@ const TABS = [
 ];
 
 const CONTENT = {
-  introduction: "Nội dung phần giới thiệu sản phẩm...",
+  introduction: "📖 Nội dung phần giới thiệu sản phẩm...",
   usage: `
   ### **HƯỚNG DẪN SỬ DỤNG:**
   - Sau các bước chăm sóc da hàng ngày, lấy một lượng vừa đủ ra đầu ngón tay và thoa nhẹ nhàng lên mặt.
@@ -36,17 +36,17 @@ function Content() {
   const [activeTab, setActiveTab] = useState("usage");
 
   return (
-    <div className="container mx-auto p-4">
-      {/* Tab header */}
-      <div className="flex border-b">
+    <div className="container mx-auto p-6">
+      {/* Tabs */}
+      <div className="flex justify-center border-b bg-gray-100 rounded-t-lg">
         {TABS.map((tab) => (
           <button
             key={tab.id}
             className={`px-6 py-3 text-lg font-medium transition-all duration-300 
               ${
                 activeTab === tab.id
-                  ? "bg-orange-500 text-white rounded-t-lg"
-                  : "text-gray-800 hover:text-orange-500"
+                  ? "bg-green-500 text-white rounded-t-lg"
+                  : "text-gray-800 hover:text-green-500"
               }`}
             onClick={() => setActiveTab(tab.id)}
           >
@@ -55,9 +55,9 @@ function Content() {
         ))}
       </div>
 
-      {/* Tab content */}
-      <div className="p-6 bg-white border rounded-b-lg">
-        <div className="whitespace-pre-line">{CONTENT[activeTab]}</div>
+      {/* Nội dung */}
+      <div className="p-6 bg-white border border-gray-300 rounded-b-lg shadow-md">
+        <div className="whitespace-pre-line text-gray-800">{CONTENT[activeTab]}</div>
       </div>
     </div>
   );
