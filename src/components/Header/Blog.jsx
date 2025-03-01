@@ -30,14 +30,25 @@ const Blog = () => {
 
   if (loading)
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="50vh">
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="50vh"
+      >
         <CircularProgress />
       </Box>
     );
 
   return (
     <Box p={3}>
-      <Typography variant="h4" gutterBottom align="center" fontWeight={600} color="green">
+      <Typography
+        variant="h4"
+        gutterBottom
+        align="center"
+        fontWeight={600}
+        color="green"
+      >
         Tin Tức & Cẩm Nang
       </Typography>
       <Grid container spacing={3} justifyContent="center">
@@ -68,8 +79,14 @@ const Blog = () => {
                 <Typography variant="h6" fontWeight="bold">
                   {blog.title}
                 </Typography>
-                <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
-                  {blog.content.length > 100 ? blog.content.slice(0, 100) + "..." : blog.content}
+                <Typography
+                  variant="body2"
+                  color="textSecondary"
+                  sx={{ mt: 1 }}
+                >
+                  {blog.content.length > 100
+                    ? blog.content.slice(0, 100) + "..."
+                    : blog.content}
                 </Typography>
               </CardContent>
             </Card>

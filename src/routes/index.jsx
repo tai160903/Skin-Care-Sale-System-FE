@@ -23,6 +23,10 @@ import Blog from "../components/Header/Blog";
 import OrTrack from "../components/Header/OrTrack";
 import Profile from "../components/Header/Profile";
 import Customer from "../components/Admin/Customer";
+import BlogList from "../components/Admin/BlogList";
+import QuizList from "../components/Admin/QuizList";
+import PromoList from "../components/Admin/PromoList";
+import ProductList from "../components/Admin/ProductList";
 const Router = createBrowserRouter([
   {
     path: "/",
@@ -132,12 +136,24 @@ const Router = createBrowserRouter([
         element: <AdminDashboard />,
       },
       {
-        path: "products",
-        element: <AdminDashboard />,
-      },
-      {
         path: "users",
         element: <Customer />,
+      },
+      {
+        path: "blog",
+        element: <BlogList />,
+      },
+      {
+        path: "faqs",
+        element: <QuizList />,
+      },
+      {
+        path: "promotions",
+        element: <PromoList />,
+      },
+      {
+        path: "products",
+        element: <ProductList />,
       },
     ],
   },
