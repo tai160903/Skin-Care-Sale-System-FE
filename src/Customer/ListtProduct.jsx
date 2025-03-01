@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { login } from "../redux/slices/userSlice";
 import productService from "../services/productService";
 import { Card, CardContent } from "@mui/material";
-import { Rating, CircularProgress, } from "@mui/material";
+import { Rating, CircularProgress } from "@mui/material";
 import { toast } from "react-toastify";
 import { formatCurrency } from "../utils/formatCurrency";
 
@@ -18,7 +18,7 @@ function ListProduct() {
     const fetchData = async () => {
       try {
         const response = await productService.getAllProduct();
-        setData(response.data.data);
+        setData(response.data);
       } catch (error) {
         toast.error("Error fetching products:", error);
       } finally {
@@ -59,7 +59,6 @@ function ListProduct() {
 
   return (
     <div className="p-6">
-      
       {loading ? (
         <div className="flex justify-center items-center h-64">
           <CircularProgress />

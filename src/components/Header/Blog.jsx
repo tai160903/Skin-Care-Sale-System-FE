@@ -75,6 +75,7 @@ const Blog = () => {
             sx={{
               cursor: "pointer",
               transition: "0.3s",
+              minHeight: "100%",
               "&:hover": { transform: "scale(1.05)" },
             }}
           >
