@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-const useTopProductService = () => { // ✅ Đổi tên thành "useTopProductService"
+const useTopProductService = () => {
+  // ✅ Đổi tên thành "useTopProductService"
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
