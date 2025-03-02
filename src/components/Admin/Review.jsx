@@ -51,7 +51,7 @@ const Review = () => {
     let filtered = reviews;
     if (searchQuery.trim()) {
       filtered = filtered.filter((review) =>
-        review.product.toLowerCase().includes(searchQuery.toLowerCase())
+        review.product.toLowerCase().includes(searchQuery.toLowerCase()),
       );
     }
     if (ratingFilter > 0) {
@@ -121,11 +121,21 @@ const Review = () => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell><b>Sản phẩm</b></TableCell>
-              <TableCell><b>Người đánh giá</b></TableCell>
-              <TableCell><b>Đánh giá</b></TableCell>
-              <TableCell><b>Nội dung</b></TableCell>
-              <TableCell><b>Hành động</b></TableCell>
+              <TableCell>
+                <b>Sản phẩm</b>
+              </TableCell>
+              <TableCell>
+                <b>Người đánh giá</b>
+              </TableCell>
+              <TableCell>
+                <b>Đánh giá</b>
+              </TableCell>
+              <TableCell>
+                <b>Nội dung</b>
+              </TableCell>
+              <TableCell>
+                <b>Hành động</b>
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

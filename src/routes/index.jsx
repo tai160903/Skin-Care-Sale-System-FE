@@ -22,7 +22,7 @@ import Map from "../components/Header/Map";
 import Blog from "../components/Header/Blog";
 import OrTrack from "../components/Header/OrTrack";
 import Profile from "../components/Header/Profile";
-import Customer from "../components/Admin/Customer";
+import User from "../components/Admin/User";
 import BlogList from "../components/Admin/BlogList";
 import QuizList from "../components/Admin/QuizList";
 import PromoList from "../components/Admin/PromoList";
@@ -140,7 +140,7 @@ const Router = createBrowserRouter([
       },
       {
         path: "users",
-        element: <Customer />,
+        element: <User />,
       },
       {
         path: "blog",
