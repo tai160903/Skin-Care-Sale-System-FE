@@ -7,6 +7,7 @@ import {
   Typography,
   Box,
   ListSubheader,
+  Divider,
 } from "@mui/material";
 import {
   Dashboard,
@@ -32,21 +33,16 @@ const Sidebar = () => {
   const menuItems = [
     { text: "Dashboard", icon: <Dashboard />, path: "/admin/" },
     { text: "Blog", icon: <Article />, path: "/admin/blog" },
+    { text: "Promotions", icon: <LocalOffer />, path: "/admin/promotions" },
     { text: "Reports", icon: <BarChart />, path: "/admin/reports" },
     { text: "Orders", icon: <ListAlt />, path: "/admin/orders" },
     { text: "Products", icon: <ShoppingCart />, path: "/admin/products" },
-    { text: "Promotions", icon: <LocalOffer />, path: "/admin/promotions" },
     { text: "Compare Products", icon: <Compare />, path: "/admin/compare" },
-    {
-      text: "Skin Care Plans",
-      icon: <Science />,
-      path: "/admin/skincare-plans",
-    },
+    { text: "Skin Care Plans", icon: <Science />, path: "/admin/skincare-plans" },
     { text: "Users", icon: <ListAlt />, path: "/admin/users" },
     { text: "Customers", icon: <People />, path: "/admin/customers" },
     { text: "Staff", icon: <Group />, path: "/admin/staff" },
     { text: "Reviews", icon: <Star />, path: "/admin/reviews" },
-
     { text: "FAQs", icon: <LiveHelp />, path: "/admin/faqs" },
     { text: "Settings", icon: <Settings />, path: "/admin/settings" },
   ];
@@ -55,29 +51,30 @@ const Sidebar = () => {
     <Drawer
       variant="permanent"
       sx={{
-        width: 240,
+        width: 260,
         flexShrink: 0,
         "& .MuiDrawer-paper": {
-          width: 240,
-          background: "#1f6192",
+          width: 260,
+          background: "#1e3a56",
           color: "#fff",
           paddingTop: 2,
           height: "100vh",
-          overflow: "hidden",
+          boxShadow: "2px 0px 5px rgba(0,0,0,0.2)",
+          transition: "all 0.3s ease",
         },
       }}
     >
       <Box
         sx={{
           textAlign: "center",
-          border: "2px solid #1976d2",
-          borderRadius: "8px",
-          backgroundColor: "#fff",
+          padding: "16px 0",
+          backgroundColor: "#1e90ff",
+          borderRadius: "0 0 8px 8px",
         }}
       >
         <Typography
-          variant="h5"
-          sx={{ fontWeight: "bold", fontFamily: "Roboto", color: "#1976d2" }}
+          variant="h6"
+          sx={{ fontWeight: "bold", fontFamily: "Roboto", color: "#fff" }}
         >
           Admin Panel
         </Typography>
@@ -89,9 +86,11 @@ const Sidebar = () => {
             backgroundColor: "transparent",
             color: "#fff",
             fontWeight: "bold",
+            fontSize: "14px",
+            paddingLeft: "16px",
           }}
         >
-          Dashboard
+          Main Menu
         </ListSubheader>
         {menuItems.map(({ text, icon, path }) => (
           <ListItem
@@ -101,7 +100,10 @@ const Sidebar = () => {
             selected={location.pathname === path}
             sx={{
               bgcolor: location.pathname === path ? "#1976d2" : "transparent",
-              "&:hover": { backgroundColor: "#c7b9b9" },
+              "&:hover": { backgroundColor: "#1976d2", transform: "scale(1.05)" },
+              transition: "all 0.2s ease-in-out",
+              borderRadius: "8px",
+              margin: "4px",
             }}
           >
             <ListItemIcon sx={{ color: "#fff" }}>{icon}</ListItemIcon>
@@ -119,13 +121,17 @@ const Sidebar = () => {
       </List>
 
       <Box sx={{ flexGrow: 1 }} />
+      <Divider sx={{ backgroundColor: "#fff", margin: "8px 16px" }} />
       <List>
         <ListItem
           component={Link}
           to="/logout"
           sx={{
             bgcolor: "transparent",
-            "&:hover": { backgroundColor: "#c7b9b9" },
+            "&:hover": { backgroundColor: "#ff4d4d", transform: "scale(1.05)" },
+            transition: "all 0.2s ease-in-out",
+            borderRadius: "8px",
+            margin: "4px",
           }}
         >
           <ListItemIcon sx={{ color: "#fff" }}>

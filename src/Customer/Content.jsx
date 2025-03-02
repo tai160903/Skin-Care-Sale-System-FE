@@ -57,7 +57,9 @@ function Content() {
 
       {/* Nội dung */}
       <div className="p-6 bg-white border border-gray-300 rounded-b-lg shadow-md">
-        <div className="whitespace-pre-line text-gray-800">{CONTENT[activeTab]}</div>
+        <div className="whitespace-pre-line text-gray-800">
+          {CONTENT[activeTab]}
+        </div>
       </div>
     </div>
   );

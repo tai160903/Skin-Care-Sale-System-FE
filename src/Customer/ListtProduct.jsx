@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { login } from "../redux/slices/userSlice";
 import productService from "../services/productService";
-import { Card, CardContent,Typography } from "@mui/material";
+import { Card, CardContent, Typography } from "@mui/material";
 import { Rating, CircularProgress } from "@mui/material";
 import { toast } from "react-toastify";
 import { formatCurrency } from "../utils/formatCurrency";
@@ -59,7 +59,7 @@ function ListProduct() {
 
   return (
     <div className="p-6">
-        <Typography variant="h5" fontWeight="bold" color="green" sx={{ mb: 2 }}>
+      <Typography variant="h5" fontWeight="bold" color="green" sx={{ mb: 2 }}>
         Gợi ý cho bạn
       </Typography>
       {loading ? (
