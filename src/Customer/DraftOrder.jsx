@@ -1,13 +1,11 @@
 import { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { createOrder } from "../redux/slices/orderSlice";
-import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
-import { FaMoneyBill1Wave, FaPaypal } from "react-icons/fa6";
+import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { formatCurrency } from "../utils/formatCurrency";
 import AddressForm from "./AddressForm";
 import shipfeeService from "../services/shipfeeService";
+import draftOrderService from "../services/draftOrderService";
 import {
   Button,
   TextField,
@@ -19,87 +17,105 @@ import {
   FormControlLabel,
   Radio,
 } from "@mui/material";
-import draftOrderService from "../services/draftOrderService";
+import { FaMoneyBill1Wave } from "react-icons/fa6";
 
 const DraftOrder = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const cart = useSelector((state) => state.cart.items);
   const customer = useSelector((state) => state.user.customer);
+
   const [paymentMethod, setPaymentMethod] = useState("cash");
   const [phone, setPhone] = useState(customer?.phone || "");
   const [coupon, setCoupon] = useState("");
   const [discountAmount, setDiscountAmount] = useState(0);
   const [address, setAddress] = useState(customer?.address || {});
   const [shippingFee, setShippingFee] = useState(0);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
-    if (address?.province && address?.district) {
-      fetchShippingFee();
-    }
+    const fetchShippingFee = async () => {
+      if (address?.province && address?.district) {
+        try {
+          const response = await shipfeeService.getShipfee(
+            address.province,
+            address.district,
+          );
+          setShippingFee(response.data.shiping_price);
+        } catch (error) {
+          toast.error(
+            error.response?.data?.message || "Lỗi khi lấy phí vận chuyển",
+          );
+          setShippingFee(0);
+        }
+      }
+    };
+    fetchShippingFee();
   }, [address.province, address.district]);
-
-  const fetchShippingFee = async () => {
-    try {
-      const response = await shipfeeService.getShipfee(
-        address.province,
-        address.district,
-      );
-      setShippingFee(response.data.shiping_price || 0);
-    } catch (error) {
-      toast.error("Lỗi khi lấy phí ship: " + error.message);
-      setShippingFee(0);
-    }
-  };
 
   const totalAmount = cart.reduce((sum, item) => {
     const originalPrice = Number(item.product_id?.price) || 0;
-    const discountRate = Number(item.product_id?.purchaseCount) || 0;
-    const discountedPrice = originalPrice * (1 - discountRate / 100);
+    const discountedPrice =
+      originalPrice * (1 - item.product_id?.discountPercent / 100);
     return sum + discountedPrice * item.quantity;
   }, 0);
 
+  const finalAmount = (
+    totalAmount -
+    (totalAmount * discountAmount) / 100 +
+    shippingFee
+  ).toFixed(0);
+
   const handleApplyCoupon = async () => {
+    if (!coupon) return toast.error("Vui lòng nhập mã giảm giá!");
     try {
       const response = await draftOrderService.applyPromotion({
         promoCode: coupon.toUpperCase(),
       });
-      if (response.status === 200) {
-        setDiscountAmount(response.data.discount_percentage);
-        toast.success(response.data.message);
-      }
+      setDiscountAmount(response.data.discount_percentage);
+      toast.success(response.data.message);
     } catch (error) {
-      toast.error("Mã giảm giá không hợp lệ" + error.message);
+      toast.error(error.response?.data?.message || "Mã giảm giá không hợp lệ");
     }
   };
 
-  const handleOrder = async (paymentType) => {
-    if (!address?.province || !address?.district || !address?.ward || !phone) {
-      toast.error("Vui lòng nhập đầy đủ thông tin giao hàng!");
-      return;
+  const validateOrderData = () => {
+    if (!address || !phone || !/^(0[1-9][0-9]{8})$/.test(phone)) {
+      toast.error("Vui lòng nhập thông tin giao hàng hợp lệ!");
+      return false;
     }
-    if (!/^(0[1-9][0-9]{8})$/.test(phone)) {
-      toast.error("Số điện thoại không hợp lệ!");
-      return;
-    }
+    return true;
+  };
 
-    const orderData = {
-      customer: customer._id,
-      cart,
-      totalAmount:
-        totalAmount - (totalAmount * discountAmount) / 100 + shippingFee,
-      address,
-      phone,
-      paymentMethod,
-      status: "pending",
-    };
+  const handleCreateOrder = async (paymentType) => {
+    if (isProcessing || !validateOrderData()) return;
+    setIsProcessing(true);
 
     try {
-      await dispatch(createOrder(orderData));
-      toast.success("Đơn hàng đã được tạo thành công!");
-      if (paymentType === "cash") navigate("/success");
+      const orderData = {
+        customerId: customer._id,
+        totalPay: finalAmount,
+        address,
+        phone,
+        payment_method: paymentType,
+      };
+
+      const response = await draftOrderService.createOrder(orderData);
+
+      console.log("paymentType", paymentType);
+      console.log("Url", response.data.data.Url);
+
+      if (paymentType === "stripe" && response.data.data.Url) {
+        window.location.href = response.data.data.Url;
+      } else {
+        toast.success(response.data.message);
+        navigate("/success");
+      }
     } catch (error) {
-      toast.error("Lỗi khi tạo đơn hàng! " + error.message);
+      toast.error(
+        error.response?.data?.message || "Có lỗi xảy ra khi tạo đơn hàng",
+      );
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -122,10 +138,7 @@ const DraftOrder = () => {
             </Typography>
           )}
           <Typography variant="h6" fontWeight="bold">
-            Tổng thanh toán:{" "}
-            {formatCurrency(
-              totalAmount - (totalAmount * discountAmount) / 100 + shippingFee,
-            )}
+            Tổng thanh toán: {formatCurrency(finalAmount)}
           </Typography>
         </CardContent>
       </Card>
@@ -153,7 +166,7 @@ const DraftOrder = () => {
           value={coupon}
           onChange={(e) => setCoupon(e.target.value)}
         />
-        <Button variant="contained" color="primary" onClick={handleApplyCoupon}>
+        <Button variant="contained" onClick={handleApplyCoupon}>
           Áp dụng
         </Button>
       </Box>
@@ -176,47 +189,24 @@ const DraftOrder = () => {
               }
             />
             <FormControlLabel
-              value="paypal"
+              value="stripe"
               control={<Radio />}
               label={
                 <>
-                  <FaPaypal className="text-blue-500" /> PayPal
+                  <FaMoneyBill1Wave className="text-purple-500" /> Stripe
                 </>
               }
             />
           </RadioGroup>
         </CardContent>
       </Card>
-      {paymentMethod === "paypal" && (
-        <PayPalScriptProvider options={{ "client-id": "your-client-id" }}>
-          <PayPalButtons
-            createOrder={(data, actions) =>
-              actions.order.create({
-                purchase_units: [
-                  {
-                    amount: {
-                      value: (
-                        totalAmount -
-                        discountAmount +
-                        shippingFee
-                      ).toFixed(0),
-                    },
-                  },
-                ],
-              })
-            }
-            onApprove={(data, actions) =>
-              actions.order.capture().then(() => handleOrder("paypal"))
-            }
-          />
-        </PayPalScriptProvider>
-      )}
+
       <Button
         variant="contained"
         color="success"
         fullWidth
         className="mt-4 py-3"
-        onClick={() => handleOrder(paymentMethod)}
+        onClick={() => handleCreateOrder(paymentMethod)}
       >
         Xác nhận đặt hàng
       </Button>

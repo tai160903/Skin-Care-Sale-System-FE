@@ -14,6 +14,8 @@ function Layout() {
     "/signup",
     "/verify-email",
     "/forgot-password",
+    "/success",
+    "/cancel",
     "/profile",
   ];
 

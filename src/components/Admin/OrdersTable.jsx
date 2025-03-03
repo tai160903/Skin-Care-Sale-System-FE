@@ -35,12 +35,12 @@ const statusIcons = {
 };
 
 const OrdersTable = () => {
-  const [searchQuery, setSearchQuery] = useState(""); // Lưu giá trị nhập vào ô search
-  const [search, setSearch] = useState(""); // Chỉ cập nhật khi nhấn nút
+  const [searchQuery, setSearchQuery] = useState("");
+  const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
 
   const handleSearch = () => {
-    setSearch(searchQuery); // Cập nhật giá trị tìm kiếm khi nhấn nút
+    setSearch(searchQuery);
   };
 
   const filteredOrders = orders.filter(

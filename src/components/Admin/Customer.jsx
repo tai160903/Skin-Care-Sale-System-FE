@@ -16,7 +16,6 @@ import {
 } from "@mui/material";
 import { Search } from "@mui/icons-material";
 
-// Dữ liệu khách hàng
 const customers = [
   { id: 1, name: "Nguyễn Văn A", phone: "0912345678", email: "a@example.com" },
   { id: 2, name: "Trần Thị B", phone: "0912345679", email: "b@example.com" },
@@ -41,8 +40,8 @@ const customers = [
 ];
 
 const CustomerList = () => {
-  const [searchQuery, setSearchQuery] = useState(""); // Lưu input
-  const [search, setSearch] = useState(""); // Chỉ cập nhật khi nhấn tìm kiếm
+  const [searchQuery, setSearchQuery] = useState("");
+  const [search, setSearch] = useState("");
   const [filterLetter, setFilterLetter] = useState("");
 
   const handleSearch = () => {

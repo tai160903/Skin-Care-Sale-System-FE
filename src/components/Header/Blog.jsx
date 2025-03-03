@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { getBlogs } from "../../services/blogServive";
 import {
   Grid,

@@ -2,6 +2,7 @@ import { useSelector } from "react-redux";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Router from "./routes";
+
 import { selectUser } from "./redux/slices/userSlice";
 
 function App() {

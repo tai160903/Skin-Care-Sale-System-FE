@@ -30,20 +30,25 @@ function ListProduct() {
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
+
     const token = urlParams.get("access_token");
     const user = urlParams.get("user")
       ? JSON.parse(urlParams.get("user"))
+      : null;
+    const customer = urlParams.get("customer")
+      ? JSON.parse(urlParams.get("customer"))
       : null;
 
     if (token && user) {
       dispatch(
         login({
           user: {
-            id: user.id,
-            email: user.email,
-            role: user.role,
+            id: user?._doc?._id,
+            email: user?._doc?.email,
+            role: user?._doc?.role,
           },
           token,
+          customer: customer?._doc,
         }),
       );
     }

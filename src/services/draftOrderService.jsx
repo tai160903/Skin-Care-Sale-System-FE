@@ -1,10 +1,31 @@
 import axiosClient from "./api.config";
 
 const draftOrderService = {
-  applyPromotion: (data) => axiosClient.post("/api/cart/apply-promotion", data),
+  applyPromotion: async (data) => {
+    try {
+      return await axiosClient.post("/api/cart/apply-promotion", data);
+    } catch (error) {
+      console.error("Error applying promotion:", error);
+      throw error;
+    }
+  },
 
-  getShippingFee: (data) => axiosClient.post("/api/shippingFee/location", data),
+  getShippingFee: async (data) => {
+    try {
+      return await axiosClient.post("/api/shippingFee/location", data);
+    } catch (error) {
+      console.error("Error getting shipping fee:", error);
+      throw error;
+    }
+  },
 
-  createOrder: (data) => axiosClient.post(`/api/Orders/create`, data),
+  createOrder: async (data) => {
+    return await axiosClient.post(`/api/Orders/create`, data);
+  },
+
+  deleteOrder: async (id) => {
+    return await axiosClient.delete(`/api/Orders/${id}`);
+  },
 };
+
 export default draftOrderService;
