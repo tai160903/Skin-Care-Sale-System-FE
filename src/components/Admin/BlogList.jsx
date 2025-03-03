@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from "react";
-import blogService from "../../services/adminService/blogadService";
+import { useState, useEffect } from "react";
 import {
+  Container,
+  Typography,
+  Button,
   Table,
   TableBody,
   TableCell,
@@ -8,272 +10,148 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Button,
   Dialog,
-  DialogActions,
-  DialogContent,
   DialogTitle,
+  DialogContent,
+  DialogActions,
   TextField,
-  InputAdornment,
-  Snackbar,
-  Alert,
-  CircularProgress,
 } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
+import blogadService from "../../services/adminService/blogadService";
 
-const BlogList = ({ role }) => {
+const BlogList = () => {
   const [blogs, setBlogs] = useState([]);
-  const [filteredBlogs, setFilteredBlogs] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedBlog, setSelectedBlog] = useState(null);
-  const [openDialog, setOpenDialog] = useState(false);
-  const [formData, setFormData] = useState({
-    title: "",
-    content: "",
-    author: "",
-  });
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState({ open: false, type: "", text: "" });
+  const [open, setOpen] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [currentBlogId, setCurrentBlogId] = useState(null);
+  const [newBlog, setNewBlog] = useState({ title: "", content: "", image: "" });
 
   useEffect(() => {
+    const fetchBlogs = async () => {
+      try {
+        const data = await blogadService.getBlogs();
+        setBlogs(data);
+      } catch (error) {
+        console.error("Lỗi khi tải danh sách bài viết:", error);
+      }
+    };
     fetchBlogs();
   }, []);
 
-  useEffect(() => {
-    handleSearch();
-  }, [blogs, searchQuery]);
-
-  const fetchBlogs = async () => {
-    setLoading(true);
-    try {
-      const data = await blogService.getAllBlogs();
-      setBlogs(data);
-    } catch (error) {
-      showMessage("error", "Lỗi khi tải danh sách blog");
-    } finally {
-      setLoading(false);
+  const handleSaveBlog = async () => {
+    if (!newBlog.title || !newBlog.content || !newBlog.image) {
+      alert("Vui lòng nhập đầy đủ thông tin bài viết!");
+      return;
     }
-  };
-
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("vi-VN");
-  };
-
-  const handleSearch = () => {
-    const query = searchQuery.toLowerCase().trim();
-    if (!query) {
-      setFilteredBlogs(blogs);
-    } else {
-      const filtered = blogs.filter(
-        (blog) =>
-          blog.title.toLowerCase().includes(query) ||
-          formatDate(blog.createdAt).includes(query),
-      );
-      setFilteredBlogs(filtered);
-    }
-  };
-
-  const handleOpenDialog = (blog = null) => {
-    setSelectedBlog(blog);
-    setFormData(
-      blog
-        ? { title: blog.title, content: blog.content, author: blog.author }
-        : { title: "", content: "", author: "" },
-    );
-    setOpenDialog(true);
-  };
-
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
-    setSelectedBlog(null);
-  };
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSave = async () => {
-    setLoading(true);
     try {
-      if (selectedBlog) {
-        await blogService.updateBlog(selectedBlog.id, formData);
-        showMessage("success", "Cập nhật blog thành công!");
+      if (editMode) {
+        await blogadService.updateBlog(currentBlogId, newBlog);
+        setBlogs(blogs.map((blog) => (blog._id === currentBlogId ? { ...blog, ...newBlog } : blog)));
       } else {
-        await blogService.createBlog(formData);
-        showMessage("success", "Thêm blog mới thành công!");
+        const createdBlog = await blogadService.createBlog(newBlog);
+        setBlogs([...blogs, createdBlog]);
       }
-      fetchBlogs();
-      handleCloseDialog();
+      setOpen(false);
+      resetForm();
     } catch (error) {
-      showMessage("error", "Lỗi khi lưu blog!");
-    } finally {
-      setLoading(false);
+      console.error("Lỗi khi lưu bài viết:", error);
     }
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm("Bạn có chắc chắn muốn xóa blog này?")) {
-      setLoading(true);
+  const handleDeleteBlog = async (id) => {
+    if (window.confirm("Bạn có chắc chắn muốn xóa bài viết này?")) {
       try {
-        await blogService.deleteBlog(id);
-        showMessage("success", "Xóa blog thành công!");
-        fetchBlogs();
+        await blogadService.deleteBlog(id);
+        setBlogs(blogs.filter((blog) => blog._id !== id));
       } catch (error) {
-        showMessage("error", "Lỗi khi xóa blog!");
-      } finally {
-        setLoading(false);
+        console.error("Lỗi khi xóa bài viết:", error);
       }
     }
   };
 
-  const showMessage = (type, text) => {
-    setMessage({ open: true, type, text });
+  const handleEditBlog = (blog) => {
+    setNewBlog(blog);
+    setCurrentBlogId(blog._id);
+    setEditMode(true);
+    setOpen(true);
+  };
+
+  const resetForm = () => {
+    setNewBlog({ title: "", content: "", image: "" });
+    setEditMode(false);
+    setCurrentBlogId(null);
   };
 
   return (
-    <>
-      {/* Thanh tìm kiếm */}
-      <TextField
-        label="Tìm kiếm theo tiêu đề hoặc ngày (dd/mm/yyyy)"
-        variant="outlined"
-        fullWidth
-        margin="dense"
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <SearchIcon />
-            </InputAdornment>
-          ),
+    <Container>
+      <Typography variant="h4" sx={{ fontWeight: "bold", marginBottom: 2, color: "#1976d2" }}>
+        Quản lý Bài viết
+      </Typography>
+      <Button
+        variant="contained"
+        sx={{ backgroundColor: "#0288d1", ":hover": { backgroundColor: "#0277bd" }, marginBottom: 2 }}
+        onClick={() => {
+          setOpen(true);
+          resetForm();
         }}
-      />
-
-      {role === "manager" && (
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => handleOpenDialog()}
-          style={{ margin: "10px 0" }}
-        >
-          Thêm Blog Mới
-        </Button>
-      )}
-
-      {loading && (
-        <CircularProgress style={{ display: "block", margin: "20px auto" }} />
-      )}
-
-      {!loading && (
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>
-                  <b>Tiêu đề</b>
-                </TableCell>
-                <TableCell>
-                  <b>Nội dung</b>
-                </TableCell>
-                <TableCell>
-                  <b>Tác giả</b>
-                </TableCell>
-                <TableCell>
-                  <b>Ngày tạo</b>
-                </TableCell>
-                <TableCell>
-                  <b>Hành động</b>
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredBlogs.map((blog) => (
-                <TableRow key={blog.id}>
+      >
+        Thêm Bài viết
+      </Button>
+      <TableContainer component={Paper} sx={{ borderRadius: 2, boxShadow: 3 }}>
+        <Table>
+          <TableHead>
+            <TableRow sx={{ backgroundColor: "#f5f5f5" }}>
+              <TableCell><strong>ID</strong></TableCell>
+              <TableCell><strong>Tiêu đề</strong></TableCell>
+              <TableCell><strong>Nội dung</strong></TableCell>
+              <TableCell><strong>Hình ảnh</strong></TableCell>
+              <TableCell><strong>Hành động</strong></TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {blogs.length > 0 ? (
+              blogs.map((blog) => (
+                <TableRow key={blog._id} hover>
+                  <TableCell>{blog._id}</TableCell>
                   <TableCell>{blog.title}</TableCell>
-                  <TableCell>{blog.content}</TableCell>
-                  <TableCell>{blog.author}</TableCell>
-                  <TableCell>{formatDate(blog.createdAt)}</TableCell>
+                  <TableCell>{blog.content.substring(0, 50)}...</TableCell>
                   <TableCell>
-                    <Button
-                      variant="contained"
-                      color="info"
-                      onClick={() => handleOpenDialog(blog)}
-                      style={{ marginRight: "5px" }}
-                    >
+                    <img src={blog.image} alt={blog.title} style={{ width: 80, height: 50, borderRadius: 5 }} />
+                  </TableCell>
+                  <TableCell>
+                    <Button variant="outlined" color="primary" sx={{ marginRight: 1 }} onClick={() => handleEditBlog(blog)}>
                       Sửa
                     </Button>
-                    {role === "manager" && (
-                      <Button
-                        variant="contained"
-                        color="secondary"
-                        onClick={() => handleDelete(blog.id)}
-                      >
-                        Xóa
-                      </Button>
-                    )}
+                    <Button variant="outlined" color="error" onClick={() => handleDeleteBlog(blog._id)}>
+                      Xóa
+                    </Button>
                   </TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      )}
-
-      {/* Dialog thêm/sửa blog */}
-      <Dialog open={openDialog} onClose={handleCloseDialog}>
-        <DialogTitle>
-          {selectedBlog ? "Cập nhật Blog" : "Thêm Blog Mới"}
-        </DialogTitle>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={5} align="center">
+                  Không có bài viết nào
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <Dialog open={open} onClose={() => setOpen(false)}>
+        <DialogTitle sx={{ fontWeight: "bold", color: "#1976d2" }}>{editMode ? "Chỉnh sửa Bài viết" : "Thêm Bài viết"}</DialogTitle>
         <DialogContent>
-          <TextField
-            label="Tiêu đề"
-            name="title"
-            fullWidth
-            margin="dense"
-            value={formData.title}
-            onChange={handleChange}
-          />
-          <TextField
-            label="Nội dung"
-            name="content"
-            fullWidth
-            margin="dense"
-            multiline
-            rows={3}
-            value={formData.content}
-            onChange={handleChange}
-          />
-          <TextField
-            label="Tác giả"
-            name="author"
-            fullWidth
-            margin="dense"
-            value={formData.author}
-            onChange={handleChange}
-          />
+          <TextField margin="dense" label="Tiêu đề" fullWidth value={newBlog.title} onChange={(e) => setNewBlog({ ...newBlog, title: e.target.value })} />
+          <TextField margin="dense" label="Nội dung" fullWidth multiline rows={4} value={newBlog.content} onChange={(e) => setNewBlog({ ...newBlog, content: e.target.value })} />
+          <TextField margin="dense" label="URL Hình ảnh" fullWidth value={newBlog.image} onChange={(e) => setNewBlog({ ...newBlog, image: e.target.value })} />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDialog} color="secondary">
-            Hủy
-          </Button>
-          <Button onClick={handleSave} color="primary" variant="contained">
-            {selectedBlog ? "Lưu thay đổi" : "Thêm"}
+          <Button onClick={() => setOpen(false)} sx={{ color: "#757575" }}>Hủy</Button>
+          <Button onClick={handleSaveBlog} sx={{ backgroundColor: "#0288d1", color: "#fff", ":hover": { backgroundColor: "#0277bd" }}}>
+            {editMode ? "Cập nhật" : "Tạo"}
           </Button>
         </DialogActions>
       </Dialog>
-
-      {/* Thông báo trạng thái */}
-      <Snackbar
-        open={message.open}
-        autoHideDuration={3000}
-        onClose={() => setMessage({ ...message, open: false })}
-      >
-        <Alert severity={message.type} sx={{ width: "100%" }}>
-          {message.text}
-        </Alert>
-      </Snackbar>
-    </>
+    </Container>
   );
 };
 

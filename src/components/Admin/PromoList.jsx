@@ -1,5 +1,8 @@
-import React from "react";
+import { useState, useEffect } from "react";
 import {
+  Container,
+  Typography,
+  Button,
   Table,
   TableBody,
   TableCell,
@@ -7,156 +10,255 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Typography,
-  Box,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
 } from "@mui/material";
+import {
+  getPromotion,
+  createPromotion,
+  updatePromotion,
+  deletePromotion,
+} from "../../services/adminService/promoService";
 
-const promotions = [
-  {
-    name: "Summer Sale",
-    code: "SUMMER2024",
-    description: "Giảm giá mùa hè",
-    discount_percentage: 20,
-    start_date: "2024-06-01",
-    end_date: "2024-06-30",
-  },
-  {
-    name: "Black Friday",
-    code: "BLACKFRI",
-    description: "Giảm giá lớn ngày Black Friday",
-    discount_percentage: 50,
-    start_date: "2024-11-25",
-    end_date: "2024-11-30",
-  },
-  {
-    name: "New Year",
-    code: "NEWYEAR24",
-    description: "Chào mừng năm mới",
-    discount_percentage: 30,
-    start_date: "2024-12-25",
-    end_date: "2025-01-05",
-  },
-  {
-    name: "Back to School",
-    code: "SCHOOL25",
-    description: "Khuyến mãi mùa tựu trường",
-    discount_percentage: 15,
-    start_date: "2024-08-01",
-    end_date: "2024-09-01",
-  },
-  {
-    name: "Holiday Sale",
-    code: "HOLIDAY24",
-    description: "Giảm giá dịp lễ",
-    discount_percentage: 25,
-    start_date: "2024-12-20",
-    end_date: "2024-12-31",
-  },
-  {
-    name: "Flash Sale",
-    code: "FLASH123",
-    description: "Giảm giá trong 24h",
-    discount_percentage: 40,
-    start_date: "2024-07-10",
-    end_date: "2024-07-11",
-  },
-  {
-    name: "Cyber Monday",
-    code: "CYBER24",
-    description: "Giảm giá ngày Cyber Monday",
-    discount_percentage: 45,
-    start_date: "2024-12-02",
-    end_date: "2024-12-03",
-  },
-  {
-    name: "Christmas Deals",
-    code: "XMAS24",
-    description: "Ưu đãi Giáng sinh",
-    discount_percentage: 35,
-    start_date: "2024-12-20",
-    end_date: "2024-12-26",
-  },
-  {
-    name: "Valentine Special",
-    code: "LOVE2024",
-    description: "Ưu đãi ngày Valentine",
-    discount_percentage: 20,
-    start_date: "2024-02-10",
-    end_date: "2024-02-15",
-  },
-  {
-    name: "Halloween Discount",
-    code: "HALLOW24",
-    description: "Giảm giá Halloween",
-    discount_percentage: 30,
-    start_date: "2024-10-25",
-    end_date: "2024-10-31",
-  },
-];
+const PromoList = () => {
+  const [promotions, setPromotions] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [currentPromoId, setCurrentPromoId] = useState(null);
+  const [newPromo, setNewPromo] = useState({
+    name: "",
+    code: "",
+    description: "",
+    discount_percentage: "",
+    start_date: "",
+    end_date: "",
+  });
 
-const PromotionManager = () => {
+  useEffect(() => {
+    const fetchPromotions = async () => {
+      try {
+        const data = await getPromotion();
+        setPromotions(data);
+      } catch (error) {
+        console.error("Lỗi khi tải danh sách khuyến mãi:", error);
+      }
+    };
+
+    fetchPromotions();
+  }, []);
+
+  const handleSavePromo = async () => {
+    if (
+      !newPromo.name ||
+      !newPromo.code ||
+      !newPromo.description ||
+      !newPromo.discount_percentage ||
+      !newPromo.start_date ||
+      !newPromo.end_date
+    ) {
+      alert("Vui lòng nhập đầy đủ thông tin khuyến mãi!");
+      return;
+    }
+
+    const promoData = {
+      ...newPromo,
+      discount_percentage: Number(newPromo.discount_percentage),
+      start_date: new Date(newPromo.start_date).toISOString(),
+      end_date: new Date(newPromo.end_date).toISOString(),
+    };
+
+    try {
+      if (editMode) {
+        await updatePromotion(currentPromoId, promoData);
+        setPromotions(
+          promotions.map((promo) =>
+            promo._id === currentPromoId ? { ...promo, ...promoData } : promo,
+          ),
+        );
+      } else {
+        const createdPromo = await createPromotion(promoData);
+        setPromotions([...promotions, createdPromo]);
+      }
+      setOpen(false);
+      resetForm();
+    } catch (error) {
+      console.error("Lỗi khi lưu khuyến mãi:", error);
+    }
+  };
+
+  const handleDeletePromo = async (id) => {
+    if (window.confirm("Bạn có chắc chắn muốn xóa khuyến mãi này?")) {
+      try {
+        await deletePromotion(id);
+        setPromotions(promotions.filter((promo) => promo._id !== id));
+      } catch (error) {
+        console.error("Lỗi khi xóa khuyến mãi:", error);
+      }
+    }
+  };
+
+  const handleEditPromo = (promo) => {
+    setNewPromo({
+      ...promo,
+      discount_percentage: promo.discount_percentage.toString(),
+    });
+    setCurrentPromoId(promo._id);
+    setEditMode(true);
+    setOpen(true);
+  };
+
+  const resetForm = () => {
+    setNewPromo({
+      name: "",
+      code: "",
+      description: "",
+      discount_percentage: "",
+      start_date: "",
+      end_date: "",
+    });
+    setEditMode(false);
+    setCurrentPromoId(null);
+  };
+
   return (
-    <Box
-      sx={{
-        padding: 3,
-        backgroundColor: "#f9f9f9",
-        borderRadius: 2,
-        boxShadow: 2,
-      }}
-    >
-      <Typography
-        variant="h5"
-        align="center"
-        sx={{ marginBottom: 2, fontWeight: "bold" }}
-      >
-        Quản lý khuyến mãi
+    <Container>
+      <Typography variant="h4" gutterBottom>
+        Quản lý Khuyến mãi
       </Typography>
-      <TableContainer
-        component={Paper}
-        sx={{ borderRadius: 2, overflow: "hidden" }}
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => {
+          setOpen(true);
+          resetForm();
+        }}
       >
+        Thêm Khuyến mãi
+      </Button>
+      <TableContainer component={Paper} sx={{ marginTop: 2 }}>
         <Table>
           <TableHead>
-            <TableRow sx={{ backgroundColor: "#1976d2" }}>
-              <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                Tên
-              </TableCell>
-              <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                Mã
-              </TableCell>
-              <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                Mô tả
-              </TableCell>
-              <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                Giảm giá (%)
-              </TableCell>
-              <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                Ngày bắt đầu
-              </TableCell>
-              <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                Ngày kết thúc
-              </TableCell>
+            <TableRow>
+              <TableCell>ID</TableCell>
+              <TableCell>Tên</TableCell>
+              <TableCell>Mã</TableCell>
+              <TableCell>Mô tả</TableCell>
+              <TableCell>Giảm giá (%)</TableCell>
+              <TableCell>Hành động</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {promotions.map((promo, index) => (
-              <TableRow
-                key={index}
-                sx={{ "&:nth-of-type(odd)": { backgroundColor: "#f5f5f5" } }}
-              >
-                <TableCell>{promo.name}</TableCell>
-                <TableCell>{promo.code}</TableCell>
-                <TableCell>{promo.description}</TableCell>
-                <TableCell>{promo.discount_percentage}%</TableCell>
-                <TableCell>{promo.start_date}</TableCell>
-                <TableCell>{promo.end_date}</TableCell>
+            {promotions.length > 0 ? (
+              promotions.map((promo) => (
+                <TableRow key={promo._id}>
+                  <TableCell>{promo._id}</TableCell>
+                  <TableCell>{promo.name}</TableCell>
+                  <TableCell>{promo.code}</TableCell>
+                  <TableCell>{promo.description}</TableCell>
+                  <TableCell>{promo.discount_percentage}%</TableCell>
+                  <TableCell>
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      sx={{ marginRight: 1 }}
+                      onClick={() => handleEditPromo(promo)}
+                    >
+                      Sửa
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      color="error"
+                      onClick={() => handleDeletePromo(promo._id)}
+                    >
+                      Xóa
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={6} align="center">
+                  Không có khuyến mãi nào
+                </TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
       </TableContainer>
-    </Box>
+      <Dialog open={open} onClose={() => setOpen(false)}>
+        <DialogTitle>
+          {editMode ? "Chỉnh sửa Khuyến mãi" : "Thêm Khuyến mãi"}
+        </DialogTitle>
+        <DialogContent>
+          <TextField
+            margin="dense"
+            label="Tên"
+            fullWidth
+            value={newPromo.name}
+            onChange={(e) => setNewPromo({ ...newPromo, name: e.target.value })}
+          />
+          <TextField
+            margin="dense"
+            label="Mã"
+            fullWidth
+            value={newPromo.code}
+            onChange={(e) => setNewPromo({ ...newPromo, code: e.target.value })}
+          />
+          <TextField
+            margin="dense"
+            label="Mô tả"
+            fullWidth
+            value={newPromo.description}
+            onChange={(e) =>
+              setNewPromo({ ...newPromo, description: e.target.value })
+            }
+          />
+          <TextField
+            margin="dense"
+            label="Giảm giá (%)"
+            fullWidth
+            type="number"
+            value={newPromo.discount_percentage}
+            onChange={(e) =>
+              setNewPromo({ ...newPromo, discount_percentage: e.target.value })
+            }
+          />
+          <TextField
+            margin="dense"
+            label="Ngày bắt đầu"
+            type="datetime-local"
+            fullWidth
+            InputLabelProps={{ shrink: true }}
+            value={newPromo.start_date}
+            onChange={(e) =>
+              setNewPromo({ ...newPromo, start_date: e.target.value })
+            }
+          />
+          <TextField
+            margin="dense"
+            label="Ngày kết thúc"
+            type="datetime-local"
+            fullWidth
+            InputLabelProps={{ shrink: true }}
+            value={newPromo.end_date}
+            onChange={(e) =>
+              setNewPromo({ ...newPromo, end_date: e.target.value })
+            }
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpen(false)} color="secondary">
+            Hủy
+          </Button>
+          <Button onClick={handleSavePromo} color="primary">
+            {editMode ? "Cập nhật" : "Tạo"}
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Container>
   );
 };
-
-export default PromotionManager;
+export default PromoList;

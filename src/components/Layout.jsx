@@ -3,6 +3,7 @@ import Header from "./Header/Header";
 import Footer from "./Footer";
 import Nav from "./Header/Nav";
 import Banner from "./Header/Banner";
+
 function Layout() {
   const location = useLocation();
   const pathname = location.pathname;
@@ -10,11 +11,12 @@ function Layout() {
   const paths = [
     "/login",
     "/signin",
-    "/signup,",
+    "/signup",
     "/verify-email",
     "/forgot-password",
     "/success",
     "/cancel",
+    "/profile",
   ];
 
   const hideHeaderFooter = paths.includes(pathname);

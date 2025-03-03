@@ -1,0 +1,32 @@
+.profile-info {
+  text-align: center;
+}
+
+.profile-image {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+}
+
+.username {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.bio {
+  font-size: 16px;
+  color: #666;
+}
+
+.profile-details {
+  margin-top: 20px;
+}
+
+.profile-details ul {
+  list-style: none;
+  padding: 0;
+}
+
+.profile-details li {
+  margin-bottom: 10px;
+}
