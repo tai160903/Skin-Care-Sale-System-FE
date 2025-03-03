@@ -1,10 +1,10 @@
 import axiosClient from "./api.config";
 
 const draftOrderService = {
-  getDraftOrder: (customerId) =>
-    axiosClient.get(`/api/draftOrders/${customerId}`),
+  applyPromotion: (data) => axiosClient.post("/api/cart/apply-promotion", data),
 
-  createDraftOrder: (customerId, data) =>
-    axiosClient.post(`/api/draftOrders/${customerId}`, data),
+  getShippingFee: (data) => axiosClient.post("/api/shippingFee/location", data),
+
+  createOrder: (data) => axiosClient.post(`/api/Orders/create`, data),
 };
 export default draftOrderService;

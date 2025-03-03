@@ -28,7 +28,6 @@ function Detail() {
       setIsLoading(true);
       try {
         const response = await productService.getProductById(id);
-        console.log("response", response.data);
         setProduct(response.data);
       } catch (error) {
         toast.error("Error fetching product:", error);
@@ -61,13 +60,13 @@ function Detail() {
     }
 
     try {
-      dispatch(addToCart({ product, quantity }));
-
       await cartService.addToCart({
-        product_id: product._id,
+        productId: product._id,
         quantity,
         customerId,
       });
+
+      dispatch(addToCart({ product, quantity }));
 
       toast.success("Product added to cart!");
     } catch (error) {
@@ -135,26 +134,32 @@ function Detail() {
 
           <div className="mt-3">
             <span
-              className={`mr-5 text-2xl font-bold ${product.purchaseCount > 0 ? "line-through text-gray-500" : "text-red-500"}`}
+              className={`mr-5 text-2xl font-bold ${product.discountPercent > 0 ? "line-through text-gray-500" : "text-red-500"}`}
             >
               {new Intl.NumberFormat("vi-VN", {
                 style: "currency",
                 currency: "VND",
               }).format(product.price)}
             </span>
-            <span
-              className={` text-2xl p-2 font-bold rounded-md text-white bg-red-500`}
-            >
-              - {product.purchaseCount}%
-            </span>
-            <div>
-              <span className={` text-2xl font-bold text-red-500`}>
-                {new Intl.NumberFormat("vi-VN", {
-                  style: "currency",
-                  currency: "VND",
-                }).format(product.price * (1 - product.purchaseCount / 100))}
-              </span>
-            </div>
+            {product.discountPercent > 0 && (
+              <>
+                <span
+                  className={` text-2xl p-2 font-bold rounded-md text-white bg-red-500`}
+                >
+                  - {product.discountPercent}%
+                </span>
+                <div>
+                  <span className={` text-2xl font-bold text-red-500`}>
+                    {new Intl.NumberFormat("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    }).format(
+                      product.price * (1 - product.discountPercent / 100),
+                    )}
+                  </span>
+                </div>
+              </>
+            )}
           </div>
 
           {/* Quantity */}

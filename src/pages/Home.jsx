@@ -1,19 +1,23 @@
 import ListProduct from "../Customer/ListtProduct";
-import FilterProduct from "../Customer/FilterProduct";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import cartService from "../services/cartService";
 import { setCart } from "../redux/slices/cartSlice";
 import { toast } from "react-toastify";
 import TopProduct from "../Customer/TopProduct";
+import Category from "../Customer/Category";
+import Blog from "../components/Header/Blog";
+import { Container, Box } from "@mui/material";
+import Adv from "../components/Header/Adv";
+
 function Home() {
   const dispatch = useDispatch();
   const customer = useSelector((state) => state.user.customer);
-  const cartItems = useSelector((state) => state.cart.items);
-
+  const [isFetched, setIsFetched] = useState(false);
+  console.log("customer", customer);
   useEffect(() => {
     const fetchCart = async () => {
-      if (customer && cartItems.length === 0) {
+      if (customer && !isFetched) {
         try {
           const response = await cartService.getCart(customer._id);
           dispatch(
@@ -23,28 +27,39 @@ function Home() {
               discount: response.data.discount,
             }),
           );
+          setIsFetched(true); // Prevent multiple fetches
         } catch (error) {
-          toast.error("Lỗi khi lấy giỏ hàng:", error);
+          toast.error(`Lỗi khi lấy giỏ hàng: ${error.message || error}`);
         }
       }
     };
 
     fetchCart();
-  }, [customer, cartItems, dispatch]);
+  }, [customer, isFetched, dispatch]);
 
   return (
-    <>
-      <TopProduct />
-      <div className="flex">
-        {/* Sidebar bên trái */}
-        <FilterProduct />
+    <Box>
+      <Adv />
+      <Container maxWidth="lg" sx={{ mt: 3 }}>
+        {/* Top sản phẩm */}
+        <Box sx={{ mb: 3 }}>
+          <TopProduct />
+        </Box>
+
+        {/* Danh mục sản phẩm */}
+        <Box sx={{ mb: 3 }}>
+          <Category />
+        </Box>
 
         {/* Danh sách sản phẩm */}
-        <div className="flex-1 p-6">
+        <Box sx={{ mb: 3 }}>
           <ListProduct />
-        </div>
-      </div>
-    </>
+        </Box>
+        <Box sx={{ mb: 3 }}>
+          <Blog />
+        </Box>
+      </Container>
+    </Box>
   );
 }
 

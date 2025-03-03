@@ -1,76 +1,160 @@
+import useTopProductService from "../services/topProduct";
 import {
   Container,
-  Grid,
-  Card,
-  CardMedia,
-  CardContent,
   Typography,
-  Button,
+  Box,
+  CircularProgress,
+  Rating,
 } from "@mui/material";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
-const products = [
-  {
-    id: 1,
-    name: "Kem chống nắng La Roche-Posay",
-    price: "450,000 VND",
-    image: "https://via.placeholder.com/150",
-  },
-  {
-    id: 2,
-    name: "Sữa rửa mặt Cetaphil",
-    price: "300,000 VND",
-    image: "https://via.placeholder.com/150",
-  },
-  {
-    id: 3,
-    name: "Kem dưỡng ẩm Neutrogena",
-    price: "500,000 VND",
-    image: "https://via.placeholder.com/150",
-  },
-  {
-    id: 4,
-    name: "Tẩy tế bào chết Paula's Choice",
-    price: "600,000 VND",
-    image: "https://via.placeholder.com/150",
-  },
-];
+const settings = {
+  dots: false,
+  infinite: true,
+  speed: 500,
+  slidesToShow: 5,
+  slidesToScroll: 2,
+  autoplay: true,
+  autoplaySpeed: 2000,
+  responsive: [
+    { breakpoint: 1024, settings: { slidesToShow: 3, slidesToScroll: 2 } },
+    { breakpoint: 600, settings: { slidesToShow: 2, slidesToScroll: 1 } },
+    { breakpoint: 480, settings: { slidesToShow: 1, slidesToScroll: 1 } },
+  ],
+};
 
 const TopProduct = () => {
+  const { products, loading } = useTopProductService();
+
+  if (loading)
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="50vh"
+      >
+        <CircularProgress />
+      </Box>
+    );
+
   return (
-    <Container>
-      <Typography variant="h4" gutterBottom textAlign="center" sx={{ mt: 4 }}>
-        Sản phẩm chăm sóc da bán chạy
+    <Container
+      sx={{
+        background: "#f8f9fa",
+        p: 3,
+        borderRadius: "10px",
+        maxWidth: "1200px",
+      }}
+    >
+      <Typography variant="h5" fontWeight="bold" color="green" sx={{ mb: 2 }}>
+        Bán chạy
       </Typography>
-      <Grid container spacing={4} justifyContent="center">
+      <Slider {...settings}>
         {products.map((product) => (
-          <Grid item xs={12} sm={6} md={4} lg={3} key={product.id}>
-            <Card
-              sx={{ display: "flex", flexDirection: "column", height: "100%" }}
+          <Box
+            key={product.id}
+            textAlign="center"
+            sx={{
+              px: 1,
+              py: 2,
+              borderRadius: "10px",
+              transition: "transform 0.3s",
+              "&:hover": { transform: "scale(1.05)" },
+            }}
+          >
+            <Box
+              sx={{
+                width: "160px",
+                height: "160px",
+                margin: "0 auto",
+                borderRadius: "10px",
+                overflow: "hidden",
+                boxShadow: 3,
+              }}
             >
-              <CardMedia
-                component="img"
-                height="180"
-                image={product.image}
+              <img
+                src={product.image || "https://via.placeholder.com/160"}
                 alt={product.name}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                }}
               />
-              <CardContent sx={{ flexGrow: 1 }}>
-                <Typography variant="h6" gutterBottom>
-                  {product.name}
+            </Box>
+
+            <Typography variant="body1" fontWeight="bold" sx={{ mt: 1 }}>
+              {product.name}
+            </Typography>
+
+            <Rating
+              name="half-rating-read"
+              defaultValue={product.rating || 0}
+              precision={0.5}
+              readOnly
+              sx={{ mt: 1 }}
+            />
+
+            <Typography
+              variant="body2"
+              color="textSecondary"
+              sx={{ mt: 1, minHeight: "40px" }}
+            >
+              {product.description}
+            </Typography>
+
+            <Box mt={1}>
+              {product.discountPercent > 0 ? (
+                <>
+                  <Typography
+                    variant="body2"
+                    sx={{ textDecoration: "line-through", color: "gray" }}
+                  >
+                    {new Intl.NumberFormat("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    }).format(product.price)}
+                  </Typography>
+                  <Typography
+                    variant="body1"
+                    sx={{ fontWeight: "bold", color: "red" }}
+                  >
+                    {new Intl.NumberFormat("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    }).format(
+                      product.price * (1 - product.discountPercent / 100),
+                    )}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      fontWeight: "bold",
+                      background: "red",
+                      color: "white",
+                      p: "4px 8px",
+                      borderRadius: "5px",
+                      mt: 1,
+                    }}
+                  >
+                    -{product.discountPercent}%
+                  </Typography>
+                </>
+              ) : (
+                <Typography variant="body1" fontWeight="bold" color="red">
+                  {new Intl.NumberFormat("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  }).format(product.price)}
                 </Typography>
-                <Typography color="text.secondary">{product.price}</Typography>
-              </CardContent>
-              <Button
-                variant="contained"
-                color="primary"
-                fullWidth
-                sx={{ mt: "auto" }}
-              >
-                Thêm vào giỏ hàng
-              </Button>
-            </Card>
-          </Grid>
+              )}
+            </Box>
+          </Box>
         ))}
-      </Grid>
+      </Slider>
     </Container>
   );
 };

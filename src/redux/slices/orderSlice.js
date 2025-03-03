@@ -1,15 +1,20 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import draftOrderService from "../../services/draftOrderService";
 
-// Thunk để tạo đơn hàng
 export const createOrder = createAsyncThunk(
   "order/createOrder",
-  async ({ customerId, orderData }, { rejectWithValue }) => {
+  async (data, { rejectWithValue }) => {
     try {
-      const response = await draftOrderService.createDraftOrder(
-        customerId,
-        orderData,
-      );
+      const response = await draftOrderService.createOrder({
+        customerId: data.customer,
+        payment_method: data.paymentMethod,
+        address:
+          (data.address = `${data.address.street}, ${data.address.ward}, ${data.address.district}, ${data.address.province}`),
+        phone: data.phone,
+        cart: data.cart,
+        totalAmount: data.totalAmount,
+        status: data.status,
+      });
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -21,10 +26,15 @@ const orderSlice = createSlice({
   name: "order",
   initialState: {
     orders: [],
+    lastOrder: null, // Lưu đơn hàng mới nhất
     loading: false,
     error: null,
   },
-  reducers: {},
+  reducers: {
+    clearLastOrder: (state) => {
+      state.lastOrder = null; // Xóa đơn hàng mới nhất sau khi hiển thị
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(createOrder.pending, (state) => {
@@ -33,6 +43,7 @@ const orderSlice = createSlice({
       })
       .addCase(createOrder.fulfilled, (state, action) => {
         state.loading = false;
+        state.lastOrder = action.payload;
         state.orders.push(action.payload);
       })
       .addCase(createOrder.rejected, (state, action) => {
@@ -42,4 +53,5 @@ const orderSlice = createSlice({
   },
 });
 
+export const { clearLastOrder } = orderSlice.actions;
 export default orderSlice.reducer;
