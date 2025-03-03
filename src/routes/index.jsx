@@ -21,7 +21,9 @@ import SuccessPayment from "../pages/SuccessPayment";
 import Map from "../components/Header/Map";
 import Blog from "../components/Header/Blog";
 import OrTrack from "../components/Header/OrTrack";
-import Profile from "../components/Header/Profile";
+import ProfilePage from "../pages/ProfilePage";
+
+// import Profile from "../components/Header/Profile";
 import User from "../components/Admin/User";
 import BlogList from "../components/Admin/BlogList";
 import QuizList from "../components/Admin/QuizList";
@@ -48,7 +50,6 @@ const Router = createBrowserRouter([
         path: "signup",
         element: <Signup />,
       },
-
       {
         path: "verify-email",
         element: <Verify />,
@@ -78,8 +79,8 @@ const Router = createBrowserRouter([
         element: <Blog />,
       },
       {
-        path: "profile",
-        element: <Profile />,
+        path: "profile/:userId", // Định nghĩa route với userId
+        element: <ProfilePage />,
       },
       {
         path: "customer-dashboard",
