@@ -1,9 +1,19 @@
 import { useEffect, useState } from "react";
 import userService from "../../services/userService";
-import { 
-  Button, Table, TableBody, TableCell, TableContainer, 
-  TableHead, TableRow, Paper, TextField, Dialog, 
-  DialogActions, DialogContent, DialogTitle 
+import {
+  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  TextField,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
 } from "@mui/material";
 
 const User = () => {
@@ -39,7 +49,12 @@ const User = () => {
   };
 
   const handleOpen = (user) => {
-    setFormData({ id: user.id, fullName: user.fullName, email: user.email, role: user.role });
+    setFormData({
+      id: user.id,
+      fullName: user.fullName,
+      email: user.email,
+      role: user.role,
+    });
     setOpen(true);
   };
 
@@ -93,10 +108,19 @@ const User = () => {
                 <TableCell>{user.email}</TableCell>
                 <TableCell>{user.role}</TableCell>
                 <TableCell>
-                  <Button variant="outlined" color="primary" onClick={() => handleOpen(user)} style={{ marginRight: 10 }}>
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    onClick={() => handleOpen(user)}
+                    style={{ marginRight: 10 }}
+                  >
                     Sửa
                   </Button>
-                  <Button variant="outlined" color="secondary" onClick={() => handleDelete(user.id)}>
+                  <Button
+                    variant="outlined"
+                    color="secondary"
+                    onClick={() => handleDelete(user.id)}
+                  >
                     Xóa
                   </Button>
                 </TableCell>
@@ -110,12 +134,30 @@ const User = () => {
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Chỉnh sửa người dùng</DialogTitle>
         <DialogContent>
-          <TextField label="Họ và Tên" name="fullName" value={formData.fullName} onChange={handleChange} fullWidth margin="dense" />
-          <TextField label="Email" name="email" value={formData.email} onChange={handleChange} fullWidth margin="dense" />
+          <TextField
+            label="Họ và Tên"
+            name="fullName"
+            value={formData.fullName}
+            onChange={handleChange}
+            fullWidth
+            margin="dense"
+          />
+          <TextField
+            label="Email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            fullWidth
+            margin="dense"
+          />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="secondary">Hủy</Button>
-          <Button onClick={handleSubmit} color="primary">Lưu</Button>
+          <Button onClick={handleClose} color="secondary">
+            Hủy
+          </Button>
+          <Button onClick={handleSubmit} color="primary">
+            Lưu
+          </Button>
         </DialogActions>
       </Dialog>
     </div>

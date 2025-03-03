@@ -79,7 +79,7 @@ const Router = createBrowserRouter([
         element: <Blog />,
       },
       {
-        path: "profile/:userId", // Định nghĩa route với userId
+        path: "profile/:userId",
         element: <ProfilePage />,
       },
       {

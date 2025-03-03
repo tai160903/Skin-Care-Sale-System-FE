@@ -38,7 +38,11 @@ const Sidebar = () => {
     { text: "Orders", icon: <ListAlt />, path: "/admin/orders" },
     { text: "Products", icon: <ShoppingCart />, path: "/admin/products" },
     { text: "Compare Products", icon: <Compare />, path: "/admin/compare" },
-    { text: "Skin Care Plans", icon: <Science />, path: "/admin/skincare-plans" },
+    {
+      text: "Skin Care Plans",
+      icon: <Science />,
+      path: "/admin/skincare-plans",
+    },
     { text: "Users", icon: <ListAlt />, path: "/admin/users" },
     { text: "Customers", icon: <People />, path: "/admin/customers" },
     { text: "Staff", icon: <Group />, path: "/admin/staff" },
@@ -100,7 +104,10 @@ const Sidebar = () => {
             selected={location.pathname === path}
             sx={{
               bgcolor: location.pathname === path ? "#1976d2" : "transparent",
-              "&:hover": { backgroundColor: "#1976d2", transform: "scale(1.05)" },
+              "&:hover": {
+                backgroundColor: "#1976d2",
+                transform: "scale(1.05)",
+              },
               transition: "all 0.2s ease-in-out",
               borderRadius: "8px",
               margin: "4px",

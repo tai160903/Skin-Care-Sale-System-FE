@@ -12,7 +12,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../redux/slices/userSlice";
 import CartA from "./CartA";
 import Question from "./Question";
-import OrTrack from "./OrTrack";
 import { clearCart } from "../../redux/slices/cartSlice";
 
 const Header = () => {
@@ -20,6 +19,7 @@ const Header = () => {
   const dispatch = useDispatch();
   const token = useSelector((state) => state.user.token);
   const cart = useSelector((state) => state.cart.items);
+  const user = useSelector((state) => state.user.user);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -114,7 +114,7 @@ const Header = () => {
                 </>
               ) : (
                 <>
-                  <LinkItem to="/profile" label="Hồ sơ" />
+                  <LinkItem to={`/profile/${user._id}`} label="Hồ sơ" />
                   <button
                     onClick={handleLogout}
                     className="block w-full text-left px-4 py-2 hover:bg-gray-200"
