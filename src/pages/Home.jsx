@@ -14,7 +14,9 @@ function Home() {
   const dispatch = useDispatch();
   const customer = useSelector((state) => state.user.customer);
   const [isFetched, setIsFetched] = useState(false);
-  console.log("customer", customer);
+
+  console.log(import.meta.env.VITE_PAYPAL_CLIENT_ID);
+
   useEffect(() => {
     const fetchCart = async () => {
       if (customer && !isFetched) {
@@ -27,7 +29,7 @@ function Home() {
               discount: response.data.discount,
             }),
           );
-          setIsFetched(true); // Prevent multiple fetches
+          setIsFetched(true);
         } catch (error) {
           toast.error(`Lỗi khi lấy giỏ hàng: ${error.message || error}`);
         }

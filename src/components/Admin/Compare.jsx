@@ -13,13 +13,48 @@ import {
   Select,
   MenuItem,
 } from "@mui/material";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
 const products = [
-  { id: 1, name: "iPhone 15", price: 1200, rating: 4.8, brand: "Apple", weight: "180g" },
-  { id: 2, name: "Samsung S23", price: 1100, rating: 4.6, brand: "Samsung", weight: "170g" },
-  { id: 3, name: "Google Pixel 7", price: 900, rating: 4.7, brand: "Google", weight: "175g" },
-  { id: 4, name: "OnePlus 11", price: 950, rating: 4.5, brand: "OnePlus", weight: "185g" },
+  {
+    id: 1,
+    name: "iPhone 15",
+    price: 1200,
+    rating: 4.8,
+    brand: "Apple",
+    weight: "180g",
+  },
+  {
+    id: 2,
+    name: "Samsung S23",
+    price: 1100,
+    rating: 4.6,
+    brand: "Samsung",
+    weight: "170g",
+  },
+  {
+    id: 3,
+    name: "Google Pixel 7",
+    price: 900,
+    rating: 4.7,
+    brand: "Google",
+    weight: "175g",
+  },
+  {
+    id: 4,
+    name: "OnePlus 11",
+    price: 950,
+    rating: 4.5,
+    brand: "OnePlus",
+    weight: "185g",
+  },
 ];
 
 const Compare = () => {
@@ -27,7 +62,10 @@ const Compare = () => {
 
   const handleSelectProduct = (event) => {
     const selectedId = event.target.value;
-    if (selectedProducts.length < 3 && !selectedProducts.find((p) => p.id === selectedId)) {
+    if (
+      selectedProducts.length < 3 &&
+      !selectedProducts.find((p) => p.id === selectedId)
+    ) {
       const product = products.find((p) => p.id === selectedId);
       setSelectedProducts([...selectedProducts, product]);
     }
@@ -61,11 +99,17 @@ const Compare = () => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell><b>Thuộc tính</b></TableCell>
+                <TableCell>
+                  <b>Thuộc tính</b>
+                </TableCell>
                 {selectedProducts.map((product) => (
                   <TableCell key={product.id}>
                     {product.name}
-                    <Button size="small" color="error" onClick={() => handleRemoveProduct(product.id)}>
+                    <Button
+                      size="small"
+                      color="error"
+                      onClick={() => handleRemoveProduct(product.id)}
+                    >
                       Xóa
                     </Button>
                   </TableCell>
@@ -74,25 +118,33 @@ const Compare = () => {
             </TableHead>
             <TableBody>
               <TableRow>
-                <TableCell><b>Giá</b></TableCell>
+                <TableCell>
+                  <b>Giá</b>
+                </TableCell>
                 {selectedProducts.map((product) => (
                   <TableCell key={product.id}>${product.price}</TableCell>
                 ))}
               </TableRow>
               <TableRow>
-                <TableCell><b>Đánh giá</b></TableCell>
+                <TableCell>
+                  <b>Đánh giá</b>
+                </TableCell>
                 {selectedProducts.map((product) => (
                   <TableCell key={product.id}>{product.rating} ⭐</TableCell>
                 ))}
               </TableRow>
               <TableRow>
-                <TableCell><b>Thương hiệu</b></TableCell>
+                <TableCell>
+                  <b>Thương hiệu</b>
+                </TableCell>
                 {selectedProducts.map((product) => (
                   <TableCell key={product.id}>{product.brand}</TableCell>
                 ))}
               </TableRow>
               <TableRow>
-                <TableCell><b>Trọng lượng</b></TableCell>
+                <TableCell>
+                  <b>Trọng lượng</b>
+                </TableCell>
                 {selectedProducts.map((product) => (
                   <TableCell key={product.id}>{product.weight}</TableCell>
                 ))}

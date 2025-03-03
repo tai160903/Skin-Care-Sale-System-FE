@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Container,
   Table,
@@ -12,6 +12,7 @@ import {
   CircularProgress,
 } from "@mui/material";
 import quizService from "../../services/quizService";
+import { toast } from "react-toastify";
 
 const QuizList = () => {
   const [questions, setQuestions] = useState([]);
@@ -25,7 +26,7 @@ const QuizList = () => {
         setLoading(false);
       })
       .catch((error) => {
-        console.error("Error fetching quiz questions:", error);
+        toast.error(error.response.data.message);
         setLoading(false);
       });
   }, []);

@@ -13,6 +13,8 @@ function Layout() {
     "/signup,",
     "/verify-email",
     "/forgot-password",
+    "/success",
+    "/cancel",
   ];
 
   const hideHeaderFooter = paths.includes(pathname);

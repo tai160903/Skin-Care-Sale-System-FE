@@ -18,6 +18,7 @@ import Cart from "../Customer/Cart";
 import SkinTypeQuiz from "../Customer/quiz";
 import DraftOrder from "../Customer/DraftOrder";
 import SuccessPayment from "../pages/SuccessPayment";
+import CancelPayment from "../pages/CancelPayment";
 import Map from "../components/Header/Map";
 import Blog from "../components/Header/Blog";
 import OrTrack from "../components/Header/OrTrack";
@@ -123,6 +124,10 @@ const Router = createBrowserRouter([
       {
         path: "success",
         element: <SuccessPayment />,
+      },
+      {
+        path: "cancel",
+        element: <CancelPayment />,
       },
     ],
   },

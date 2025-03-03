@@ -5,7 +5,7 @@ import {
   TextField,
   InputAdornment,
 } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search"; // Import SearchIcon
+import SearchIcon from "@mui/icons-material/Search";
 
 function MyApp() {
   return (

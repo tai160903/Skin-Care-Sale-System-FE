@@ -13,7 +13,6 @@ const AddressForm = ({ onAddressChange }) => {
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
-
   const [province, setProvince] = useState("");
   const [district, setDistrict] = useState("");
   const [ward, setWard] = useState("");
@@ -23,7 +22,8 @@ const AddressForm = ({ onAddressChange }) => {
     const fetchProvinces = async () => {
       try {
         const res = await addressService.getProvince();
-        setProvinces(res?.data || []);
+
+        setProvinces(res?.data?.data || []);
       } catch (error) {
         toast.error("Lỗi lấy danh sách tỉnh/thành:", error);
       }
@@ -41,9 +41,9 @@ const AddressForm = ({ onAddressChange }) => {
 
     try {
       const res = await addressService.getDistrict(province);
-      setDistricts(res.data || []);
+      setDistricts(res?.data?.data || []);
     } catch (error) {
-      console.error("Lỗi lấy danh sách quận/huyện:", error);
+      toast.error(error.response.data.message);
     }
 
     updateAddress("province", province);
@@ -56,9 +56,9 @@ const AddressForm = ({ onAddressChange }) => {
 
     try {
       const res = await addressService.getWard(district);
-      setWards(res.data || []);
+      setWards(res?.data?.data || []);
     } catch (error) {
-      console.error("Lỗi lấy danh sách phường/xã:", error);
+      toast.error("Lỗi lấy danh sách phường/xã:", error);
     }
 
     updateAddress("district", district);
@@ -82,8 +82,6 @@ const AddressForm = ({ onAddressChange }) => {
       street: field === "street" ? value : street,
     });
   };
-
-  console.log("update");
 
   return (
     <div className="flex flex-col gap-5">

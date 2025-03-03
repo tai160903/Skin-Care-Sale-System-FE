@@ -46,7 +46,6 @@ function Signup() {
 
   const handleLoginGoogle = async () => {
     try {
-      // Redirect to backend Google OAuth URL
       window.location.href = "http://localhost:8080/api/auth/google";
     } catch (error) {
       toast.error(error.message);
