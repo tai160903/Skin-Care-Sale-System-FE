@@ -155,7 +155,7 @@ const TopProduct = () => {
           </Box>
         ))}
       </Slider>
-    </Container>
+      </Container>
   );
 };
 

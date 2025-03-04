@@ -1,4 +1,3 @@
-import React from "react";
 import { Link } from "react-router-dom";
 const Banner = () => {
   return (
@@ -21,7 +20,7 @@ const Banner = () => {
       <div>
         <Link to="/question">
           <button className="bg-white text-green-900 px-3 py-1 rounded font-medium shadow hover:bg-gray-200 transition">
-            Learn More
+            Click Here
           </button>
         </Link>
       </div>

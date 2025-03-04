@@ -45,7 +45,11 @@ const BlogList = () => {
     try {
       if (editMode) {
         await blogadService.updateBlog(currentBlogId, newBlog);
-        setBlogs(blogs.map((blog) => (blog._id === currentBlogId ? { ...blog, ...newBlog } : blog)));
+        setBlogs(
+          blogs.map((blog) =>
+            blog._id === currentBlogId ? { ...blog, ...newBlog } : blog,
+          ),
+        );
       } else {
         const createdBlog = await blogadService.createBlog(newBlog);
         setBlogs([...blogs, createdBlog]);
@@ -83,12 +87,19 @@ const BlogList = () => {
 
   return (
     <Container>
-      <Typography variant="h4" sx={{ fontWeight: "bold", marginBottom: 2, color: "#1976d2" }}>
+      <Typography
+        variant="h4"
+        sx={{ fontWeight: "bold", marginBottom: 2, color: "#1976d2" }}
+      >
         Quản lý Bài viết
       </Typography>
       <Button
         variant="contained"
-        sx={{ backgroundColor: "#0288d1", ":hover": { backgroundColor: "#0277bd" }, marginBottom: 2 }}
+        sx={{
+          backgroundColor: "#0288d1",
+          ":hover": { backgroundColor: "#0277bd" },
+          marginBottom: 2,
+        }}
         onClick={() => {
           setOpen(true);
           resetForm();
@@ -100,11 +111,21 @@ const BlogList = () => {
         <Table>
           <TableHead>
             <TableRow sx={{ backgroundColor: "#f5f5f5" }}>
-              <TableCell><strong>ID</strong></TableCell>
-              <TableCell><strong>Tiêu đề</strong></TableCell>
-              <TableCell><strong>Nội dung</strong></TableCell>
-              <TableCell><strong>Hình ảnh</strong></TableCell>
-              <TableCell><strong>Hành động</strong></TableCell>
+              <TableCell>
+                <strong>ID</strong>
+              </TableCell>
+              <TableCell>
+                <strong>Tiêu đề</strong>
+              </TableCell>
+              <TableCell>
+                <strong>Nội dung</strong>
+              </TableCell>
+              <TableCell>
+                <strong>Hình ảnh</strong>
+              </TableCell>
+              <TableCell>
+                <strong>Hành động</strong>
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -115,13 +136,26 @@ const BlogList = () => {
                   <TableCell>{blog.title}</TableCell>
                   <TableCell>{blog.content.substring(0, 50)}...</TableCell>
                   <TableCell>
-                    <img src={blog.image} alt={blog.title} style={{ width: 80, height: 50, borderRadius: 5 }} />
+                    <img
+                      src={blog.image}
+                      alt={blog.title}
+                      style={{ width: 80, height: 50, borderRadius: 5 }}
+                    />
                   </TableCell>
                   <TableCell>
-                    <Button variant="outlined" color="primary" sx={{ marginRight: 1 }} onClick={() => handleEditBlog(blog)}>
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      sx={{ marginRight: 1 }}
+                      onClick={() => handleEditBlog(blog)}
+                    >
                       Sửa
                     </Button>
-                    <Button variant="outlined" color="error" onClick={() => handleDeleteBlog(blog._id)}>
+                    <Button
+                      variant="outlined"
+                      color="error"
+                      onClick={() => handleDeleteBlog(blog._id)}
+                    >
                       Xóa
                     </Button>
                   </TableCell>
@@ -138,15 +172,48 @@ const BlogList = () => {
         </Table>
       </TableContainer>
       <Dialog open={open} onClose={() => setOpen(false)}>
-        <DialogTitle sx={{ fontWeight: "bold", color: "#1976d2" }}>{editMode ? "Chỉnh sửa Bài viết" : "Thêm Bài viết"}</DialogTitle>
+        <DialogTitle sx={{ fontWeight: "bold", color: "#1976d2" }}>
+          {editMode ? "Chỉnh sửa Bài viết" : "Thêm Bài viết"}
+        </DialogTitle>
         <DialogContent>
-          <TextField margin="dense" label="Tiêu đề" fullWidth value={newBlog.title} onChange={(e) => setNewBlog({ ...newBlog, title: e.target.value })} />
-          <TextField margin="dense" label="Nội dung" fullWidth multiline rows={4} value={newBlog.content} onChange={(e) => setNewBlog({ ...newBlog, content: e.target.value })} />
-          <TextField margin="dense" label="URL Hình ảnh" fullWidth value={newBlog.image} onChange={(e) => setNewBlog({ ...newBlog, image: e.target.value })} />
+          <TextField
+            margin="dense"
+            label="Tiêu đề"
+            fullWidth
+            value={newBlog.title}
+            onChange={(e) => setNewBlog({ ...newBlog, title: e.target.value })}
+          />
+          <TextField
+            margin="dense"
+            label="Nội dung"
+            fullWidth
+            multiline
+            rows={4}
+            value={newBlog.content}
+            onChange={(e) =>
+              setNewBlog({ ...newBlog, content: e.target.value })
+            }
+          />
+          <TextField
+            margin="dense"
+            label="URL Hình ảnh"
+            fullWidth
+            value={newBlog.image}
+            onChange={(e) => setNewBlog({ ...newBlog, image: e.target.value })}
+          />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpen(false)} sx={{ color: "#757575" }}>Hủy</Button>
-          <Button onClick={handleSaveBlog} sx={{ backgroundColor: "#0288d1", color: "#fff", ":hover": { backgroundColor: "#0277bd" }}}>
+          <Button onClick={() => setOpen(false)} sx={{ color: "#757575" }}>
+            Hủy
+          </Button>
+          <Button
+            onClick={handleSaveBlog}
+            sx={{
+              backgroundColor: "#0288d1",
+              color: "#fff",
+              ":hover": { backgroundColor: "#0277bd" },
+            }}
+          >
             {editMode ? "Cập nhật" : "Tạo"}
           </Button>
         </DialogActions>
