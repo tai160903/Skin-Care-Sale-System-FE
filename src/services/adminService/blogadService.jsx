@@ -8,7 +8,10 @@ const blogadService = {
       const response = await axios.get(API_URL);
       return response.data;
     } catch (error) {
-      console.error("Lỗi khi lấy danh sách bài viết:", error.response?.data || error.message);
+      console.error(
+        "Lỗi khi lấy danh sách bài viết:",
+        error.response?.data || error.message,
+      );
       throw error;
     }
   },
@@ -20,7 +23,10 @@ const blogadService = {
       });
       return response.data;
     } catch (error) {
-      console.error("Lỗi khi tạo bài viết:", error.response?.data || error.message);
+      console.error(
+        "Lỗi khi tạo bài viết:",
+        error.response?.data || error.message,
+      );
       throw error;
     }
   },
@@ -32,7 +38,10 @@ const blogadService = {
       });
       return response.data;
     } catch (error) {
-      console.error("Lỗi khi cập nhật bài viết:", error.response?.data || error.message);
+      console.error(
+        "Lỗi khi cập nhật bài viết:",
+        error.response?.data || error.message,
+      );
       throw error;
     }
   },
@@ -42,7 +51,10 @@ const blogadService = {
       await axios.delete(`${API_URL}/${id}`);
       return { success: true, message: "Bài viết đã được xóa thành công" };
     } catch (error) {
-      console.error("Lỗi khi xóa bài viết:", error.response?.data || error.message);
+      console.error(
+        "Lỗi khi xóa bài viết:",
+        error.response?.data || error.message,
+      );
       throw error;
     }
   },

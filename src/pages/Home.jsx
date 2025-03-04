@@ -42,7 +42,7 @@ function Home() {
   return (
     <Box>
       <Adv />
-      <Container maxWidth="lg" sx={{ mt: 3 }}>
+      <Container maxWidth="xl" sx={{ mt: 3 }}>
         {/* Top sản phẩm */}
         <Box sx={{ mb: 3 }}>
           <TopProduct />
