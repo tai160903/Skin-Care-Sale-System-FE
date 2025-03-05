@@ -35,6 +35,10 @@ import Compare from "../components/Admin/Compare";
 import Review from "../components/Admin/Review";
 import ShipList from "../components/Admin/ShipList";
 import ShipFee from "../components/Admin/ShipFee";
+
+
+import StaffLayout from "../components/StaffLayout";
+import OrderManagement from "../components/Staff/OrderManagement";
 const Router = createBrowserRouter([
   {
     path: "/",
@@ -191,6 +195,21 @@ const Router = createBrowserRouter([
         element: <ShipFee />,
       },
     ],
+  },
+  {
+    path: "staff",
+    element: (
+      // <ProtectedRoute role="admin">
+      <StaffLayout />
+      // </ProtectedRoute>
+    ),
+    children: [
+    
+      {
+        path: "orders",
+        element: <OrderManagement />,
+      },
+    ]
   },
 
   {

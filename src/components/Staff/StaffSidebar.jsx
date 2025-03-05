@@ -1,79 +1,133 @@
-import React from "react";
 import {
-  AppBar,
-  Toolbar,
-  Typography,
   Drawer,
   List,
   ListItem,
+  ListItemIcon,
   ListItemText,
-  Container,
+  Typography,
   Box,
-  Paper,
+  Divider,
 } from "@mui/material";
-import OrderManagement from "./OrderManagement";
-import CustomerSupport from "./CustomerSupport";
-import ProductManagement from "./ProductManagement";
-import PromotionManagement from "./PromotionManagement";
-import ReportsDashboard from "./ReportsDashboard";
+import {
+  ListAlt,
+  People,
+  ShoppingCart,
+  LocalOffer,
+  BarChart,
+  ExitToApp,
+} from "@mui/icons-material";
+import { Link, useLocation } from "react-router-dom";
 
-const menuItems = [
-  "Quản lý đơn hàng",
-  "Hỗ trợ khách hàng",
-  "Quản lý sản phẩm",
-  "Quản lý khuyến mãi & tích điểm",
-  "Báo cáo & phân tích",
-  "Quản lý ship",
-];
+const StaffSidebar = () => {
+  const location = useLocation();
 
-const components = {
-  "Quản lý shiop": <OrderManagement />,
-  "Quản lý đơn hàng": <OrderManagement />,
-  "Hỗ trợ khách hàng": <CustomerSupport />,
-  "Quản lý sản phẩm": <ProductManagement />,
-  "Quản lý khuyến mãi & tích điểm": <PromotionManagement />,
-  "Báo cáo & phân tích": <ReportsDashboard />,
-};
-
-const StaffDashboard = () => {
-  const [selectedItem, setSelectedItem] = React.useState(menuItems[0]);
+  const menuItems = [
+    { text: "Quản lý đơn hàng", icon: <ListAlt />, path: "/staff/orders" },
+    { text: "Hỗ trợ khách hàng", icon: <People />, path: "/staff/customers" },
+    { text: "Quản lý sản phẩm", icon: <ShoppingCart />, path: "/staff/products" },
+    { text: "Quản lý khuyến mãi", icon: <LocalOffer />, path: "/staff/promotions" },
+    { text: "Báo cáo & phân tích", icon: <BarChart />, path: "/staff/reports" },
+    { text: "Quản lý ship", icon: <BarChart />, path: "/staff/ship" },
+  ];
 
   return (
-    <Box sx={{ display: "flex" }}>
-      {/* Sidebar */}
-      <Drawer variant="permanent" sx={{ width: 250, flexShrink: 0 }}>
-        <List>
-          {menuItems.map((text) => (
-            <ListItem
-              button
-              key={text}
-              onClick={() => setSelectedItem(text)}
-              sx={{
-                backgroundColor: selectedItem === text ? "#e0e0e0" : "inherit",
-              }}
-            >
-              <ListItemText primary={text} />
-            </ListItem>
-          ))}
-        </List>
-      </Drawer>
-
-      {/* Main Content */}
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        <AppBar position="static">
-          <Toolbar>
-            <Typography variant="h6">Staff Dashboard</Typography>
-          </Toolbar>
-        </AppBar>
-
-        <Container>
-          <Paper elevation={3} sx={{ p: 3, mt: 3 }}>
-            {components[selectedItem]}
-          </Paper>
-        </Container>
+    <Drawer
+      variant="permanent"
+      sx={{
+        width: 260,
+        flexShrink: 0,
+        "& .MuiDrawer-paper": {
+          width: 260,
+          background: "#1e3a56",
+          color: "#fff",
+          paddingTop: 2,
+          height: "100vh",
+          boxShadow: "2px 0px 5px rgba(0,0,0,0.2)",
+          transition: "all 0.3s ease",
+        },
+      }}
+    >
+      <Box
+        sx={{
+          textAlign: "center",
+          padding: "16px 0",
+          backgroundColor: "#1e90ff",
+          borderRadius: "0 0 8px 8px",
+        }}
+      >
+        <Typography
+          variant="h6"
+          sx={{ fontWeight: "bold", fontFamily: "Roboto", color: "#fff" }}
+        >
+          Staff Panel
+        </Typography>
       </Box>
-    </Box>
+
+      <List>
+        {menuItems.map(({ text, icon, path }) => (
+          <ListItem
+            key={text}
+            component={Link}
+            to={path}
+            selected={location.pathname === path}
+            sx={{
+              bgcolor: location.pathname === path ? "#1976d2" : "transparent",
+              "&:hover": {
+                backgroundColor: "#1976d2",
+                transform: "scale(1.05)",
+              },
+              transition: "all 0.2s ease-in-out",
+              borderRadius: "8px",
+              margin: "4px",
+            }}
+          >
+            <ListItemIcon sx={{ color: "#fff" }}>{icon}</ListItemIcon>
+            <ListItemText
+              primary={text}
+              primaryTypographyProps={{
+                fontSize: "16px",
+                fontWeight: "bold",
+                fontFamily: "Roboto",
+                color: "#fff",
+              }}
+            />
+          </ListItem>
+        ))}
+      </List>
+
+      <Box sx={{ flexGrow: 1 }} />
+      <Divider sx={{ backgroundColor: "#fff", margin: "8px 16px" }} />
+      <List>
+        <ListItem
+          component={Link}
+          to="/logout"
+          sx={{
+            bgcolor: "transparent",
+            "&:hover": {
+              backgroundColor: "#ff4d4d",
+              transform: "scale(1.05)",
+            },
+            transition: "all 0.2s ease-in-out",
+            borderRadius: "8px",
+            margin: "4px",
+          }}
+        >
+          <ListItemIcon sx={{ color: "#fff" }}>
+            <ExitToApp />
+          </ListItemIcon>
+          <ListItemText
+            primary="Logout"
+            primaryTypographyProps={{
+              fontSize: "16px",
+              fontWeight: "bold",
+              fontFamily: "Roboto",
+              color: "#fff",
+            }}
+          />
+        </ListItem>
+      </List>
+    </Drawer>
   );
 };
 
-export default StaffDashboard;
+export default StaffSidebar;
