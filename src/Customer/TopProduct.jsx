@@ -56,7 +56,7 @@ const TopProduct = () => {
       <Slider {...settings}>
         {products.map((product) => (
           <Box
-            key={product.id}
+            key={product._id}
             textAlign="center"
             sx={{
               px: 1,

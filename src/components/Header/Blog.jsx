@@ -53,7 +53,7 @@ const Blog = () => {
       </Typography>
       <Grid container spacing={3} justifyContent="center">
         {blogs.map((blog) => (
-          <Grid item xs={12} sm={6} md={4} lg={3} key={blog.id}>
+          <Grid item xs={12} sm={6} md={4} lg={3} key={blog._id}>
             <Card
               sx={{
                 cursor: "pointer",
