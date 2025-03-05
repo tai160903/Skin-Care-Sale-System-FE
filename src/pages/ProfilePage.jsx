@@ -13,7 +13,7 @@ const ProfilePage = () => {
     const fetchUserData = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/users/customerId/${userId}`,
+          `http://localhost:8080/api/users/${userId}`,
         );
 
         if (!response.ok) {

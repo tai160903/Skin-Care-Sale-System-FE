@@ -3,7 +3,13 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { login } from "../redux/slices/userSlice";
 import productService from "../services/productService";
-import { Card, CardContent, Typography, CircularProgress, Rating } from "@mui/material";
+import {
+  Card,
+  CardContent,
+  Typography,
+  CircularProgress,
+  Rating,
+} from "@mui/material";
 import { toast } from "react-toastify";
 
 function ListProduct() {
@@ -18,7 +24,7 @@ function ListProduct() {
         const response = await productService.getAllProduct();
         setData(response.data.data);
       } catch (error) {
-        toast.error("Lỗi khi tải sản phẩm");
+        toast.error(error.response.data.message);
       } finally {
         setLoading(false);
       }
@@ -29,8 +35,12 @@ function ListProduct() {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get("access_token");
-    const user = urlParams.get("user") ? JSON.parse(urlParams.get("user")) : null;
-    const customer = urlParams.get("customer") ? JSON.parse(urlParams.get("customer")) : null;
+    const user = urlParams.get("user")
+      ? JSON.parse(urlParams.get("user"))
+      : null;
+    const customer = urlParams.get("customer")
+      ? JSON.parse(urlParams.get("customer"))
+      : null;
 
     if (token && user) {
       dispatch(
@@ -42,7 +52,7 @@ function ListProduct() {
           },
           token,
           customer: customer?._doc,
-        })
+        }),
       );
     }
 
@@ -79,30 +89,44 @@ function ListProduct() {
                   alt={item.name}
                   className="w-full h-60 object-cover rounded-t-xl"
                 />
-                {item.discountPercent > 0 && (
+                {item.discountPercentage > 0 && (
                   <span className="absolute top-3 left-3 bg-red-500 text-white text-sm font-bold px-2 py-1 rounded">
-                    -{item.discountPercent}%
+                    -{item.discountPercentage}%
                   </span>
                 )}
               </div>
 
               <CardContent className="p-4">
-                <Typography variant="h6" fontWeight="bold" className="text-center text-gray-800">
+                <Typography
+                  variant="h6"
+                  fontWeight="bold"
+                  className="text-center text-gray-800 truncate"
+                >
                   {item.name}
                 </Typography>
                 <div className="flex justify-center mt-2">
-                  <Rating name="read-only" value={item.rating} precision={0.5} readOnly size="small" />
+                  <Rating
+                    name="read-only"
+                    value={item.rating}
+                    precision={0.5}
+                    readOnly
+                    size="small"
+                  />
                 </div>
-                <p className="text-gray-500 text-sm text-center mt-1 truncate">{item.description}</p>
+                <p className="text-gray-500 text-sm text-center mt-1 truncate">
+                  {item.description}
+                </p>
 
                 <div className="mt-4 flex justify-center items-center gap-2">
-                  {item.discountPercent > 0 ? (
+                  {item.discountPercentage > 0 ? (
                     <>
                       <span className="text-lg font-bold text-red-500">
                         {new Intl.NumberFormat("vi-VN", {
                           style: "currency",
                           currency: "VND",
-                        }).format(item.price * (1 - item.discountPercent / 100))}
+                        }).format(
+                          item.price * (1 - item.discountPercentage / 100),
+                        )}
                       </span>
                       <span className="text-sm font-medium text-gray-500 line-through">
                         {new Intl.NumberFormat("vi-VN", {

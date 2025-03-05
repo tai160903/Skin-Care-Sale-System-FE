@@ -42,22 +42,22 @@ function Home() {
   return (
     <Box>
       <Adv />
-      <Container maxWidth="xl" sx={{ mt: 3 }}>
+      <Container maxWidth="xl" sx={{ mt: 4 }}>
         {/* Top sản phẩm */}
-        <Box sx={{ mb: 3 }}>
+        <Box sx={{ mb: 10 }}>
           <TopProduct />
         </Box>
 
         {/* Danh mục sản phẩm */}
-        <Box sx={{ mb: 3 }}>
+        <Box sx={{ mb: 5 }}>
           <Category />
         </Box>
 
         {/* Danh sách sản phẩm */}
-        <Box sx={{ mb: 3 }}>
+        <Box sx={{ mb: 5 }}>
           <ListProduct />
         </Box>
-        <Box sx={{ mb: 3 }}>
+        <Box sx={{ mb: 6 }}>
           <Blog />
         </Box>
       </Container>

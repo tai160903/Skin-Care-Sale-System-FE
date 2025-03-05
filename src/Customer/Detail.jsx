@@ -9,7 +9,6 @@ import { toast } from "react-toastify";
 import productService from "../services/productService";
 import cartService from "../services/cartService";
 import { addToCart } from "../redux/slices/cartSlice";
-
 import Content from "./Content";
 
 function Detail() {
@@ -30,7 +29,7 @@ function Detail() {
         const response = await productService.getProductById(id);
         setProduct(response.data);
       } catch (error) {
-        toast.error("Error fetching product:", error);
+        toast.error("Lỗi khi tải sản phẩm");
       } finally {
         setIsLoading(false);
       }
@@ -48,14 +47,14 @@ function Detail() {
 
   const handleAddToCart = async () => {
     if (!customerId) {
-      toast.error("You must be logged in!");
+      toast.error("Bạn phải đăng nhập!");
       localStorage.setItem("redirectAfterLogin", window.location.pathname);
       setTimeout(() => navigate("/signin"), 1000);
       return;
     }
 
     if (!product) {
-      toast.error("Product not found!");
+      toast.error("Sản phẩm không tồn tại!");
       return;
     }
 
@@ -67,10 +66,9 @@ function Detail() {
       });
 
       dispatch(addToCart({ product, quantity }));
-
-      toast.success("Product added to cart!");
+      toast.success("Đã thêm vào giỏ hàng!");
     } catch (error) {
-      toast.error("Error adding product to cart:", error);
+      toast.error("Lỗi khi thêm sản phẩm vào giỏ hàng");
     }
   };
 
@@ -88,13 +86,13 @@ function Detail() {
   }
 
   if (!product) {
-    return <p className="text-center text-gray-500">Product not found</p>;
+    return <p className="text-center text-gray-500">Sản phẩm không tồn tại</p>;
   }
 
   return (
     <div className="container mx-auto p-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Product image */}
+        {/* Hình ảnh sản phẩm */}
         <motion.div
           className="relative"
           initial={{ opacity: 0, x: -50 }}
@@ -109,14 +107,12 @@ function Detail() {
           <img
             src={product.image}
             alt={product.name}
-            className={`w-full h-[500px] object-cover rounded-lg shadow-lg transition-opacity ${
-              imageLoaded ? "opacity-100" : "opacity-0"
-            }`}
+            className={`w-full h-[500px] object-cover rounded-lg shadow-lg transition-opacity ${imageLoaded ? "opacity-100" : "opacity-0"}`}
             onLoad={() => setImageLoaded(true)}
           />
         </motion.div>
 
-        {/* Product information */}
+        {/* Thông tin sản phẩm */}
         <motion.div
           className="flex flex-col"
           initial={{ opacity: 0, x: 50 }}
@@ -131,30 +127,34 @@ function Detail() {
             readOnly
           />
           <p className="text-gray-500 text-sm">{product.description}</p>
+          <p className="text-gray-600 mt-2">
+            Số lượng còn lại: <strong>{product.stock}</strong>
+          </p>
+          <p className="text-gray-600">
+            Đã bán: <strong>{product.purchaseCount}</strong>
+          </p>
 
           <div className="mt-3">
             <span
-              className={`mr-5 text-2xl font-bold ${product.discountPercent > 0 ? "line-through text-gray-500" : "text-red-500"}`}
+              className={`mr-5 text-2xl font-bold ${product.discountPercentage > 0 ? "line-through text-gray-500" : "text-red-500"}`}
             >
               {new Intl.NumberFormat("vi-VN", {
                 style: "currency",
                 currency: "VND",
               }).format(product.price)}
             </span>
-            {product.discountPercent > 0 && (
+            {product.discountPercentage > 0 && (
               <>
-                <span
-                  className={` text-2xl p-2 font-bold rounded-md text-white bg-red-500`}
-                >
-                  - {product.discountPercent}%
+                <span className="text-2xl p-2 font-bold rounded-md text-white bg-red-500">
+                  - {product.discountPercentage}%
                 </span>
                 <div>
-                  <span className={` text-2xl font-bold text-red-500`}>
+                  <span className="text-2xl font-bold text-red-500">
                     {new Intl.NumberFormat("vi-VN", {
                       style: "currency",
                       currency: "VND",
                     }).format(
-                      product.price * (1 - product.discountPercent / 100),
+                      product.price * (1 - product.discountPercentage / 100),
                     )}
                   </span>
                 </div>
@@ -162,7 +162,7 @@ function Detail() {
             )}
           </div>
 
-          {/* Quantity */}
+          {/* Số lượng */}
           <div className="flex items-center mt-4 space-x-4">
             <IconButton onClick={handleDecreaseQuantity} color="error">
               <FaMinus />
@@ -173,7 +173,7 @@ function Detail() {
             </IconButton>
           </div>
 
-          {/* Buttons */}
+          {/* Nút thao tác */}
           <div className="mt-6 flex gap-4">
             <Button
               variant="contained"
@@ -195,8 +195,6 @@ function Detail() {
           </div>
         </motion.div>
       </div>
-
-      {/* Additional content */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
