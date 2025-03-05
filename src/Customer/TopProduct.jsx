@@ -46,7 +46,8 @@ const TopProduct = () => {
         background: "#f8f9fa",
         p: 3,
         borderRadius: "10px",
-        maxWidth: "1200px",
+        minWidth: "100%",
+        mx: 0,
       }}
     >
       <Typography variant="h5" fontWeight="bold" color="green" sx={{ mb: 2 }}>
@@ -101,13 +102,17 @@ const TopProduct = () => {
             <Typography
               variant="body2"
               color="textSecondary"
-              sx={{ mt: 1, minHeight: "40px" }}
+              sx={{
+                mt: 1,
+                minHeight: "40px",
+              }}
+              className="text-center text-gray-800 truncate"
             >
               {product.description}
             </Typography>
 
             <Box mt={1}>
-              {product.discountPercent > 0 ? (
+              {product.discountPercentage > 0 ? (
                 <>
                   <Typography
                     variant="body2"
@@ -126,7 +131,7 @@ const TopProduct = () => {
                       style: "currency",
                       currency: "VND",
                     }).format(
-                      product.price * (1 - product.discountPercent / 100),
+                      product.price * (1 - product.discountPercentage / 100),
                     )}
                   </Typography>
                   <Typography
@@ -140,7 +145,7 @@ const TopProduct = () => {
                       mt: 1,
                     }}
                   >
-                    -{product.discountPercent}%
+                    -{product.discountPercentage}%
                   </Typography>
                 </>
               ) : (
@@ -155,7 +160,7 @@ const TopProduct = () => {
           </Box>
         ))}
       </Slider>
-      </Container>
+    </Container>
   );
 };
 

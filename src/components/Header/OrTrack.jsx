@@ -1,68 +1,81 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import orderService from "../../services/orderService";
 import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
   TextField,
   Button,
-  Stepper,
-  Step,
-  StepLabel,
-  Box,
+  Typography,
 } from "@mui/material";
 
-const steps = [
-  "Đã nhận đơn",
-  "Đang chuẩn bị hàng",
-  "Đang giao",
-  "Đã giao thành công",
-];
-
 const OrTrack = () => {
-  const [orderId, setOrderId] = useState("");
-  const [orderStatus, setOrderStatus] = useState(null);
-  const [activeStep, setActiveStep] = useState(0);
+  const [customerId, setCustomerId] = useState("");
+  const [orders, setOrders] = useState([]);
 
-  // Giả lập dữ liệu đơn hàng
-  const mockOrders = {
-    123456: 2, // Đang giao hàng
-    789012: 3, // Đã giao thành công
-  };
-
-  const handleTrackOrder = () => {
-    if (mockOrders[orderId]) {
-      setOrderStatus(`Trạng thái: ${steps[mockOrders[orderId]]}`);
-      setActiveStep(mockOrders[orderId]);
-    } else {
-      setOrderStatus("Không tìm thấy đơn hàng!");
-      setActiveStep(0);
+  const fetchOrders = async () => {
+    if (!customerId.trim()) {
+      alert("Vui lòng nhập Customer ID!");
+      return;
+    }
+    try {
+      const data = await orderService.getOrdersByCustomerId(customerId);
+      setOrders(data);
+    } catch (error) {
+      console.error("Lỗi khi tải đơn hàng:", error);
     }
   };
 
   return (
-    <Box className="flex flex-col items-center p-6 bg-white shadow-lg rounded-xl w-full max-w-lg mx-auto">
-      <h2 className="text-xl font-semibold mb-4">🔍 Tra cứu đơn hàng</h2>
+    <Paper sx={{ padding: 2 }}>
+      <Typography variant="h6" gutterBottom>
+        Theo dõi đơn hàng
+      </Typography>
       <TextField
-        label="Nhập mã đơn hàng"
-        variant="outlined"
-        value={orderId}
-        onChange={(e) => setOrderId(e.target.value)}
-        className="w-full mb-4"
+        label="Customer ID"
+        value={customerId}
+        onChange={(e) => setCustomerId(e.target.value)}
+        sx={{ marginBottom: 2, width: "300px" }}
       />
-      <Button variant="contained" color="primary" onClick={handleTrackOrder}>
-        Kiểm tra
+      <Button onClick={fetchOrders} variant="contained" sx={{ marginLeft: 2 }}>
+        Tra cứu
       </Button>
 
-      {orderStatus && (
-        <Box className="mt-6 w-full">
-          <p className="text-center font-medium">{orderStatus}</p>
-          <Stepper activeStep={activeStep} alternativeLabel>
-            {steps.map((label) => (
-              <Step key={label}>
-                <StepLabel>{label}</StepLabel>
-              </Step>
-            ))}
-          </Stepper>
-        </Box>
-      )}
-    </Box>
+      <TableContainer component={Paper} sx={{ marginTop: 2 }}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Mã đơn</TableCell>
+              <TableCell>Trạng thái</TableCell>
+              <TableCell>Ngày mua</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {orders.length > 0 ? (
+              orders.map((order) => (
+                <TableRow key={order._id}>
+                  <TableCell>{order._id}</TableCell>
+                  <TableCell>{order.order_status}</TableCell>
+                  <TableCell>
+                    {new Date(order.createdAt).toLocaleString()}
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={3} align="center">
+                  Không có đơn hàng nào!
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Paper>
   );
 };
 

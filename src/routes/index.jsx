@@ -33,6 +33,8 @@ import ProductList from "../components/Admin/ProductList";
 import OrdersTable from "../components/Admin/OrdersTable";
 import Compare from "../components/Admin/Compare";
 import Review from "../components/Admin/Review";
+import ShipList from "../components/Admin/ShipList";
+import ShipFee from "../components/Admin/ShipFee";
 const Router = createBrowserRouter([
   {
     path: "/",
@@ -179,6 +181,14 @@ const Router = createBrowserRouter([
       {
         path: "reviews",
         element: <Review />,
+      },
+      {
+        path: "ship",
+        element: <ShipList />,
+      },
+      {
+        path: "shipfee",
+        element: <ShipFee />,
       },
     ],
   },

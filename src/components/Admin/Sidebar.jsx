@@ -34,6 +34,8 @@ const Sidebar = () => {
     { text: "Dashboard", icon: <Dashboard />, path: "/admin/" },
     { text: "Blog", icon: <Article />, path: "/admin/blog" },
     { text: "Promotions", icon: <LocalOffer />, path: "/admin/promotions" },
+    { text: "Ship", icon: <BarChart />, path: "/admin/ship" },
+    { text: "ShipFee", icon: <BarChart />, path: "/admin/shipfee" },
     { text: "Reports", icon: <BarChart />, path: "/admin/reports" },
     { text: "Orders", icon: <ListAlt />, path: "/admin/orders" },
     { text: "Products", icon: <ShoppingCart />, path: "/admin/products" },
@@ -80,7 +82,7 @@ const Sidebar = () => {
           variant="h6"
           sx={{ fontWeight: "bold", fontFamily: "Roboto", color: "#fff" }}
         >
-          Admin Panel
+          Manager Panel
         </Typography>
       </Box>
 
