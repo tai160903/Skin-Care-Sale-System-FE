@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import "./ProfilePage.css";
+import axios from "axios";
+import { toast } from "react-toastify";
+
 
 const ProfilePage = () => {
   const { userId } = useParams();
@@ -19,7 +21,7 @@ const ProfilePage = () => {
     const fetchUserData = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/users/customerId/${userId}`,
+          `http://localhost:8080/api/users/customer/${userId}`,
         );
 
         if (!response.ok) {
@@ -28,7 +30,7 @@ const ProfilePage = () => {
 
         const data = await response.json();
 
-        // Điền dữ liệu vào form
+        // Populate form with data
         Object.keys(data).forEach((key) => {
           setValue(key, data[key]);
         });
@@ -42,26 +44,19 @@ const ProfilePage = () => {
 
   const onSubmit = async (formData) => {
     console.log(formData);
-    // try {
-    //   const response = await fetch(
-    //     `http://localhost:8080/api/users/customerId/${userId}`,
-    //     {
-    //       method: "PUT",
-    //       headers: {
-    //         "Content-Type": "application/json",
-    //       },
-    //       body: JSON.stringify(formData),
-    //     },
-    //   );
-
-    //   if (!response.ok) {
-    //     throw new Error("Cập nhật thất bại!");
-    //   }
-
-    //   alert("Cập nhật thành công!");
-    // } catch (error) {
-    //   setError(error.message);
-    // }
+    try {
+      const response = await axios.put(
+        `http://localhost:8080/api/users/customer/${userId}`,
+        {
+          name: formData.name,
+          address: formData.address,
+          phone: formData.phone,
+        },
+      );
+      toast.success(response.data.message);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   if (error) {
@@ -78,52 +73,61 @@ const ProfilePage = () => {
           SkinCare
         </Link>
       </div>
-      <div className="profile-container">
-        <header>
-          <h1>Hồ sơ người dùng</h1>
-        </header>
-        <main>
-          <form onSubmit={handleSubmit(onSubmit)} className="profile-form">
-            <section className="profile-info">
-              <label>Ảnh đại diện:</label>
-              <input
-                {...register("profileImage")}
-                className="profile-image-input"
-              />
-              <img
-                src="path/to/default-profile-image.jpg"
-                alt="Profile"
-                className="profile-image"
-              />
 
-              <label>Tên người dùng:</label>
-              <input
-                {...register("username", { required: "Tên là bắt buộc" })}
-                className="input-field border-2"
-              />
-              {errors.username && (
-                <p className="error">{errors.username.message}</p>
-              )}
+      <form
+        className="max-w-md mx-auto mt-20"
+        onSubmit={handleSubmit(onSubmit)}
+      >
+        <div className="relative z-0 w-full mb-5 group">
+          <input
+            type="text"
+            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+            placeholder=" "
+            {...register("name", { required: "Full name is required" })}
+          />
+          <label className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+            Full name
+          </label>
+          {errors.fullName && (
+            <span className="text-red-500">{errors.fullName.message}</span>
+          )}
+        </div>
+        <div className="relative z-0 w-full mb-5 group">
+          <input
+            type="text"
+            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+            placeholder=" "
+            {...register("address", { required: "Address is required" })}
+          />
+          <label className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+            Address
+          </label>
+          {errors.address && (
+            <span className="text-red-500">{errors.address.message}</span>
+          )}
+        </div>
+        <div className="relative z-0 w-full mb-5 group">
+          <input
+            type="text"
+            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+            placeholder=" "
+            {...register("phone", { required: "Phone is required" })}
+          />
+          <label className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+            Phone
+          </label>
+          {errors.phone && (
+            <span className="text-red-500">{errors.phone.message}</span>
+          )}
+        </div>
 
-              <label>Tiểu sử:</label>
-              <textarea {...register("bio")} className="input-field border-2" />
-            </section>
-
-            <section className="profile-details">
-              <h3>Chi tiết</h3>
-              <label>Email:</label>
-              <input {...register("email")} className="input-field border-2" />
-
-              <label>Số điện thoại:</label>
-              <input {...register("phone")} className="input-field border-2" />
-
-              <button type="submit" className="save-button">
-                Cập nhật hồ sơ
-              </button>
-            </section>
-          </form>
-        </main>
-      </div>
+        <button
+          type="submit"
+          className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+        >
+          Submit
+        </button>
+      </form>
     </>
   );
 };

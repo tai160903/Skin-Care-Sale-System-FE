@@ -20,6 +20,7 @@ const Header = () => {
   const token = useSelector((state) => state.user.token);
   const cart = useSelector((state) => state.cart.items);
   const user = useSelector((state) => state.user.user);
+  console.log(user);
 
   const handleLogout = () => {
     dispatch(logout());
