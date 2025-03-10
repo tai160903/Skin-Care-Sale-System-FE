@@ -64,8 +64,8 @@ const OrderManagement = () => {
       await orderService.updateOrderStatus(orderId, newStatus);
       setOrders((prevOrders) =>
         prevOrders.map((order) =>
-          order._id === orderId ? { ...order, order_status: newStatus } : order
-        )
+          order._id === orderId ? { ...order, order_status: newStatus } : order,
+        ),
       );
       toast.success("Order status updated successfully");
     } catch (error) {
@@ -105,13 +105,22 @@ const OrderManagement = () => {
           <CircularProgress />
         </Box>
       ) : (
-        <TableContainer component={Paper} sx={{ borderRadius: 3, boxShadow: 3 }}>
+        <TableContainer
+          component={Paper}
+          sx={{ borderRadius: 3, boxShadow: 3 }}
+        >
           <Table>
             <TableHead sx={{ backgroundColor: "#1976d2" }}>
               <TableRow>
-                <TableCell sx={{ color: "white", fontWeight: "bold" }}>Order ID</TableCell>
-                <TableCell sx={{ color: "white", fontWeight: "bold" }}>Customer ID</TableCell>
-                <TableCell sx={{ color: "white", fontWeight: "bold" }}>Order Status</TableCell>
+                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                  Order ID
+                </TableCell>
+                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                  Customer ID
+                </TableCell>
+                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                  Order Status
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -122,11 +131,17 @@ const OrderManagement = () => {
                   <TableCell>
                     <Select
                       value={order.order_status}
-                      onChange={(e) => handleStatusChange(order._id, e.target.value)}
+                      onChange={(e) =>
+                        handleStatusChange(order._id, e.target.value)
+                      }
                       sx={{ backgroundColor: "white", borderRadius: 2 }}
                     >
-                      <MenuItem value="Pending Confirmation">Pending Confirmation</MenuItem>
-                      <MenuItem value="Complete Confirmation">Complete Confirmation</MenuItem>
+                      <MenuItem value="Pending Confirmation">
+                        Pending Confirmation
+                      </MenuItem>
+                      <MenuItem value="Complete Confirmation">
+                        Complete Confirmation
+                      </MenuItem>
                       <MenuItem value="Cancelled">Cancelled</MenuItem>
                     </Select>
                     <Chip

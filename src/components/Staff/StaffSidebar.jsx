@@ -15,6 +15,7 @@ import {
   LocalOffer,
   BarChart,
   ExitToApp,
+  LocalShipping,
 } from "@mui/icons-material";
 import { Link, useLocation } from "react-router-dom";
 
@@ -22,56 +23,48 @@ const StaffSidebar = () => {
   const location = useLocation();
 
   const menuItems = [
-    { text: "Quản lý đơn hàng", icon: <ListAlt />, path: "/staff/orders" },
+    { text: "Đơn hàng", icon: <ListAlt />, path: "/staff/orders" },
     { text: "Hỗ trợ khách hàng", icon: <People />, path: "/staff/customers" },
-    {
-      text: "Quản lý sản phẩm",
-      icon: <ShoppingCart />,
-      path: "/staff/products",
-    },
-    {
-      text: "Quản lý khuyến mãi",
-      icon: <LocalOffer />,
-      path: "/staff/promotions",
-    },
-    { text: "Báo cáo & phân tích", icon: <BarChart />, path: "/staff/reports" },
-    { text: "Quản lý ship", icon: <BarChart />, path: "/staff/shipmanager" },
+    { text: "Sản phẩm", icon: <ShoppingCart />, path: "/staff/products" },
+    { text: "Khuyến mãi", icon: <LocalOffer />, path: "/staff/promotions" },
+    { text: "Báo cáo", icon: <BarChart />, path: "/staff/reports" },
+    { text: "Giao hàng", icon: <LocalShipping />, path: "/staff/shipmanager" },
   ];
 
   return (
     <Drawer
       variant="permanent"
       sx={{
-        width: 260,
+        width: 280,
         flexShrink: 0,
         "& .MuiDrawer-paper": {
-          width: 260,
-          background: "#1e3a56",
-          color: "#fff",
+          width: 280,
+          background: "#2C3E50",
+          color: "#ECF0F1",
           paddingTop: 2,
           height: "100vh",
-          boxShadow: "2px 0px 5px rgba(0,0,0,0.2)",
-          transition: "all 0.3s ease",
+          boxShadow: "2px 0px 10px rgba(0,0,0,0.2)",
         },
       }}
     >
+      {/* Header */}
       <Box
         sx={{
           textAlign: "center",
-          padding: "16px 0",
-          backgroundColor: "#1e90ff",
-          borderRadius: "0 0 8px 8px",
+          padding: "24px 0",
+          backgroundColor: "#2980B9",
         }}
       >
         <Typography
           variant="h6"
           sx={{ fontWeight: "bold", fontFamily: "Roboto", color: "#fff" }}
         >
-          Staff Panel
+          Staff Dashboard
         </Typography>
       </Box>
 
-      <List>
+      {/* Menu Items */}
+      <List sx={{ padding: "16px 8px" }}>
         {menuItems.map(({ text, icon, path }) => (
           <ListItem
             key={text}
@@ -79,24 +72,25 @@ const StaffSidebar = () => {
             to={path}
             selected={location.pathname === path}
             sx={{
-              bgcolor: location.pathname === path ? "#1976d2" : "transparent",
+              bgcolor: location.pathname === path ? "#3498DB" : "transparent",
               "&:hover": {
-                backgroundColor: "#1976d2",
+                backgroundColor: "#3498DB",
                 transform: "scale(1.05)",
               },
-              transition: "all 0.2s ease-in-out",
-              borderRadius: "8px",
-              margin: "4px",
+              transition: "all 0.3s ease-in-out",
+              borderRadius: "6px",
+              marginBottom: "10px",
+              padding: "12px 20px",
             }}
           >
-            <ListItemIcon sx={{ color: "#fff" }}>{icon}</ListItemIcon>
+            <ListItemIcon sx={{ color: "#ECF0F1" }}>{icon}</ListItemIcon>
             <ListItemText
               primary={text}
               primaryTypographyProps={{
                 fontSize: "16px",
-                fontWeight: "bold",
+                fontWeight: "500",
                 fontFamily: "Roboto",
-                color: "#fff",
+                color: "#ECF0F1",
               }}
             />
           </ListItem>
@@ -104,7 +98,7 @@ const StaffSidebar = () => {
       </List>
 
       <Box sx={{ flexGrow: 1 }} />
-      <Divider sx={{ backgroundColor: "#fff", margin: "8px 16px" }} />
+      <Divider sx={{ backgroundColor: "#ECF0F1", margin: "16px 20px" }} />
       <List>
         <ListItem
           component={Link}
@@ -112,24 +106,25 @@ const StaffSidebar = () => {
           sx={{
             bgcolor: "transparent",
             "&:hover": {
-              backgroundColor: "#ff4d4d",
+              backgroundColor: "#E74C3C",
               transform: "scale(1.05)",
             },
-            transition: "all 0.2s ease-in-out",
-            borderRadius: "8px",
-            margin: "4px",
+            transition: "all 0.3s ease-in-out",
+            borderRadius: "6px",
+            margin: "10px 8px",
+            padding: "12px 20px",
           }}
         >
-          <ListItemIcon sx={{ color: "#fff" }}>
+          <ListItemIcon sx={{ color: "#ECF0F1" }}>
             <ExitToApp />
           </ListItemIcon>
           <ListItemText
-            primary="Logout"
+            primary="Đăng xuất"
             primaryTypographyProps={{
               fontSize: "16px",
-              fontWeight: "bold",
+              fontWeight: "500",
               fontFamily: "Roboto",
-              color: "#fff",
+              color: "#ECF0F1",
             }}
           />
         </ListItem>
