@@ -4,12 +4,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { CircularProgress, Rating, Button, IconButton } from "@mui/material";
 import { FiShoppingCart } from "react-icons/fi";
 import { FaPlus, FaMinus } from "react-icons/fa";
+import { MdCompare } from "react-icons/md";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
 import productService from "../services/productService";
 import cartService from "../services/cartService";
 import { addToCart } from "../redux/slices/cartSlice";
+import { addToCompare } from "../redux/slices/compareSlice"; // Thêm action để so sánh
 import Content from "./Content";
+import { formatCurrency } from "../utils/formatCurrency";
 
 function Detail() {
   const { id } = useParams();
@@ -29,7 +32,7 @@ function Detail() {
         const response = await productService.getProductById(id);
         setProduct(response.data);
       } catch (error) {
-        toast.error("Lỗi khi tải sản phẩm");
+        toast.error(error.response.data.message);
       } finally {
         setIsLoading(false);
       }
@@ -54,7 +57,7 @@ function Detail() {
     }
 
     if (!product) {
-      toast.error("Sản phẩm không tồn tại!");
+      toast.error("Sản phẩm không tồn tại");
       return;
     }
 
@@ -68,13 +71,18 @@ function Detail() {
       dispatch(addToCart({ product, quantity }));
       toast.success("Đã thêm vào giỏ hàng!");
     } catch (error) {
-      toast.error("Lỗi khi thêm sản phẩm vào giỏ hàng");
+      toast.error(error.response.data.message);
     }
   };
 
   const handleBuyNow = async () => {
     await handleAddToCart();
     if (customerId) navigate("/cart");
+  };
+
+  const handleCompare = () => {
+    dispatch(addToCompare(product));
+    toast.success("Đã thêm vào danh sách so sánh!");
   };
 
   if (isLoading) {
@@ -92,7 +100,6 @@ function Detail() {
   return (
     <div className="container mx-auto p-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Hình ảnh sản phẩm */}
         <motion.div
           className="relative"
           initial={{ opacity: 0, x: -50 }}
@@ -107,12 +114,13 @@ function Detail() {
           <img
             src={product.image}
             alt={product.name}
-            className={`w-full h-[500px] object-cover rounded-lg shadow-lg transition-opacity ${imageLoaded ? "opacity-100" : "opacity-0"}`}
+            className={`w-full h-[500px] object-cover rounded-lg shadow-lg transition-opacity ${
+              imageLoaded ? "opacity-100" : "opacity-0"
+            }`}
             onLoad={() => setImageLoaded(true)}
           />
         </motion.div>
 
-        {/* Thông tin sản phẩm */}
         <motion.div
           className="flex flex-col"
           initial={{ opacity: 0, x: 50 }}
@@ -136,12 +144,13 @@ function Detail() {
 
           <div className="mt-3">
             <span
-              className={`mr-5 text-2xl font-bold ${product.discountPercentage > 0 ? "line-through text-gray-500" : "text-red-500"}`}
+              className={`mr-5 text-2xl font-bold ${
+                product.discountPercentage > 0
+                  ? "line-through text-gray-500"
+                  : "text-red-500"
+              }`}
             >
-              {new Intl.NumberFormat("vi-VN", {
-                style: "currency",
-                currency: "VND",
-              }).format(product.price)}
+              {formatCurrency(product.price)}
             </span>
             {product.discountPercentage > 0 && (
               <>
@@ -150,10 +159,7 @@ function Detail() {
                 </span>
                 <div>
                   <span className="text-2xl font-bold text-red-500">
-                    {new Intl.NumberFormat("vi-VN", {
-                      style: "currency",
-                      currency: "VND",
-                    }).format(
+                    {formatCurrency(
                       product.price * (1 - product.discountPercentage / 100),
                     )}
                   </span>
@@ -191,6 +197,15 @@ function Detail() {
               className="bg-green-500"
             >
               Mua ngay
+            </Button>
+            <Button
+              variant="contained"
+              color="info"
+              startIcon={<MdCompare />}
+              onClick={handleCompare}
+              className="bg-blue-500"
+            >
+              So sánh
             </Button>
           </div>
         </motion.div>
