@@ -9,7 +9,11 @@ import {
   Typography,
   Box,
   Avatar,
+  Select,
+  MenuItem,
+  Button,
 } from "@mui/material";
+import { useState } from "react";
 
 const products = [
   {
@@ -57,47 +61,53 @@ const products = [
 ];
 
 const ProductManager = () => {
+  const [category, setCategory] = useState("All");
+
+  const filteredProducts =
+    category === "All"
+      ? products
+      : products.filter((product) => product.category === category);
+
   return (
-    <Box
-      sx={{
-        padding: 3,
-        backgroundColor: "#ffffff",
-        borderRadius: 2,
-        boxShadow: 3,
-      }}
-    >
-      <Typography
-        variant="h5"
-        align="center"
-        sx={{ marginBottom: 2, fontWeight: "bold", color: "#333" }}
-      >
-        Quản lý sản phẩm
+    <Paper sx={{ padding: 3, borderRadius: 3, backgroundColor: "#f8f9fa" }}>
+      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
+      <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+        🛍️ Product Management
       </Typography>
-      <TableContainer
-        component={Paper}
-        sx={{ borderRadius: 2, overflow: "hidden", boxShadow: 1 }}
-      >
+        </Box>
+      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
+        <Select
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          sx={{ backgroundColor: "white", borderRadius: 2 }}
+        >
+          <MenuItem value="All">All Categories</MenuItem>
+          <MenuItem value="Skincare">Skincare</MenuItem>
+          <MenuItem value="Suncare">Suncare</MenuItem>
+        </Select>
+        <Button variant="contained" color="primary" onClick={() => setCategory("All")}>
+          Reset Filter
+        </Button>
+      </Box>
+
+      <TableContainer component={Paper} sx={{ borderRadius: 3, boxShadow: 3 }}>
         <Table>
-          <TableHead>
-            <TableRow sx={{ backgroundColor: "#1976d2" }}>
+          <TableHead sx={{ backgroundColor: "#1976d2" }}>
+            <TableRow>
               {[
-                "Hình ảnh",
-                "Tên",
-                "Danh mục",
-                "Giảm giá",
-                "Loại da",
-                "Kho",
-                "Giá",
-                "Đánh giá",
-                "Lượt mua",
+                "Image",
+                "Name",
+                "Category",
+                "Discount",
+                "Skin Type",
+                "Stock",
+                "Price",
+                "Rating",
+                "Purchases",
               ].map((header) => (
                 <TableCell
                   key={header}
-                  sx={{
-                    color: "white",
-                    fontWeight: "bold",
-                    textAlign: "center",
-                  }}
+                  sx={{ color: "white", fontWeight: "bold", textAlign: "center" }}
                 >
                   {header}
                 </TableCell>
@@ -105,7 +115,7 @@ const ProductManager = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {products.map((product, index) => (
+            {filteredProducts.map((product, index) => (
               <TableRow
                 key={index}
                 sx={{ "&:nth-of-type(odd)": { backgroundColor: "#f9f9f9" } }}
@@ -115,9 +125,7 @@ const ProductManager = () => {
                 </TableCell>
                 <TableCell>{product.name}</TableCell>
                 <TableCell align="center">{product.category}</TableCell>
-                <TableCell align="center">
-                  {product.discountPercentage}%
-                </TableCell>
+                <TableCell align="center">{product.discountPercentage}%</TableCell>
                 <TableCell align="center">{product.skinType}</TableCell>
                 <TableCell align="center">{product.stock}</TableCell>
                 <TableCell align="center">${product.price}</TableCell>
@@ -128,7 +136,7 @@ const ProductManager = () => {
           </TableBody>
         </Table>
       </TableContainer>
-    </Box>
+    </Paper>
   );
 };
 

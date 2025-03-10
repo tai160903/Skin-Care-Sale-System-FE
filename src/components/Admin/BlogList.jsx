@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import {
-  Container,
+import { Box,
   Typography,
   Button,
   Table,
@@ -15,7 +14,12 @@ import {
   DialogContent,
   DialogActions,
   TextField,
+  Tooltip,
+  IconButton,
+  Zoom,
+  Fade,
 } from "@mui/material";
+import { Add, Edit, Delete } from "@mui/icons-material";
 import blogadService from "../../services/adminService/blogadService";
 
 const BlogList = () => {
@@ -47,8 +51,8 @@ const BlogList = () => {
         await blogadService.updateBlog(currentBlogId, newBlog);
         setBlogs(
           blogs.map((blog) =>
-            blog._id === currentBlogId ? { ...blog, ...newBlog } : blog,
-          ),
+            blog._id === currentBlogId ? { ...blog, ...newBlog } : blog
+          )
         );
       } else {
         const createdBlog = await blogadService.createBlog(newBlog);
@@ -86,19 +90,20 @@ const BlogList = () => {
   };
 
   return (
-    <Container>
-      <Typography
-        variant="h4"
-        sx={{ fontWeight: "bold", marginBottom: 2, color: "#1976d2" }}
-      >
-        Quản lý Bài viết
-      </Typography>
+    <Paper sx={{ padding: 3, borderRadius: 3, backgroundColor: "#f8f9fa" }}>
+    <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
+    <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+      🛍️ Product Management
+    </Typography>
+      </Box>
       <Button
         variant="contained"
+        startIcon={<Add />}
         sx={{
           backgroundColor: "#0288d1",
-          ":hover": { backgroundColor: "#0277bd" },
-          marginBottom: 2,
+          ":hover": { backgroundColor: "#0277bd", transform: "scale(1.05)" },
+          transition: "0.3s ease-in-out",
+          mb: 2,
         }}
         onClick={() => {
           setOpen(true);
@@ -107,59 +112,59 @@ const BlogList = () => {
       >
         Thêm Bài viết
       </Button>
-      <TableContainer component={Paper} sx={{ borderRadius: 2, boxShadow: 3 }}>
-        <Table>
-          <TableHead>
-            <TableRow sx={{ backgroundColor: "#f5f5f5" }}>
-              <TableCell>
-                <strong>ID</strong>
-              </TableCell>
-              <TableCell>
-                <strong>Tiêu đề</strong>
-              </TableCell>
-              <TableCell>
-                <strong>Nội dung</strong>
-              </TableCell>
-              <TableCell>
-                <strong>Hình ảnh</strong>
-              </TableCell>
-              <TableCell>
-                <strong>Hành động</strong>
-              </TableCell>
+
+      <TableContainer
+          component={Paper}
+          sx={{ borderRadius: 3, boxShadow: 3, overflow: "hidden" }}
+        >
+          <Table>
+            <TableHead sx={{ backgroundColor: "#1976d2" }}>
+              <TableRow>
+            <TableCell sx={{ color: "white", fontWeight: "bold" }}><strong>ID</strong></TableCell>
+            <TableCell sx={{ color: "white", fontWeight: "bold" }}><strong>Tiêu đề</strong></TableCell>
+              <TableCell sx={{ color: "white", fontWeight: "bold" }}><strong>Nội dung</strong></TableCell>
+              <TableCell sx={{ color: "white", fontWeight: "bold" }}><strong>Hình ảnh</strong></TableCell>
+              <TableCell sx={{ color: "white", fontWeight: "bold" }}><strong>Hành động</strong></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {blogs.length > 0 ? (
               blogs.map((blog) => (
-                <TableRow key={blog._id} hover>
-                  <TableCell>{blog._id}</TableCell>
-                  <TableCell>{blog.title}</TableCell>
-                  <TableCell>{blog.content.substring(0, 50)}...</TableCell>
-                  <TableCell>
-                    <img
-                      src={blog.image}
-                      alt={blog.title}
-                      style={{ width: 80, height: 50, borderRadius: 5 }}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Button
-                      variant="outlined"
-                      color="primary"
-                      sx={{ marginRight: 1 }}
-                      onClick={() => handleEditBlog(blog)}
-                    >
-                      Sửa
-                    </Button>
-                    <Button
-                      variant="outlined"
-                      color="error"
-                      onClick={() => handleDeleteBlog(blog._id)}
-                    >
-                      Xóa
-                    </Button>
-                  </TableCell>
-                </TableRow>
+                <Fade in key={blog._id} timeout={500}>
+                  <TableRow hover>
+                    <TableCell>{blog._id}</TableCell>
+                    <TableCell>{blog.title}</TableCell>
+                    <TableCell>
+                      <Tooltip title={blog.content} arrow TransitionComponent={Zoom}>
+                        <span>{blog.content.substring(0, 50)}...</span>
+                      </Tooltip>
+                    </TableCell>
+                    <TableCell>
+                      <img
+                        src={blog.image}
+                        alt={blog.title}
+                        style={{
+                          width: 80,
+                          height: 50,
+                          borderRadius: 5,
+                          boxShadow: "0px 2px 5px rgba(0,0,0,0.2)",
+                        }}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Tooltip title="Chỉnh sửa" TransitionComponent={Zoom}>
+                        <IconButton color="primary" onClick={() => handleEditBlog(blog)}>
+                          <Edit />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Xóa" TransitionComponent={Zoom}>
+                        <IconButton color="error" onClick={() => handleDeleteBlog(blog._id)}>
+                          <Delete />
+                        </IconButton>
+                      </Tooltip>
+                    </TableCell>
+                  </TableRow>
+                </Fade>
               ))
             ) : (
               <TableRow>
@@ -171,54 +176,34 @@ const BlogList = () => {
           </TableBody>
         </Table>
       </TableContainer>
+
       <Dialog open={open} onClose={() => setOpen(false)}>
         <DialogTitle sx={{ fontWeight: "bold", color: "#1976d2" }}>
-          {editMode ? "Chỉnh sửa Bài viết" : "Thêm Bài viết"}
+          {editMode ? (
+            <>
+              <Edit sx={{ verticalAlign: "middle", mr: 1 }} />
+              Chỉnh sửa Bài viết
+            </>
+          ) : (
+            <>
+              <Add sx={{ verticalAlign: "middle", mr: 1 }} />
+              Thêm Bài viết
+            </>
+          )}
         </DialogTitle>
         <DialogContent>
-          <TextField
-            margin="dense"
-            label="Tiêu đề"
-            fullWidth
-            value={newBlog.title}
-            onChange={(e) => setNewBlog({ ...newBlog, title: e.target.value })}
-          />
-          <TextField
-            margin="dense"
-            label="Nội dung"
-            fullWidth
-            multiline
-            rows={4}
-            value={newBlog.content}
-            onChange={(e) =>
-              setNewBlog({ ...newBlog, content: e.target.value })
-            }
-          />
-          <TextField
-            margin="dense"
-            label="URL Hình ảnh"
-            fullWidth
-            value={newBlog.image}
-            onChange={(e) => setNewBlog({ ...newBlog, image: e.target.value })}
-          />
+          <TextField margin="dense" label="Tiêu đề" fullWidth value={newBlog.title} onChange={(e) => setNewBlog({ ...newBlog, title: e.target.value })} />
+          <TextField margin="dense" label="Nội dung" fullWidth multiline rows={4} value={newBlog.content} onChange={(e) => setNewBlog({ ...newBlog, content: e.target.value })} />
+          <TextField margin="dense" label="URL Hình ảnh" fullWidth value={newBlog.image} onChange={(e) => setNewBlog({ ...newBlog, image: e.target.value })} />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpen(false)} sx={{ color: "#757575" }}>
-            Hủy
-          </Button>
-          <Button
-            onClick={handleSaveBlog}
-            sx={{
-              backgroundColor: "#0288d1",
-              color: "#fff",
-              ":hover": { backgroundColor: "#0277bd" },
-            }}
-          >
+          <Button onClick={() => setOpen(false)} sx={{ color: "#757575" }}>Hủy</Button>
+          <Button onClick={handleSaveBlog} sx={{ backgroundColor: "#0288d1", color: "#fff", ":hover": { backgroundColor: "#0277bd" } }}>
             {editMode ? "Cập nhật" : "Tạo"}
           </Button>
         </DialogActions>
       </Dialog>
-    </Container>
+    </Paper>
   );
 };
 

@@ -35,7 +35,7 @@ const StaffSidebar = () => {
       path: "/staff/promotions",
     },
     { text: "Báo cáo & phân tích", icon: <BarChart />, path: "/staff/reports" },
-    { text: "Quản lý ship", icon: <BarChart />, path: "/staff/ship" },
+    { text: "Quản lý ship", icon: <BarChart />, path: "/staff/shipmanager" },
   ];
 
   return (

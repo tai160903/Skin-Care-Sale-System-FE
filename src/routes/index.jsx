@@ -25,6 +25,7 @@ import OrTrack from "../components/Header/OrTrack";
 import ProfilePage from "../pages/ProfilePage";
 
 // import Profile from "../components/Header/Profile";
+// admin
 import User from "../components/Admin/User";
 import BlogList from "../components/Admin/BlogList";
 import QuizList from "../components/Admin/QuizList";
@@ -35,10 +36,17 @@ import Compare from "../components/Admin/Compare";
 import Review from "../components/Admin/Review";
 import ShipList from "../components/Admin/ShipList";
 import ShipFee from "../components/Admin/ShipFee";
-
 import StaffLayout from "../components/StaffLayout";
 import OrderManagement from "../components/Staff/OrderManagement";
 import ProductComparison from "../pages/ProductComparison";
+import StaffList from "../components/Admin/StaffList";
+import CustomerList from "../components/Admin/CustomerList";
+// staff
+import StaffLayout from "../components/StaffLayout";
+import OrderManagement from "../components/Staff/OrderManagement";
+import ProductManagement from "../components/Staff/ProductManagement";
+import PromotionManagement from "../components/Staff/PromotionManagement";
+
 const Router = createBrowserRouter([
   {
     path: "/",
@@ -198,12 +206,20 @@ const Router = createBrowserRouter([
         path: "shipfee",
         element: <ShipFee />,
       },
+      {
+        path: "staff",
+        element: <StaffList />,
+      },
+      {
+        path: "customers",
+        element: <CustomerList />,
+      },
     ],
   },
   {
     path: "staff",
     element: (
-      // <ProtectedRoute role="admin">
+      // <ProtectedRoute role="staff">
       <StaffLayout />
       // </ProtectedRoute>
     ),
@@ -211,6 +227,14 @@ const Router = createBrowserRouter([
       {
         path: "orders",
         element: <OrderManagement />,
+      },
+      {
+        path: "products",
+        element: <ProductManagement />,
+      },
+      {
+        path: "promotions",
+        element: <PromotionManagement />,
       },
     ],
   },
