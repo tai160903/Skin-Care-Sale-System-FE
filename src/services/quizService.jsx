@@ -5,10 +5,9 @@ const quizService = {
   getAnswer: (questionId) =>
     axiosClient.get(`/api/questions/answers/${questionId}`),
 
-  submit: (data) => {
-    console.log("data", data);
-    return axiosClient.post("/api/questions/submit", data);
-  },
+  submit: (data) => axiosClient.post("/api/questions/submit", data),
+
+  getRoutine: (id) => axiosClient.get(`/api/routines/skintype/${id}`),
 };
 
 export default quizService;

@@ -22,7 +22,7 @@ function Content() {
         const response = await productService.getProductById(id);
         setProduct(response.data);
       } catch (error) {
-        setError("Không thể tải dữ liệu sản phẩm.");
+        setError(error.response.data.message);
       } finally {
         setLoading(false);
       }
@@ -36,7 +36,6 @@ function Content() {
 
   return (
     <div className="container mx-auto p-6">
-      {/* Tabs */}
       <div className="flex justify-center border-b bg-gray-100 rounded-t-lg">
         {TABS.map((tab) => (
           <button
@@ -54,7 +53,6 @@ function Content() {
         ))}
       </div>
 
-      {/* Nội dung */}
       <div className="p-6 bg-white border border-gray-300 rounded-b-lg shadow-md">
         <div className="whitespace-pre-line text-gray-800">
           {product

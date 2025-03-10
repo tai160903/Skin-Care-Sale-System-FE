@@ -55,15 +55,13 @@ const DraftOrder = () => {
   const totalAmount = cart.reduce((sum, item) => {
     const originalPrice = Number(item.product_id?.price) || 0;
     const discountedPrice =
-      originalPrice * (1 - item.product_id?.discountPercent / 100);
+      originalPrice * (1 - item.product_id?.discountPercentage / 100);
     return sum + discountedPrice * item.quantity;
   }, 0);
 
-  const finalAmount = (
-    totalAmount -
-    (totalAmount * discountAmount) / 100 +
-    shippingFee
-  ).toFixed(0);
+  const discounted = (totalAmount * discountAmount) / 100;
+
+  const finalAmount = (totalAmount - discounted + shippingFee).toFixed(0);
 
   const handleApplyCoupon = async () => {
     if (!coupon) return toast.error("Vui lòng nhập mã giảm giá!");
@@ -96,13 +94,12 @@ const DraftOrder = () => {
         totalPay: finalAmount,
         address,
         phone,
+        discounted,
         payment_method: paymentType,
       };
 
       const response = await draftOrderService.createOrder(orderData);
-
-      console.log("paymentType", paymentType);
-      console.log("Url", response.data.data.Url);
+      localStorage.setItem("order", JSON.stringify(response.data));
 
       if (paymentType === "stripe" && response.data.data.Url) {
         window.location.href = response.data.data.Url;

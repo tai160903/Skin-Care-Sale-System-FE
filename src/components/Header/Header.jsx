@@ -24,8 +24,6 @@ const Header = () => {
   const handleLogout = () => {
     dispatch(logout());
     dispatch(clearCart());
-    localStorage.removeItem("user"); // Xóa dữ liệu user trong localStorage
-    localStorage.removeItem("cart"); // Xóa giỏ hàng trong localStorage (nếu đang lưu)
   };
 
   return (
