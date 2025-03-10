@@ -37,8 +37,6 @@ function Home() {
       }
     };
 
-   
-
     fetchCart();
   }, [customer, isFetched, dispatch]);
 
@@ -55,12 +53,6 @@ function Home() {
         <Box sx={{ mb: 5 }}>
           <Category />
         </Box>
-
-        <div>
-        <h2>Upload Ảnh với Supabase Storage</h2>
-        < UploadImage />
-        </div>
-
         {/* Danh sách sản phẩm */}
         <Box sx={{ mb: 5 }}>
           <ListProduct />
@@ -68,6 +60,10 @@ function Home() {
         <Box sx={{ mb: 6 }}>
           <Blog />
         </Box>
+        <div>
+          <h2>Upload Ảnh với Supabase Storage</h2>
+          <UploadImage />
+        </div>
       </Container>
     </Box>
   );

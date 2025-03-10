@@ -1,15 +1,17 @@
+import { useState } from "react";
 import {
   Drawer,
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
-  Typography,
-  Box,
-  ListSubheader,
+  IconButton,
+  Tooltip,
   Divider,
+  Box,
 } from "@mui/material";
 import {
+  Menu,
   Dashboard,
   People,
   ShoppingCart,
@@ -30,12 +32,17 @@ import {
 import { Link, useLocation } from "react-router-dom";
 
 const Sidebar = () => {
+  const [open, setOpen] = useState(true);
   const location = useLocation();
+
+  const toggleDrawer = () => {
+    setOpen(!open);
+  };
 
   const sections = [
     {
       title: "Quản lý chính",
-      icon: <AdminPanelSettings />,
+      icon: <AdminPanelSettings />, 
       items: [
         { text: "Dashboard", icon: <Dashboard />, path: "/admin/" },
         { text: "Blog", icon: <Article />, path: "/admin/blog" },
@@ -45,22 +52,18 @@ const Sidebar = () => {
     },
     {
       title: "Quản lý sản phẩm",
-      icon: <Inventory />,
+      icon: <Inventory />, 
       items: [
         { text: "Đơn hàng", icon: <ListAlt />, path: "/admin/orders" },
         { text: "Sản phẩm", icon: <ShoppingCart />, path: "/admin/products" },
         { text: "So sánh sản phẩm", icon: <Compare />, path: "/admin/compare" },
-        {
-          text: "Kế hoạch chăm sóc da",
-          icon: <Science />,
-          path: "/admin/skincare-plans",
-        },
+        {text: "Kế hoạch chăm sóc da",icon: <Science />,path: "/admin/skincare-plans"},
         { text: "Đánh giá", icon: <Star />, path: "/admin/reviews" },
       ],
     },
     {
       title: "Quản lý người dùng",
-      icon: <People />,
+      icon: <People />, 
       items: [
         { text: "Người dùng", icon: <ListAlt />, path: "/admin/users" },
         { text: "Khách hàng", icon: <People />, path: "/admin/customers" },
@@ -80,114 +83,78 @@ const Sidebar = () => {
   return (
     <Drawer
       variant="permanent"
+      open={open}
       sx={{
-        width: 260,
+        width: open ? 260 : 80,
         flexShrink: 0,
         "& .MuiDrawer-paper": {
-          width: 260,
-          background: "#E3F2FD", // Xanh nhạt pastel
-          color: "#424242", // Xám đậm
+          width: open ? 260 : 80,
+          background: "linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)",
+          color: "#333",
+          transition: "width 0.3s ease",
           paddingTop: 2,
           height: "100vh",
           boxShadow: "2px 0px 5px rgba(0,0,0,0.1)",
-          transition: "all 0.3s ease",
         },
       }}
     >
-      <Box
-        sx={{
-          textAlign: "center",
-          padding: "16px 0",
-          backgroundColor: "#BBDEFB", // Xanh nhạt pastel
-          borderRadius: "0 0 8px 8px",
-        }}
-      >
-        <Typography
-          variant="h6"
-          sx={{ fontWeight: "bold", fontFamily: "Roboto", color: "#1565C0" }}
-        >
-          Manager Panel
-        </Typography>
+      <Box sx={{ display: "flex", justifyContent: "center", p: 1 }}>
+        <IconButton onClick={toggleDrawer}>
+          <Menu sx={{ color: "#333" }} />
+        </IconButton>
       </Box>
-
       <List>
         {sections.map((section) => (
           <Box key={section.title}>
-            <ListSubheader
-              sx={{
-                backgroundColor: "transparent",
-                color: "#424242", // Xám đậm
-                fontWeight: "bold",
-                fontSize: "14px",
-                paddingLeft: "16px",
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-              }}
-            >
-              {section.icon} {section.title}
-            </ListSubheader>
-            {section.items.map(({ text, icon, path }) => (
-              <ListItem
-                key={text}
-                component={Link}
-                to={path}
-                selected={location.pathname === path}
-                sx={{
-                  bgcolor:
-                    location.pathname === path ? "#BBDEFB" : "transparent",
-                  "&:hover": {
-                    backgroundColor: "#90CAF9",
-                    transform: "scale(1.05)",
-                  },
-                  transition: "all 0.2s ease-in-out",
-                  borderRadius: "8px",
-                  margin: "4px",
-                }}
-              >
-                <ListItemIcon sx={{ color: "#1565C0" }}>{icon}</ListItemIcon>
-                <ListItemText
-                  primary={text}
-                  primaryTypographyProps={{
-                    fontSize: "16px",
-                    fontWeight: "bold",
-                    fontFamily: "Roboto",
-                    color: location.pathname === path ? "#0D47A1" : "#424242",
-                  }}
-                />
+            {open && (
+              <ListItem sx={{ fontWeight: "bold", fontSize: "14px", color: "#555", pl: 2 }}>
+                {section.title}
               </ListItem>
+            )}
+            {section.items.map(({ text, icon, path }) => (
+              <Tooltip title={!open ? text : ""} placement="right" key={text}>
+                <ListItem
+                  button
+                  component={Link}
+                  to={path}
+                  selected={location.pathname === path}
+                  sx={{
+                    bgcolor: location.pathname === path ? "#BBDEFB" : "transparent",
+                    "&:hover": { backgroundColor: "#90CAF9", transform: "scale(1.05)" },
+                    transition: "all 0.2s ease-in-out",
+                    borderRadius: "8px",
+                    margin: "4px",
+                  }}
+                >
+                  <ListItemIcon sx={{ color: "#1565C0" }}>{icon}</ListItemIcon>
+                  {open && <ListItemText primary={text} />}
+                </ListItem>
+              </Tooltip>
             ))}
             <Divider sx={{ backgroundColor: "#90CAF9", margin: "8px 16px" }} />
           </Box>
         ))}
       </List>
-
       <Box sx={{ flexGrow: 1 }} />
       <List>
-        <ListItem
-          component={Link}
-          to="/logout"
-          sx={{
-            bgcolor: "transparent",
-            "&:hover": { backgroundColor: "#FFCDD2", transform: "scale(1.05)" },
-            transition: "all 0.2s ease-in-out",
-            borderRadius: "8px",
-            margin: "4px",
-          }}
-        >
-          <ListItemIcon sx={{ color: "#D32F2F" }}>
-            <ExitToApp />
-          </ListItemIcon>
-          <ListItemText
-            primary="Logout"
-            primaryTypographyProps={{
-              fontSize: "16px",
-              fontWeight: "bold",
-              fontFamily: "Roboto",
-              color: "#D32F2F",
+        <Tooltip title={!open ? "Logout" : ""} placement="right">
+          <ListItem
+            component={Link}
+            to="/logout"
+            sx={{
+              bgcolor: "transparent",
+              "&:hover": { backgroundColor: "#FFCDD2", transform: "scale(1.05)" },
+              transition: "all 0.2s ease-in-out",
+              borderRadius: "8px",
+              margin: "4px",
             }}
-          />
-        </ListItem>
+          >
+            <ListItemIcon sx={{ color: "#D32F2F" }}>
+              <ExitToApp />
+            </ListItemIcon>
+            {open && <ListItemText primary="Logout" />}
+          </ListItem>
+        </Tooltip>
       </List>
     </Drawer>
   );

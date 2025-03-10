@@ -7,6 +7,8 @@ import {
   Typography,
   Box,
   Divider,
+  IconButton,
+  Tooltip,
 } from "@mui/material";
 import {
   ListAlt,
@@ -16,11 +18,18 @@ import {
   BarChart,
   ExitToApp,
   LocalShipping,
+  Menu,
 } from "@mui/icons-material";
 import { Link, useLocation } from "react-router-dom";
+import { useState } from "react";
 
 const StaffSidebar = () => {
   const location = useLocation();
+  const [open, setOpen] = useState(true);
+
+  const toggleSidebar = () => {
+    setOpen(!open);
+  };
 
   const menuItems = [
     { text: "Đơn hàng", icon: <ListAlt />, path: "/staff/orders" },
@@ -35,15 +44,17 @@ const StaffSidebar = () => {
     <Drawer
       variant="permanent"
       sx={{
-        width: 280,
+        width: open ? 260 : 80,
         flexShrink: 0,
+        transition: "width 0.3s ease-in-out",
         "& .MuiDrawer-paper": {
-          width: 280,
-          background: "#2C3E50",
-          color: "#ECF0F1",
+          width: open ? 260 : 80,
+          background: "#ECF5FF",
+          color: "#34495E",
           paddingTop: 2,
           height: "100vh",
-          boxShadow: "2px 0px 10px rgba(0,0,0,0.2)",
+          boxShadow: "2px 0px 10px rgba(0,0,0,0.15)",
+          transition: "width 0.3s ease-in-out",
         },
       }}
     >
@@ -51,54 +62,63 @@ const StaffSidebar = () => {
       <Box
         sx={{
           textAlign: "center",
-          padding: "24px 0",
-          backgroundColor: "#2980B9",
+          padding: "16px 0",
+          backgroundColor: "#3498DB",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          paddingLeft: open ? "20px" : "8px",
+          paddingRight: "8px",
         }}
       >
-        <Typography
-          variant="h6"
-          sx={{ fontWeight: "bold", fontFamily: "Roboto", color: "#fff" }}
-        >
-          Staff Dashboard
-        </Typography>
+        {open && (
+          <Typography variant="h6" sx={{ color: "#fff", fontWeight: "bold" }}>
+            Staff
+          </Typography>
+        )}
+        <IconButton onClick={toggleSidebar} sx={{ color: "#fff" }}>
+          <Menu />
+        </IconButton>
       </Box>
 
       {/* Menu Items */}
       <List sx={{ padding: "16px 8px" }}>
         {menuItems.map(({ text, icon, path }) => (
-          <ListItem
-            key={text}
-            component={Link}
-            to={path}
-            selected={location.pathname === path}
-            sx={{
-              bgcolor: location.pathname === path ? "#3498DB" : "transparent",
-              "&:hover": {
-                backgroundColor: "#3498DB",
-                transform: "scale(1.05)",
-              },
-              transition: "all 0.3s ease-in-out",
-              borderRadius: "6px",
-              marginBottom: "10px",
-              padding: "12px 20px",
-            }}
-          >
-            <ListItemIcon sx={{ color: "#ECF0F1" }}>{icon}</ListItemIcon>
-            <ListItemText
-              primary={text}
-              primaryTypographyProps={{
-                fontSize: "16px",
-                fontWeight: "500",
-                fontFamily: "Roboto",
-                color: "#ECF0F1",
+          <Tooltip title={!open ? text : ""} placement="right" key={text}>
+            <ListItem
+              component={Link}
+              to={path}
+              selected={location.pathname === path}
+              sx={{
+                bgcolor: location.pathname === path ? "#85C1E9" : "transparent",
+                "&:hover": {
+                  backgroundColor: "#D6EAF8",
+                  transform: "scale(1.05)",
+                },
+                transition: "all 0.3s",
+                borderRadius: "8px",
+                marginBottom: "10px",
+                padding: "12px",
+                display: "flex",
+                alignItems: "center",
               }}
-            />
-          </ListItem>
+            >
+              <ListItemIcon sx={{ color: "#2C3E50", minWidth: "40px" }}>
+                {icon}
+              </ListItemIcon>
+              {open && (
+                <ListItemText
+                  primary={text}
+                  primaryTypographyProps={{ fontSize: "16px", fontWeight: "500" }}
+                />
+              )}
+            </ListItem>
+          </Tooltip>
         ))}
       </List>
 
       <Box sx={{ flexGrow: 1 }} />
-      <Divider sx={{ backgroundColor: "#ECF0F1", margin: "16px 20px" }} />
+      <Divider sx={{ backgroundColor: "#2C3E50", margin: "16px 20px" }} />
       <List>
         <ListItem
           component={Link}
@@ -106,27 +126,24 @@ const StaffSidebar = () => {
           sx={{
             bgcolor: "transparent",
             "&:hover": {
-              backgroundColor: "#E74C3C",
+              backgroundColor: "#F5B7B1",
               transform: "scale(1.05)",
             },
-            transition: "all 0.3s ease-in-out",
-            borderRadius: "6px",
+            transition: "all 0.3s",
+            borderRadius: "8px",
             margin: "10px 8px",
-            padding: "12px 20px",
+            padding: "12px",
           }}
         >
-          <ListItemIcon sx={{ color: "#ECF0F1" }}>
+          <ListItemIcon sx={{ color: "#E74C3C" }}>
             <ExitToApp />
           </ListItemIcon>
-          <ListItemText
-            primary="Đăng xuất"
-            primaryTypographyProps={{
-              fontSize: "16px",
-              fontWeight: "500",
-              fontFamily: "Roboto",
-              color: "#ECF0F1",
-            }}
-          />
+          {open && (
+            <ListItemText
+              primary="Đăng xuất"
+              primaryTypographyProps={{ fontSize: "16px", fontWeight: "500" }}
+            />
+          )}
         </ListItem>
       </List>
     </Drawer>
