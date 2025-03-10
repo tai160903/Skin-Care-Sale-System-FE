@@ -24,10 +24,18 @@ const StaffSidebar = () => {
   const menuItems = [
     { text: "Quản lý đơn hàng", icon: <ListAlt />, path: "/staff/orders" },
     { text: "Hỗ trợ khách hàng", icon: <People />, path: "/staff/customers" },
-    { text: "Quản lý sản phẩm", icon: <ShoppingCart />, path: "/staff/products" },
-    { text: "Quản lý khuyến mãi", icon: <LocalOffer />, path: "/staff/promotions" },
+    {
+      text: "Quản lý sản phẩm",
+      icon: <ShoppingCart />,
+      path: "/staff/products",
+    },
+    {
+      text: "Quản lý khuyến mãi",
+      icon: <LocalOffer />,
+      path: "/staff/promotions",
+    },
     { text: "Báo cáo & phân tích", icon: <BarChart />, path: "/staff/reports" },
-    { text: "Quản lý ship", icon: <BarChart />, path: "/staff/ship" },
+    { text: "Quản lý ship", icon: <BarChart />, path: "/staff/shipmanager" },
   ];
 
   return (
