@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import {
-  Container,
+  Box,
   Typography,
   Button,
   Table,
@@ -16,6 +16,7 @@ import {
   DialogActions,
   TextField,
 } from "@mui/material";
+import { Add } from "@mui/icons-material";
 import {
   getPromotion,
   createPromotion,
@@ -124,30 +125,38 @@ const PromoList = () => {
   };
 
   return (
-    <Container>
-      <Typography variant="h4" gutterBottom>
-        Quản lý Khuyến mãi
-      </Typography>
+     <Paper sx={{ padding: 3, borderRadius: 3, backgroundColor: "#f8f9fa" }}>
+          <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
+          <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+           🎉 Quản lý Khuyến mãi
+          </Typography>
+            </Box>
       <Button
         variant="contained"
-        color="primary"
-        onClick={() => {
-          setOpen(true);
-          resetForm();
-        }}
+               startIcon={<Add />}
+               sx={{
+                 backgroundColor: "#0288d1",
+                 ":hover": { backgroundColor: "#0277bd", transform: "scale(1.05)" },
+                 transition: "0.3s ease-in-out",
+                 mb: 2,
+               }}
       >
         Thêm Khuyến mãi
       </Button>
-      <TableContainer component={Paper} sx={{ marginTop: 2 }}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>ID</TableCell>
-              <TableCell>Tên</TableCell>
-              <TableCell>Mã</TableCell>
-              <TableCell>Mô tả</TableCell>
-              <TableCell>Giảm giá (%)</TableCell>
-              <TableCell>Hành động</TableCell>
+
+      <TableContainer
+          component={Paper}
+          sx={{ borderRadius: 3, boxShadow: 3, overflow: "hidden" }}
+        >
+          <Table>
+            <TableHead sx={{ backgroundColor: "#1976d2" }}>
+              <TableRow>
+              <TableCell sx={{ color: "white", fontWeight: "bold" }}>ID</TableCell>
+              <TableCell sx={{ color: "white", fontWeight: "bold" }}>Tên</TableCell>
+              <TableCell sx={{ color: "white", fontWeight: "bold" }}>Mã</TableCell>
+              <TableCell sx={{ color: "white", fontWeight: "bold" }}>Mô tả</TableCell>
+              <TableCell sx={{ color: "white", fontWeight: "bold" }}>Giảm giá (%)</TableCell>
+              <TableCell sx={{ color: "white", fontWeight: "bold" }}>Hành động</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -258,7 +267,7 @@ const PromoList = () => {
           </Button>
         </DialogActions>
       </Dialog>
-    </Container>
+    </Paper>
   );
 };
 export default PromoList;
