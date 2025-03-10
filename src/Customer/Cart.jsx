@@ -33,7 +33,7 @@ const Cart = () => {
     (sum, item) =>
       sum +
       item.product_id.price *
-        (1 - item.product_id.discountPercent / 100) *
+        (1 - item.product_id.discountPercentage / 100) *
         item.quantity,
     0,
   );
@@ -55,7 +55,7 @@ const Cart = () => {
       return;
     }
     const userConfirmed = window.confirm(
-      "Do you really want to remove this product from your cart?",
+      "Bạn có muốn xóa sản phẩm này ra khỏi giỏ hàng không",
     );
 
     if (userConfirmed) {
@@ -136,7 +136,7 @@ const Cart = () => {
                     <TableCell align="center">
                       {formatCurrency(
                         item.product_id.price *
-                          (1 - item.product_id.discountPercent / 100),
+                          (1 - item.product_id.discountPercentage / 100),
                       )}
                     </TableCell>
                     <TableCell align="center">
@@ -161,7 +161,7 @@ const Cart = () => {
                     <TableCell align="center">
                       {formatCurrency(
                         item.product_id.price *
-                          (1 - item.product_id.discountPercent / 100) *
+                          (1 - item.product_id.discountPercentage / 100) *
                           item.quantity,
                       )}
                     </TableCell>

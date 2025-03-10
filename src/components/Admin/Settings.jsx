@@ -33,7 +33,6 @@ const Settings = () => {
 
   // Hàm lưu cài đặt
   const handleSaveSettings = () => {
-    // Thực hiện lưu các cài đặt (có thể gửi đến server hoặc lưu vào localStorage)
     console.log("Cài đặt đã được lưu:");
     console.log("Chế độ sáng/tối:", darkMode ? "Tối" : "Sáng");
     console.log("Email:", email);

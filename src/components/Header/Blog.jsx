@@ -52,7 +52,7 @@ const Blog = () => {
         Tin Tức & Cẩm Nang
       </Typography>
       <Grid container spacing={3} justifyContent="center">
-        {blogs.map((blog) => (
+        {blogs.slice(0, 4).map((blog) => (
           <Grid item xs={12} sm={6} md={4} lg={3} key={blog._id}>
             <Card
               sx={{
@@ -61,6 +61,9 @@ const Blog = () => {
                 "&:hover": { transform: "scale(1.05)" },
                 boxShadow: 3,
                 borderRadius: 2,
+                height: 350, // Cố định chiều cao của Card
+                display: "flex",
+                flexDirection: "column",
               }}
             >
               {blog.image && (
@@ -70,12 +73,12 @@ const Blog = () => {
                   alt={blog.title}
                   sx={{
                     width: "100%",
-                    aspectRatio: "16/9",
+                    height: 180, // Cố định chiều cao ảnh
                     objectFit: "cover",
                   }}
                 />
               )}
-              <CardContent>
+              <CardContent sx={{ flex: 1 }}>
                 <Typography variant="h6" fontWeight="bold">
                   {blog.title}
                 </Typography>

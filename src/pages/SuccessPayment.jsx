@@ -9,14 +9,10 @@ import { Button, Typography, Box, Paper, Divider } from "@mui/material";
 const SuccessPayment = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const data = localStorage.getItem("order");
-
-  console.log("Last order data:", JSON.parse(data));
+  const data = JSON.parse(localStorage.getItem("order"));
 
   useEffect(() => {
-    return () => {
-      dispatch(clearCart());
-    };
+    dispatch(clearCart());
   }, [dispatch]);
 
   const handleContinueShopping = () => {
@@ -59,7 +55,7 @@ const SuccessPayment = () => {
             <Box className="flex justify-between">
               <Typography variant="body1">Mã đơn hàng: </Typography>
               <Typography variant="body1" fontWeight="bold">
-                {data?.data?.order?._id}
+                {data?.order?._id}
               </Typography>
             </Box>
 
@@ -83,7 +79,8 @@ const SuccessPayment = () => {
                       </Box>
                       <Typography variant="body2" fontWeight="bold">
                         {formatCurrency(
-                          (item.price || item.product_id?.price || 0) *
+                          item.product_id.price *
+                            (1 - item.product_id.discountPercentage / 100) *
                             item.quantity,
                         )}
                       </Typography>
@@ -101,6 +98,19 @@ const SuccessPayment = () => {
                   : "Tiền mặt khi nhận hàng"}
               </Typography>
             </Box>
+
+            {data?.data?.order?.shipping_price && (
+              <Box className="flex justify-between">
+                <Typography variant="body1">Tiền vận chuyển:</Typography>
+                <Typography
+                  variant="body1"
+                  fontWeight="bold"
+                  className="text-red-600"
+                >
+                  {formatCurrency(data?.data?.order?.shipping_price || 0)}
+                </Typography>
+              </Box>
+            )}
 
             <Box className="flex justify-between">
               <Typography variant="body1">Tổng tiền:</Typography>
@@ -176,6 +186,19 @@ const SuccessPayment = () => {
               </Box>
             )}
 
+            {data?.data?.shipping?.shipping_status && (
+              <Box className="flex justify-between">
+                <Typography variant="body1">Trạng thái đơn hàng:</Typography>
+                <Typography
+                  variant="body1"
+                  fontWeight="bold"
+                  className="text-right max-w-[60%]"
+                >
+                  {data?.data?.shipping?.shipping_status}
+                </Typography>
+              </Box>
+            )}
+
             {data?.data?.shipping?.shipping_address && (
               <Box className="flex justify-between">
                 <Typography variant="body1">Địa chỉ giao hàng:</Typography>
@@ -188,19 +211,6 @@ const SuccessPayment = () => {
                 </Typography>
               </Box>
             )}
-
-            {/* <Box className="flex justify-between">
-              <Typography variant="body1">Trạng thái:</Typography>
-              <Chip
-                label={data?.data?.shipping?.shipping_status || "Chờ xác nhận"}
-                color={
-                  data?.data?.shipping?.payment_method === "paypal"
-                    ? "success"
-                    : "warning"
-                }
-                variant="outlined"
-              />
-            </Box> */}
           </Box>
         </Paper>
       </Box>
