@@ -45,7 +45,7 @@ const CustomerList = () => {
     const filtered = customerList.filter(
       (customer) =>
         customer.name.toLowerCase().includes(value) ||
-        customer.phone.includes(value)
+        customer.phone.includes(value),
     );
     setFilteredCustomers(filtered);
   };
@@ -53,10 +53,10 @@ const CustomerList = () => {
   return (
     <Paper sx={{ padding: 3, borderRadius: 3, backgroundColor: "#f8f9fa" }}>
       <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
-      <Typography variant="h5" sx={{ fontWeight: "bold" }}>
-        👥 Customer Management
-      </Typography>
-        </Box>
+        <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+          👥 Customer Management
+        </Typography>
+      </Box>
       <Box
         sx={{
           display: "flex",

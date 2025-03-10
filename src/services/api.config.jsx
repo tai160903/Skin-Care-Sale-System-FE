@@ -9,7 +9,6 @@ const axiosClient = axios.create({
   },
 });
 
-// Xử lý trước khi gửi request
 const handleRequestSuccess = async (config) => {
   const token = Cookies.get("token");
 
@@ -25,10 +24,8 @@ const handleRequestErr = (err) => {
   return Promise.reject(err);
 };
 
-// Xử lý response thành công
 const handleResponseSuccess = (res) => res;
 
-// Xử lý response lỗi
 const handleResponseErr = async (err) => {
   if (!err.response || !err.response.status) {
     console.error("Unknown error:", err);
@@ -37,7 +34,6 @@ const handleResponseErr = async (err) => {
 
   const originalRequest = err.config;
 
-  // Xử lý lỗi 401 (Unauthorized) và thực hiện refresh token
   if (err.response.status === 401 && !originalRequest._retry) {
     originalRequest._retry = true;
     const refreshToken = Cookies.get("refreshToken");
@@ -74,7 +70,6 @@ const handleResponseErr = async (err) => {
   return Promise.reject(err);
 };
 
-// Thêm interceptor để tự động gắn token vào headers
 axiosClient.interceptors.request.use(
   (config) => {
     const token = Cookies.get("token");

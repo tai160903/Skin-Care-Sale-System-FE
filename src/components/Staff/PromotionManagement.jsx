@@ -52,10 +52,18 @@ const PromotionManagement = () => {
   const filteredPromotions = promotions.filter((promo) => {
     const promoStartDate = new Date(promo.start_date);
     const promoEndDate = new Date(promo.end_date);
-    
-    const matchesStartDate = startDate ? promoStartDate.toLocaleDateString() === startDate.toDate().toLocaleDateString() : true;
-    const matchesEndDate = endDate ? promoEndDate.toLocaleDateString() === endDate.toDate().toLocaleDateString() : true;
-    const matchesName = searchName ? promo.name.toLowerCase().includes(searchName.toLowerCase()) : true;
+
+    const matchesStartDate = startDate
+      ? promoStartDate.toLocaleDateString() ===
+        startDate.toDate().toLocaleDateString()
+      : true;
+    const matchesEndDate = endDate
+      ? promoEndDate.toLocaleDateString() ===
+        endDate.toDate().toLocaleDateString()
+      : true;
+    const matchesName = searchName
+      ? promo.name.toLowerCase().includes(searchName.toLowerCase())
+      : true;
 
     return matchesStartDate && matchesEndDate && matchesName;
   });
@@ -78,7 +86,7 @@ const PromotionManagement = () => {
 
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <Box sx={{ display: "flex", gap: 2, marginBottom: 2 }}>
-        <TextField
+          <TextField
             label="Search by Name"
             variant="outlined"
             fullWidth
@@ -89,13 +97,17 @@ const PromotionManagement = () => {
             label="Start Date"
             value={startDate}
             onChange={(newValue) => setStartDate(newValue)}
-            renderInput={(params) => <TextField {...params} variant="outlined" fullWidth />}
+            renderInput={(params) => (
+              <TextField {...params} variant="outlined" fullWidth />
+            )}
           />
           <DatePicker
             label="End Date"
             value={endDate}
             onChange={(newValue) => setEndDate(newValue)}
-            renderInput={(params) => <TextField {...params} variant="outlined" fullWidth />}
+            renderInput={(params) => (
+              <TextField {...params} variant="outlined" fullWidth />
+            )}
           />
         </Box>
       </LocalizationProvider>
@@ -105,12 +117,30 @@ const PromotionManagement = () => {
           <CircularProgress color="primary" />
         </Box>
       ) : (
-        <TableContainer component={Paper} sx={{ borderRadius: 2, boxShadow: 2 }}>
+        <TableContainer
+          component={Paper}
+          sx={{ borderRadius: 2, boxShadow: 2 }}
+        >
           <Table>
             <TableHead>
               <TableRow sx={{ bgcolor: "#1976d2" }}>
-                {["Name", "Code", "Description", "Discount (%)", "Start Date", "End Date", "Status"].map((header) => (
-                  <TableCell key={header} sx={{ color: "white", fontWeight: "bold", textAlign: "center" }}>
+                {[
+                  "Name",
+                  "Code",
+                  "Description",
+                  "Discount (%)",
+                  "Start Date",
+                  "End Date",
+                  "Status",
+                ].map((header) => (
+                  <TableCell
+                    key={header}
+                    sx={{
+                      color: "white",
+                      fontWeight: "bold",
+                      textAlign: "center",
+                    }}
+                  >
                     {header}
                   </TableCell>
                 ))}
@@ -123,7 +153,9 @@ const PromotionManagement = () => {
                     <TableCell align="center">{promo.name}</TableCell>
                     <TableCell align="center">{promo.code}</TableCell>
                     <TableCell align="center">{promo.description}</TableCell>
-                    <TableCell align="center">{promo.discount_percentage}%</TableCell>
+                    <TableCell align="center">
+                      {promo.discount_percentage}%
+                    </TableCell>
                     <TableCell align="center">
                       {new Date(promo.start_date).toLocaleDateString()}
                     </TableCell>
@@ -132,15 +164,27 @@ const PromotionManagement = () => {
                     </TableCell>
                     <TableCell align="center">
                       <Chip
-                        label={new Date(promo.end_date) > new Date() ? "Active" : "Expired"}
-                        color={new Date(promo.end_date) > new Date() ? "success" : "error"}
+                        label={
+                          new Date(promo.end_date) > new Date()
+                            ? "Active"
+                            : "Expired"
+                        }
+                        color={
+                          new Date(promo.end_date) > new Date()
+                            ? "success"
+                            : "error"
+                        }
                       />
                     </TableCell>
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={7} align="center" sx={{ p: 3, color: "gray" }}>
+                  <TableCell
+                    colSpan={7}
+                    align="center"
+                    sx={{ p: 3, color: "gray" }}
+                  >
                     No promotions available.
                   </TableCell>
                 </TableRow>

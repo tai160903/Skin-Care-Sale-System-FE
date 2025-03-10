@@ -40,30 +40,6 @@ const categories = [
     image:
       "https://down-vn.img.susercontent.com/file/vn-11134207-7r98o-ltrw8pdzmmfh6b",
   },
-  {
-    id: 7,
-    name: "Chống Nắng Da",
-    image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTTsLJg6P4IaoRmjIeNHIdYP68Kr3OugNyVmA&s",
-  },
-  {
-    id: 8,
-    name: "Tẩy Trang Mặt",
-    image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTGeelFmL7Onl9HVUnMHP02XZwJv1qE-kh_2g&s",
-  },
-  {
-    id: 9,
-    name: "Sữa Tắm",
-    image:
-      "https://bizweb.dktcdn.net/100/136/276/products/kem-chong-nang-a6aff683-14c0-46bd-9114-eae82ff2224c.jpg?v=1675215528467",
-  },
-  {
-    id: 10,
-    name: "Dưỡng Thể",
-    image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT2GADDVfU_neQ2z8nDSl5MEoSydzGhJbuBgg&s",
-  },
 ];
 
 const settings = {
@@ -75,45 +51,77 @@ const settings = {
   autoplay: true,
   autoplaySpeed: 3000,
   responsive: [
-    { breakpoint: 1024, settings: { slidesToShow: 4, slidesToScroll: 2 } },
-    { breakpoint: 600, settings: { slidesToShow: 3, slidesToScroll: 1 } },
-    { breakpoint: 480, settings: { slidesToShow: 2, slidesToScroll: 1 } },
+    { breakpoint: 1200, settings: { slidesToShow: 6, slidesToScroll: 2 } },
+    { breakpoint: 1024, settings: { slidesToShow: 5, slidesToScroll: 2 } },
+    { breakpoint: 768, settings: { slidesToShow: 4, slidesToScroll: 1 } },
+    { breakpoint: 480, settings: { slidesToShow: 3, slidesToScroll: 1 } },
   ],
 };
 
 const Category = () => {
   return (
-    <Container sx={{ background: "#f8f9fa", p: 3, borderRadius: "10px" }}>
-      <Typography variant="h5" fontWeight="bold" color="green" sx={{ mb: 2 }}>
-        Danh mục
+    <Container
+      sx={{
+        background: "#f8f9fa",
+        p: 2,
+        borderRadius: "12px",
+        boxShadow: 2,
+        minWidth: "100%",
+      }}
+    >
+      <Typography
+        variant="h6"
+        fontWeight="bold"
+        color="green"
+        sx={{ mb: 2, textAlign: "center" }}
+      >
+        Danh mục sản phẩm
       </Typography>
-      <Slider {...settings}>
+      <Slider {...settings} style={{ gap: "10px" }}>
         {categories.map((category) => (
           <Box
             key={category.id}
             textAlign="center"
             sx={{
-              px: 2,
-              py: 2,
-              mx: 1, // Tạo khoảng cách ngang
+              px: 1,
+              py: 1.5,
+              mx: 1,
               background: "white",
-              borderRadius: "10px",
+              borderRadius: "12px",
               boxShadow: 1,
-              transition: "transform 0.3s ease-in-out",
-              "&:hover": { transform: "scale(1.05)", boxShadow: 3 }, // Hiệu ứng hover
+              transition: "transform 0.3s, box-shadow 0.3s",
+              transform: "scale(0.95)",
+              "&:hover": {
+                transform: "scale(1)",
+                boxShadow: 4,
+              },
             }}
           >
-            <img
-              src={category.image}
-              alt={category.name}
-              style={{
-                width: "110px",
-                height: "110px",
-                objectFit: "cover",
-                borderRadius: "10px",
+            <Box
+              sx={{
+                width: "100px",
+                height: "100px",
+                mx: "auto",
+                borderRadius: "12px",
+                overflow: "hidden",
+                boxShadow: 2,
               }}
-            />
-            <Typography variant="body1" fontWeight="bold" sx={{ mt: 1 }}>
+            >
+              <img
+                src={category.image}
+                alt={category.name}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                }}
+              />
+            </Box>
+            <Typography
+              variant="body1"
+              fontWeight="bold"
+              sx={{ mt: 1, fontSize: "13px" }}
+            >
               {category.name}
             </Typography>
           </Box>

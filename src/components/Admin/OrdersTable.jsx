@@ -74,11 +74,21 @@ const OrdersTable = () => {
         <Table>
           <TableHead sx={{ backgroundColor: "#1976d2" }}>
             <TableRow>
-              <TableCell sx={{ color: "white", fontWeight: "bold" }}>Total Pay</TableCell>
-              <TableCell sx={{ color: "white", fontWeight: "bold" }}>Items</TableCell>
-              <TableCell sx={{ color: "white", fontWeight: "bold" }}>Order Status</TableCell>
-              <TableCell sx={{ color: "white", fontWeight: "bold" }}>Payment Method</TableCell>
-              <TableCell sx={{ color: "white", fontWeight: "bold" }}>Created At</TableCell>
+              <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                Total Pay
+              </TableCell>
+              <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                Items
+              </TableCell>
+              <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                Order Status
+              </TableCell>
+              <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                Payment Method
+              </TableCell>
+              <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                Created At
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -90,7 +100,9 @@ const OrdersTable = () => {
                 <TableCell>
                   <Accordion sx={{ backgroundColor: "#f1f1f1" }}>
                     <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                      <Typography sx={{ fontWeight: "bold" }}>View Items</Typography>
+                      <Typography sx={{ fontWeight: "bold" }}>
+                        View Items
+                      </Typography>
                     </AccordionSummary>
                     <AccordionDetails>
                       {order.items.map((item) => (
@@ -104,14 +116,29 @@ const OrdersTable = () => {
                             boxShadow: 2,
                           }}
                         >
-                          <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
+                          <Typography
+                            variant="subtitle1"
+                            sx={{ fontWeight: "bold" }}
+                          >
                             {item.product_id?.name || "Unknown Product"}
                           </Typography>
                           <Typography>Quantity: {item.quantity}</Typography>
-                          <Typography>Price: ${item.priceAtTime.toLocaleString()}</Typography>
-                          <Typography>Category: {item.product_id?.category || "N/A"}</Typography>
-                          <Typography>Rating: ⭐ {item.product_id?.rating || "N/A"}</Typography>
-                          <Box sx={{ display: "flex", justifyContent: "center", marginTop: 1 }}>
+                          <Typography>
+                            Price: ${item.priceAtTime.toLocaleString()}
+                          </Typography>
+                          <Typography>
+                            Category: {item.product_id?.category || "N/A"}
+                          </Typography>
+                          <Typography>
+                            Rating: ⭐ {item.product_id?.rating || "N/A"}
+                          </Typography>
+                          <Box
+                            sx={{
+                              display: "flex",
+                              justifyContent: "center",
+                              marginTop: 1,
+                            }}
+                          >
                             <img
                               src={item.product_id?.image}
                               alt={item.product_id?.name}
@@ -131,10 +158,14 @@ const OrdersTable = () => {
                   />
                 </TableCell>
                 <TableCell sx={{ fontWeight: "bold", color: "#1976d2" }}>
-                  {order.payment_method ? order.payment_method.toUpperCase() : "N/A"}
+                  {order.payment_method
+                    ? order.payment_method.toUpperCase()
+                    : "N/A"}
                 </TableCell>
                 <TableCell sx={{ color: "#555" }}>
-                  {order.createdAt ? new Date(order.createdAt).toLocaleString() : "N/A"}
+                  {order.createdAt
+                    ? new Date(order.createdAt).toLocaleString()
+                    : "N/A"}
                 </TableCell>
               </TableRow>
             ))}

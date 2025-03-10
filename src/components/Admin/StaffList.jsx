@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import {Box,
+import {
+  Box,
   Table,
   TableBody,
   TableCell,
@@ -44,7 +45,7 @@ const StaffList = () => {
     const filtered = staffList.filter(
       (staff) =>
         staff.email.toLowerCase().includes(value) ||
-        staff.role.toLowerCase().includes(value)
+        staff.role.toLowerCase().includes(value),
     );
     setFilteredStaff(filtered);
   };
@@ -52,9 +53,9 @@ const StaffList = () => {
   return (
     <Paper sx={{ padding: 3, borderRadius: 3, backgroundColor: "#f8f9fa" }}>
       <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
-      <Typography variant="h5" sx={{ fontWeight: "bold" }}>
-        👨‍💼 Staff Management
-      </Typography>
+        <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+          👨‍💼 Staff Management
+        </Typography>
       </Box>
       <Box
         sx={{
@@ -76,7 +77,7 @@ const StaffList = () => {
           onChange={handleSearch}
           InputProps={{ disableUnderline: true }}
         />
-        </Box>
+      </Box>
       {loading ? (
         <Box sx={{ textAlign: "center", marginTop: 5 }}>
           <CircularProgress />
@@ -93,10 +94,18 @@ const StaffList = () => {
           <Table>
             <TableHead sx={{ backgroundColor: "#1976d2" }}>
               <TableRow>
-                <TableCell sx={{ color: "white", fontWeight: "bold" }}>Avatar</TableCell>
-                <TableCell sx={{ color: "white", fontWeight: "bold" }}>Full Name</TableCell>
-                <TableCell sx={{ color: "white", fontWeight: "bold" }}>Email</TableCell>
-                <TableCell sx={{ color: "white", fontWeight: "bold" }}>Role</TableCell>
+                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                  Avatar
+                </TableCell>
+                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                  Full Name
+                </TableCell>
+                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                  Email
+                </TableCell>
+                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                  Role
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
