@@ -82,7 +82,6 @@ function Detail() {
 
   const handleCompare = () => {
     dispatch(addToCompare(product));
-    toast.success("Đã thêm vào danh sách so sánh!");
   };
 
   if (isLoading) {

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { Box,
+import {
+  Box,
   Typography,
   Button,
   Table,
@@ -51,8 +52,8 @@ const BlogList = () => {
         await blogadService.updateBlog(currentBlogId, newBlog);
         setBlogs(
           blogs.map((blog) =>
-            blog._id === currentBlogId ? { ...blog, ...newBlog } : blog
-          )
+            blog._id === currentBlogId ? { ...blog, ...newBlog } : blog,
+          ),
         );
       } else {
         const createdBlog = await blogadService.createBlog(newBlog);
@@ -91,10 +92,10 @@ const BlogList = () => {
 
   return (
     <Paper sx={{ padding: 3, borderRadius: 3, backgroundColor: "#f8f9fa" }}>
-    <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
-    <Typography variant="h5" sx={{ fontWeight: "bold" }}>
-      🛍️ Product Management
-    </Typography>
+      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
+        <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+          🛍️ Product Management
+        </Typography>
       </Box>
       <Button
         variant="contained"
@@ -114,17 +115,27 @@ const BlogList = () => {
       </Button>
 
       <TableContainer
-          component={Paper}
-          sx={{ borderRadius: 3, boxShadow: 3, overflow: "hidden" }}
-        >
-          <Table>
-            <TableHead sx={{ backgroundColor: "#1976d2" }}>
-              <TableRow>
-            <TableCell sx={{ color: "white", fontWeight: "bold" }}><strong>ID</strong></TableCell>
-            <TableCell sx={{ color: "white", fontWeight: "bold" }}><strong>Tiêu đề</strong></TableCell>
-              <TableCell sx={{ color: "white", fontWeight: "bold" }}><strong>Nội dung</strong></TableCell>
-              <TableCell sx={{ color: "white", fontWeight: "bold" }}><strong>Hình ảnh</strong></TableCell>
-              <TableCell sx={{ color: "white", fontWeight: "bold" }}><strong>Hành động</strong></TableCell>
+        component={Paper}
+        sx={{ borderRadius: 3, boxShadow: 3, overflow: "hidden" }}
+      >
+        <Table>
+          <TableHead sx={{ backgroundColor: "#1976d2" }}>
+            <TableRow>
+              <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                <strong>ID</strong>
+              </TableCell>
+              <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                <strong>Tiêu đề</strong>
+              </TableCell>
+              <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                <strong>Nội dung</strong>
+              </TableCell>
+              <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                <strong>Hình ảnh</strong>
+              </TableCell>
+              <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                <strong>Hành động</strong>
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -135,7 +146,11 @@ const BlogList = () => {
                     <TableCell>{blog._id}</TableCell>
                     <TableCell>{blog.title}</TableCell>
                     <TableCell>
-                      <Tooltip title={blog.content} arrow TransitionComponent={Zoom}>
+                      <Tooltip
+                        title={blog.content}
+                        arrow
+                        TransitionComponent={Zoom}
+                      >
                         <span>{blog.content.substring(0, 50)}...</span>
                       </Tooltip>
                     </TableCell>
@@ -153,12 +168,18 @@ const BlogList = () => {
                     </TableCell>
                     <TableCell>
                       <Tooltip title="Chỉnh sửa" TransitionComponent={Zoom}>
-                        <IconButton color="primary" onClick={() => handleEditBlog(blog)}>
+                        <IconButton
+                          color="primary"
+                          onClick={() => handleEditBlog(blog)}
+                        >
                           <Edit />
                         </IconButton>
                       </Tooltip>
                       <Tooltip title="Xóa" TransitionComponent={Zoom}>
-                        <IconButton color="error" onClick={() => handleDeleteBlog(blog._id)}>
+                        <IconButton
+                          color="error"
+                          onClick={() => handleDeleteBlog(blog._id)}
+                        >
                           <Delete />
                         </IconButton>
                       </Tooltip>
@@ -192,13 +213,44 @@ const BlogList = () => {
           )}
         </DialogTitle>
         <DialogContent>
-          <TextField margin="dense" label="Tiêu đề" fullWidth value={newBlog.title} onChange={(e) => setNewBlog({ ...newBlog, title: e.target.value })} />
-          <TextField margin="dense" label="Nội dung" fullWidth multiline rows={4} value={newBlog.content} onChange={(e) => setNewBlog({ ...newBlog, content: e.target.value })} />
-          <TextField margin="dense" label="URL Hình ảnh" fullWidth value={newBlog.image} onChange={(e) => setNewBlog({ ...newBlog, image: e.target.value })} />
+          <TextField
+            margin="dense"
+            label="Tiêu đề"
+            fullWidth
+            value={newBlog.title}
+            onChange={(e) => setNewBlog({ ...newBlog, title: e.target.value })}
+          />
+          <TextField
+            margin="dense"
+            label="Nội dung"
+            fullWidth
+            multiline
+            rows={4}
+            value={newBlog.content}
+            onChange={(e) =>
+              setNewBlog({ ...newBlog, content: e.target.value })
+            }
+          />
+          <TextField
+            margin="dense"
+            label="URL Hình ảnh"
+            fullWidth
+            value={newBlog.image}
+            onChange={(e) => setNewBlog({ ...newBlog, image: e.target.value })}
+          />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpen(false)} sx={{ color: "#757575" }}>Hủy</Button>
-          <Button onClick={handleSaveBlog} sx={{ backgroundColor: "#0288d1", color: "#fff", ":hover": { backgroundColor: "#0277bd" } }}>
+          <Button onClick={() => setOpen(false)} sx={{ color: "#757575" }}>
+            Hủy
+          </Button>
+          <Button
+            onClick={handleSaveBlog}
+            sx={{
+              backgroundColor: "#0288d1",
+              color: "#fff",
+              ":hover": { backgroundColor: "#0277bd" },
+            }}
+          >
             {editMode ? "Cập nhật" : "Tạo"}
           </Button>
         </DialogActions>

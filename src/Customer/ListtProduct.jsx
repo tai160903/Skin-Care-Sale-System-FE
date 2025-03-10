@@ -11,6 +11,7 @@ import {
   Rating,
 } from "@mui/material";
 import { toast } from "react-toastify";
+import { formatCurrency } from "../utils/formatCurrency";
 
 function ListProduct() {
   const dispatch = useDispatch();
@@ -76,11 +77,11 @@ function ListProduct() {
           <CircularProgress />
         </div>
       ) : (
-        <div className="grid xl:grid-cols-6 lg:grid-cols-5 md:grid-cols-4 sm:grid-cols-3 gap-6">
+        <div className="flex flex-wrap gap-6 justify-start">
           {data.map((item, index) => (
             <Card
               key={index}
-              className="rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 cursor-pointer border border-gray-200"
+              className="min-w-[220px] max-w-[250px] flex-1 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 cursor-pointer border border-gray-200"
               onClick={() => handleProductClick(item._id)}
             >
               <div className="relative">
@@ -121,26 +122,17 @@ function ListProduct() {
                   {item.discountPercentage > 0 ? (
                     <>
                       <span className="text-lg font-bold text-red-500">
-                        {new Intl.NumberFormat("vi-VN", {
-                          style: "currency",
-                          currency: "VND",
-                        }).format(
+                        {formatCurrency(
                           item.price * (1 - item.discountPercentage / 100),
                         )}
                       </span>
                       <span className="text-sm font-medium text-gray-500 line-through">
-                        {new Intl.NumberFormat("vi-VN", {
-                          style: "currency",
-                          currency: "VND",
-                        }).format(item.price)}
+                        {formatCurrency(item.price)}
                       </span>
                     </>
                   ) : (
                     <span className="text-lg font-bold text-green-600">
-                      {new Intl.NumberFormat("vi-VN", {
-                        style: "currency",
-                        currency: "VND",
-                      }).format(item.price)}
+                      {formatCurrency(item.price)}
                     </span>
                   )}
                 </div>

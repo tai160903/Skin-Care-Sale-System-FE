@@ -46,32 +46,51 @@ const ProductManagement = () => {
   return (
     <Paper sx={{ padding: 3, borderRadius: 3, backgroundColor: "#f8f9fa" }}>
       <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
-       <Typography variant="h5" sx={{ fontWeight: "bold" }}>
-        🛍️ Product Management
-      </Typography>
+        <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+          🛍️ Product Management
+        </Typography>
         <Button variant="contained" color="primary" onClick={fetchProducts}>
           Refresh Products
         </Button>
       </Box>
 
       <Select
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          sx={{ marginBottom: 2, backgroundColor: "white", borderRadius: 2 }}
-        >
-          <MenuItem value="All">All Categories</MenuItem>
-          <MenuItem value="Skincare">Skincare</MenuItem>
-          <MenuItem value="Suncare">Suncare</MenuItem>
+        value={category}
+        onChange={(e) => setCategory(e.target.value)}
+        sx={{ marginBottom: 2, backgroundColor: "white", borderRadius: 2 }}
+      >
+        <MenuItem value="All">All Categories</MenuItem>
+        <MenuItem value="Skincare">Skincare</MenuItem>
+        <MenuItem value="Suncare">Suncare</MenuItem>
       </Select>
       {loading ? (
-        <Typography align="center" sx={{ color: "gray" }}>Loading products...</Typography>
+        <Typography align="center" sx={{ color: "gray" }}>
+          Loading products...
+        </Typography>
       ) : (
-        <TableContainer component={Paper} sx={{ borderRadius: 2, overflow: "hidden", boxShadow: 1 }}>
+        <TableContainer
+          component={Paper}
+          sx={{ borderRadius: 2, overflow: "hidden", boxShadow: 1 }}
+        >
           <Table>
             <TableHead>
               <TableRow sx={{ backgroundColor: "#1976d2" }}>
-                {["Image", "Name", "Category", "Price", "Stock", "Discount (%)"].map((header) => (
-                  <TableCell key={header} sx={{ color: "white", fontWeight: "bold", textAlign: "center" }}>
+                {[
+                  "Image",
+                  "Name",
+                  "Category",
+                  "Price",
+                  "Stock",
+                  "Discount (%)",
+                ].map((header) => (
+                  <TableCell
+                    key={header}
+                    sx={{
+                      color: "white",
+                      fontWeight: "bold",
+                      textAlign: "center",
+                    }}
+                  >
                     {header}
                   </TableCell>
                 ))}
@@ -80,15 +99,24 @@ const ProductManagement = () => {
             <TableBody>
               {products.length > 0 ? (
                 products.map((product, index) => (
-                  <TableRow key={index} sx={{ "&:nth-of-type(odd)": { backgroundColor: "#f9f9f9" } }}>
+                  <TableRow
+                    key={index}
+                    sx={{
+                      "&:nth-of-type(odd)": { backgroundColor: "#f9f9f9" },
+                    }}
+                  >
                     <TableCell align="center">
                       <Avatar src={product.image} alt={product.name} />
                     </TableCell>
                     <TableCell>{product.name}</TableCell>
                     <TableCell align="center">{product.category}</TableCell>
-                    <TableCell align="center">${product.price.toFixed(2)}</TableCell>
+                    <TableCell align="center">
+                      ${product.price.toFixed(2)}
+                    </TableCell>
                     <TableCell align="center">{product.stock}</TableCell>
-                    <TableCell align="center">{product.discountPercentage}%</TableCell>
+                    <TableCell align="center">
+                      {product.discountPercentage}%
+                    </TableCell>
                   </TableRow>
                 ))
               ) : (

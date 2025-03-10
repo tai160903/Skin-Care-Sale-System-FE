@@ -41,9 +41,6 @@ import OrderManagement from "../components/Staff/OrderManagement";
 import ProductComparison from "../pages/ProductComparison";
 import StaffList from "../components/Admin/StaffList";
 import CustomerList from "../components/Admin/CustomerList";
-// staff
-import StaffLayout from "../components/StaffLayout";
-import OrderManagement from "../components/Staff/OrderManagement";
 import ProductManagement from "../components/Staff/ProductManagement";
 import PromotionManagement from "../components/Staff/PromotionManagement";
 
