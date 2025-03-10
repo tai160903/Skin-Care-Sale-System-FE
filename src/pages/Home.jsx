@@ -9,6 +9,7 @@ import Category from "../Customer/Category";
 import Blog from "../components/Header/Blog";
 import { Container, Box } from "@mui/material";
 import Adv from "../components/Header/Adv";
+import UploadImage from "../components/UploadImage";
 
 function Home() {
   const dispatch = useDispatch();
@@ -36,6 +37,8 @@ function Home() {
       }
     };
 
+   
+
     fetchCart();
   }, [customer, isFetched, dispatch]);
 
@@ -52,6 +55,11 @@ function Home() {
         <Box sx={{ mb: 5 }}>
           <Category />
         </Box>
+
+        <div>
+        <h2>Upload Ảnh với Supabase Storage</h2>
+        < UploadImage />
+        </div>
 
         {/* Danh sách sản phẩm */}
         <Box sx={{ mb: 5 }}>
