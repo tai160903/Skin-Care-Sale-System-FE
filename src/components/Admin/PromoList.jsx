@@ -1,6 +1,27 @@
 import { useEffect, useState } from "react";
-import { getPromotion, createPromotion, updatePromotion, deletePromotion } from "../../services/adminService/promoService";
-import { Button, Box,Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from "@mui/material";
+import {
+  getPromotion,
+  createPromotion,
+  updatePromotion,
+  deletePromotion,
+} from "../../services/adminService/promoService";
+import {
+  Button,
+  Box,
+  Typography,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+} from "@mui/material";
 
 const PromoList = () => {
   const [promotions, setPromotions] = useState([]);
@@ -37,19 +58,19 @@ const PromoList = () => {
 
     if (searchTerm) {
       filtered = filtered.filter((promo) =>
-        promo.name.toLowerCase().includes(searchTerm.toLowerCase())
+        promo.name.toLowerCase().includes(searchTerm.toLowerCase()),
       );
     }
 
     if (startDateFilter) {
       filtered = filtered.filter(
-        (promo) => new Date(promo.start_date) >= new Date(startDateFilter)
+        (promo) => new Date(promo.start_date) >= new Date(startDateFilter),
       );
     }
 
     if (endDateFilter) {
       filtered = filtered.filter(
-        (promo) => new Date(promo.end_date) <= new Date(endDateFilter)
+        (promo) => new Date(promo.end_date) <= new Date(endDateFilter),
       );
     }
 
@@ -119,9 +140,9 @@ const PromoList = () => {
     <Paper sx={{ padding: 3, borderRadius: 3, backgroundColor: "#f8f9fa" }}>
       <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
         <Typography variant="h5" sx={{ fontWeight: "bold" }}>
-        🎉 Quản lí Khuyến mãi
+          🎉 Quản lí Khuyến mãi
         </Typography>
-        </Box>
+      </Box>
       {/* Ô tìm kiếm và bộ lọc */}
       <div style={{ display: "flex", gap: "10px", marginBottom: "15px" }}>
         <TextField
@@ -157,20 +178,36 @@ const PromoList = () => {
           ":hover": { backgroundColor: "#0277bd", transform: "scale(1.05)" },
           transition: "0.3s ease-in-out",
           mb: 2,
-      }} onClick={() => handleOpenDialog()}>
+        }}
+        onClick={() => handleOpenDialog()}
+      >
         Thêm Khuyến mãi
       </Button>
       <TableContainer component={Paper} sx={{ borderRadius: 3, boxShadow: 3 }}>
         <Table>
           <TableHead sx={{ backgroundColor: "#1976d2" }}>
             <TableRow>
-            <TableCell sx={{ color: "white", fontWeight: "bold" }}>Tên</TableCell>
-            <TableCell sx={{ color: "white", fontWeight: "bold" }}>Mã</TableCell>
-            <TableCell sx={{ color: "white", fontWeight: "bold" }}>Mô tả</TableCell>
-            <TableCell sx={{ color: "white", fontWeight: "bold" }}>Giảm giá (%)</TableCell>
-            <TableCell sx={{ color: "white", fontWeight: "bold" }}>Bắt đầu</TableCell>
-            <TableCell sx={{ color: "white", fontWeight: "bold" }}>Kết thúc</TableCell>
-            <TableCell sx={{ color: "white", fontWeight: "bold" }}>Hành động</TableCell>
+              <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                Tên
+              </TableCell>
+              <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                Mã
+              </TableCell>
+              <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                Mô tả
+              </TableCell>
+              <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                Giảm giá (%)
+              </TableCell>
+              <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                Bắt đầu
+              </TableCell>
+              <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                Kết thúc
+              </TableCell>
+              <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                Hành động
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -180,11 +217,28 @@ const PromoList = () => {
                 <TableCell>{promo.code}</TableCell>
                 <TableCell>{promo.description}</TableCell>
                 <TableCell>{promo.discount_percentage}%</TableCell>
-                <TableCell>{new Date(promo.start_date).toLocaleDateString()}</TableCell>
-                <TableCell>{new Date(promo.end_date).toLocaleDateString()}</TableCell>
                 <TableCell>
-                  <Button variant="outlined" color="primary" onClick={() => handleOpenDialog(promo)}>Sửa</Button>
-                  <Button variant="outlined" color="secondary" onClick={() => handleDelete(promo._id)} style={{ marginLeft: "10px" }}>Xóa</Button>
+                  {new Date(promo.start_date).toLocaleDateString()}
+                </TableCell>
+                <TableCell>
+                  {new Date(promo.end_date).toLocaleDateString()}
+                </TableCell>
+                <TableCell>
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    onClick={() => handleOpenDialog(promo)}
+                  >
+                    Sửa
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    color="secondary"
+                    onClick={() => handleDelete(promo._id)}
+                    style={{ marginLeft: "10px" }}
+                  >
+                    Xóa
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}
@@ -194,18 +248,69 @@ const PromoList = () => {
 
       {/* Dialog Form */}
       <Dialog open={openDialog} onClose={handleCloseDialog}>
-        <DialogTitle>{editingId ? "Sửa Khuyến mãi" : "Thêm Khuyến mãi"}</DialogTitle>
+        <DialogTitle>
+          {editingId ? "Sửa Khuyến mãi" : "Thêm Khuyến mãi"}
+        </DialogTitle>
         <DialogContent>
-          <TextField fullWidth margin="dense" label="Tên" name="name" value={formData.name} onChange={handleChange} />
-          <TextField fullWidth margin="dense" label="Mã" name="code" value={formData.code} onChange={handleChange} />
-          <TextField fullWidth margin="dense" label="Mô tả" name="description" value={formData.description} onChange={handleChange} />
-          <TextField fullWidth margin="dense" label="Giảm giá (%)" name="discount_percentage" type="number" value={formData.discount_percentage} onChange={handleChange} />
-          <TextField fullWidth margin="dense" label="Ngày bắt đầu" name="start_date" type="date" value={formData.start_date} onChange={handleChange} />
-          <TextField fullWidth margin="dense" label="Ngày kết thúc" name="end_date" type="date" value={formData.end_date} onChange={handleChange} />
+          <TextField
+            fullWidth
+            margin="dense"
+            label="Tên"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+          />
+          <TextField
+            fullWidth
+            margin="dense"
+            label="Mã"
+            name="code"
+            value={formData.code}
+            onChange={handleChange}
+          />
+          <TextField
+            fullWidth
+            margin="dense"
+            label="Mô tả"
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+          />
+          <TextField
+            fullWidth
+            margin="dense"
+            label="Giảm giá (%)"
+            name="discount_percentage"
+            type="number"
+            value={formData.discount_percentage}
+            onChange={handleChange}
+          />
+          <TextField
+            fullWidth
+            margin="dense"
+            label="Ngày bắt đầu"
+            name="start_date"
+            type="date"
+            value={formData.start_date}
+            onChange={handleChange}
+          />
+          <TextField
+            fullWidth
+            margin="dense"
+            label="Ngày kết thúc"
+            name="end_date"
+            type="date"
+            value={formData.end_date}
+            onChange={handleChange}
+          />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDialog} color="secondary">Hủy</Button>
-          <Button onClick={handleSubmit} color="primary">{editingId ? "Cập nhật" : "Thêm"}</Button>
+          <Button onClick={handleCloseDialog} color="secondary">
+            Hủy
+          </Button>
+          <Button onClick={handleSubmit} color="primary">
+            {editingId ? "Cập nhật" : "Thêm"}
+          </Button>
         </DialogActions>
       </Dialog>
     </Paper>

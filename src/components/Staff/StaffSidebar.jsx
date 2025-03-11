@@ -109,7 +109,10 @@ const StaffSidebar = () => {
               {open && (
                 <ListItemText
                   primary={text}
-                  primaryTypographyProps={{ fontSize: "16px", fontWeight: "500" }}
+                  primaryTypographyProps={{
+                    fontSize: "16px",
+                    fontWeight: "500",
+                  }}
                 />
               )}
             </ListItem>
