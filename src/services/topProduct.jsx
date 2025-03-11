@@ -1,22 +1,23 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axiosClient from "./api.config";
 
 const useTopProductService = () => {
-  // ✅ Đổi tên thành "useTopProductService"
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios
-      .get("http://localhost:8080/api/products/top-sell")
-      .then((response) => {
+    const fetchTopProducts = async () => {
+      try {
+        const response = await axiosClient.get("/api/products/top-sell");
         setProducts(response.data);
+      } catch (error) {
+        console.error("Lỗi khi lấy dữ liệu:", error.response?.data || error.message);
+      } finally {
         setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Lỗi khi lấy dữ liệu:", error);
-        setLoading(false);
-      });
+      }
+    };
+
+    fetchTopProducts();
   }, []);
 
   return { products, loading };

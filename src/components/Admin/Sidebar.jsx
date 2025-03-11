@@ -57,12 +57,11 @@ const Sidebar = () => {
         { text: "Đơn hàng", icon: <ListAlt />, path: "/admin/orders" },
         { text: "Sản phẩm", icon: <ShoppingCart />, path: "/admin/products" },
         { text: "So sánh sản phẩm", icon: <Compare />, path: "/admin/compare" },
-        {
-          text: "Kế hoạch chăm sóc da",
-          icon: <Science />,
-          path: "/admin/skincare-plans",
+        {text: "Kế hoạch chăm sóc da",icon: <Science />,path: "/admin/skincare-plans",
         },
         { text: "Đánh giá", icon: <Star />, path: "/admin/reviews" },
+        { text: "Shipfee", icon: <Star />, path: "/admin/shipfee" },
+        { text: "Shipping", icon: <Star />, path: "/admin/shipping" },
       ],
     },
     {

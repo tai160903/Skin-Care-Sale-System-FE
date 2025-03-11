@@ -1,13 +1,11 @@
-import axios from "axios";
+import axiosClient from "../api.config";
 
-const API_BASE_URL = "http://localhost:8080/api/users";
+const API_BASE_URL = "/api/users";
 
 const allUserService = {
   getCustomers: async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/customer`, {
-        headers: { Accept: "application/json" },
-      });
+      const response = await axiosClient.get(`${API_BASE_URL}/customer`);
       return response.data;
     } catch (error) {
       console.error("Error fetching customers:", error);
@@ -17,9 +15,7 @@ const allUserService = {
 
   getStaff: async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/staff`, {
-        headers: { Accept: "application/json" },
-      });
+      const response = await axiosClient.get(`${API_BASE_URL}/staff`);
       return response.data;
     } catch (error) {
       console.error("Error fetching staff:", error);

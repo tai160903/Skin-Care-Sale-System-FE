@@ -1,38 +1,26 @@
-// src/services/shipService.js
-import axios from "axios";
+import axiosClient from "../api.config";
 
-const API_BASE_URL = "http://localhost:8080/api/shippings";
+const API_BASE_URL = "/api/shippings";
 
 const shipService = {
   getAllShippings: async () => {
     try {
-      const response = await axios.get(API_BASE_URL, {
-        headers: { Accept: "application/json" },
-      });
+      const response = await axiosClient.get(API_BASE_URL);
       return response.data;
     } catch (error) {
-      console.error("Error fetching shippings:", error);
+      console.error("Error fetching shippings:", error.response?.data || error.message);
       throw error;
     }
   },
 
   updateShippingStatus: async (id, status) => {
     try {
-      const response = await axios.put(
-        `${API_BASE_URL}/update-status/${id}`,
-        {
-          shipping_status: status,
-        },
-        {
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-        },
-      );
+      const response = await axiosClient.put(`${API_BASE_URL}/update-status/${id}`, {
+        shipping_status: status,
+      });
       return response.data;
     } catch (error) {
-      console.error("Error updating shipping status:", error);
+      console.error("Error updating shipping status:", error.response?.data || error.message);
       throw error;
     }
   },

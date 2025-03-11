@@ -1,30 +1,58 @@
-// services/adminService/shipFeeService.js
-import axios from "axios";
+import axiosClient from "../api.config";
 
-const API_URL = "http://localhost:8080/api/shipfees";
+const API_URL = "/api/shipfees";
 
 const shipFeeService = {
   getAllShipFees: async () => {
-    const response = await axios.get(API_URL);
-    return response.data;
+    try {
+      const response = await axiosClient.get(API_URL);
+      return response.data;
+    } catch (error) {
+      console.error("Lỗi khi lấy danh sách phí vận chuyển:", error.response?.data || error.message);
+      throw error;
+    }
   },
+  
   createShipFee: async (shipFee) => {
-    const response = await axios.post(API_URL, shipFee);
-    return response.data;
+    try {
+      const response = await axiosClient.post(API_URL, shipFee);
+      return response.data;
+    } catch (error) {
+      console.error("Lỗi khi tạo phí vận chuyển:", error.response?.data || error.message);
+      throw error;
+    }
   },
+  
   getShipFeeByLocation: async (location) => {
-    const response = await axios.get(`${API_URL}/location`, {
-      params: { location },
-    });
-    return response.data;
+    try {
+      const response = await axiosClient.get(`${API_URL}/location`, {
+        params: { location },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Lỗi khi lấy phí vận chuyển theo địa điểm:", error.response?.data || error.message);
+      throw error;
+    }
   },
+  
   updateShipFee: async (id, shipFee) => {
-    const response = await axios.put(`${API_URL}/${id}`, shipFee);
-    return response.data;
+    try {
+      const response = await axiosClient.put(`${API_URL}/${id}`, shipFee);
+      return response.data;
+    } catch (error) {
+      console.error("Lỗi khi cập nhật phí vận chuyển:", error.response?.data || error.message);
+      throw error;
+    }
   },
+  
   deleteShipFee: async (id) => {
-    const response = await axios.delete(`${API_URL}/${id}`);
-    return response.data;
+    try {
+      const response = await axiosClient.delete(`${API_URL}/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error("Lỗi khi xóa phí vận chuyển:", error.response?.data || error.message);
+      throw error;
+    }
   },
 };
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axiosClient from "./api.config";
 
 const useCategoryService = () => {
   const [categories, setCategories] = useState([]);
@@ -9,15 +9,13 @@ const useCategoryService = () => {
     const fetchCategories = async () => {
       try {
         // Gọi API lấy danh sách danh mục
-        const categoryRes = await axios.get(
-          "http://localhost:8080/api/products/categories",
-        );
+        const categoryRes = await axiosClient.get("/api/products/categories");
         const categoryList = categoryRes.data;
 
         // Gọi API lấy 1 sản phẩm đầu tiên của mỗi danh mục
         const productPromises = categoryList.map(async (category) => {
-          const productRes = await axios.get(
-            `http://localhost:8080/api/products/category/${category}?limit=1`,
+          const productRes = await axiosClient.get(
+            `/api/products/category/${category}?limit=1`
           );
           return {
             name: category,
@@ -28,7 +26,7 @@ const useCategoryService = () => {
         const categoriesWithProducts = await Promise.all(productPromises);
         setCategories(categoriesWithProducts);
       } catch (error) {
-        console.error("Lỗi khi lấy danh mục:", error);
+        console.error("Lỗi khi lấy danh mục:", error.response?.data || error.message);
       } finally {
         setLoading(false);
       }
