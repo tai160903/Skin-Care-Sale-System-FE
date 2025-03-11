@@ -42,7 +42,7 @@ const Sidebar = () => {
   const sections = [
     {
       title: "Quản lý chính",
-      icon: <AdminPanelSettings />, 
+      icon: <AdminPanelSettings />,
       items: [
         { text: "Dashboard", icon: <Dashboard />, path: "/admin/" },
         { text: "Blog", icon: <Article />, path: "/admin/blog" },
@@ -52,18 +52,22 @@ const Sidebar = () => {
     },
     {
       title: "Quản lý sản phẩm",
-      icon: <Inventory />, 
+      icon: <Inventory />,
       items: [
         { text: "Đơn hàng", icon: <ListAlt />, path: "/admin/orders" },
         { text: "Sản phẩm", icon: <ShoppingCart />, path: "/admin/products" },
         { text: "So sánh sản phẩm", icon: <Compare />, path: "/admin/compare" },
-        {text: "Kế hoạch chăm sóc da",icon: <Science />,path: "/admin/skincare-plans"},
+        {
+          text: "Kế hoạch chăm sóc da",
+          icon: <Science />,
+          path: "/admin/skincare-plans",
+        },
         { text: "Đánh giá", icon: <Star />, path: "/admin/reviews" },
       ],
     },
     {
       title: "Quản lý người dùng",
-      icon: <People />, 
+      icon: <People />,
       items: [
         { text: "Người dùng", icon: <ListAlt />, path: "/admin/users" },
         { text: "Khách hàng", icon: <People />, path: "/admin/customers" },
@@ -107,7 +111,14 @@ const Sidebar = () => {
         {sections.map((section) => (
           <Box key={section.title}>
             {open && (
-              <ListItem sx={{ fontWeight: "bold", fontSize: "14px", color: "#555", pl: 2 }}>
+              <ListItem
+                sx={{
+                  fontWeight: "bold",
+                  fontSize: "14px",
+                  color: "#555",
+                  pl: 2,
+                }}
+              >
                 {section.title}
               </ListItem>
             )}
@@ -119,8 +130,12 @@ const Sidebar = () => {
                   to={path}
                   selected={location.pathname === path}
                   sx={{
-                    bgcolor: location.pathname === path ? "#BBDEFB" : "transparent",
-                    "&:hover": { backgroundColor: "#90CAF9", transform: "scale(1.05)" },
+                    bgcolor:
+                      location.pathname === path ? "#BBDEFB" : "transparent",
+                    "&:hover": {
+                      backgroundColor: "#90CAF9",
+                      transform: "scale(1.05)",
+                    },
                     transition: "all 0.2s ease-in-out",
                     borderRadius: "8px",
                     margin: "4px",
@@ -143,7 +158,10 @@ const Sidebar = () => {
             to="/logout"
             sx={{
               bgcolor: "transparent",
-              "&:hover": { backgroundColor: "#FFCDD2", transform: "scale(1.05)" },
+              "&:hover": {
+                backgroundColor: "#FFCDD2",
+                transform: "scale(1.05)",
+              },
               transition: "all 0.2s ease-in-out",
               borderRadius: "8px",
               margin: "4px",
