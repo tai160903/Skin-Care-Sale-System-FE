@@ -40,7 +40,7 @@ const Router = createBrowserRouter([
       {
         path: "",
         element: <Home />,
-        errorElement: <Error />,
+        // errorElement: <Error />,
       },
       {
         path: "signin",

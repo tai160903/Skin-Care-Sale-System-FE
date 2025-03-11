@@ -1,13 +1,18 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { toast } from "react-toastify";
-
+import Header from "../components/Header/Header";
 
 const ProfilePage = () => {
   const { userId } = useParams();
   const [error, setError] = useState(null);
+  const [userData, setUserData] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [activeTab, setActiveTab] = useState("view");
+
   const {
     register,
     handleSubmit,
@@ -15,35 +20,34 @@ const ProfilePage = () => {
     formState: { errors },
   } = useForm();
 
+  const fetchUserData = async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get(
+        `http://localhost:8080/api/users/customer/${userId}`,
+      );
+      const data = response.data.data;
+      setUserData(data);
+      setValue("name", data?.name || "");
+      setValue("address", data?.address || "");
+      setValue("phone", data?.phone || "");
+      setValue("gender", data?.gender);
+    } catch {
+      setError("Failed to fetch user data");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    if (!userId) return;
-
-    const fetchUserData = async () => {
-      try {
-        const response = await fetch(
-          `http://localhost:8080/api/users/customer/${userId}`,
-        );
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-
-        const data = await response.json();
-
-        // Populate form with data
-        Object.keys(data).forEach((key) => {
-          setValue(key, data[key]);
-        });
-      } catch (error) {
-        setError(error.message);
-      }
-    };
-
+    if (!userId) {
+      return;
+    }
     fetchUserData();
-  }, [userId, setValue]);
+  }, [userId]);
 
   const onSubmit = async (formData) => {
-    console.log(formData);
+    setIsSubmitting(true);
     try {
       const response = await axios.put(
         `http://localhost:8080/api/users/customer/${userId}`,
@@ -51,85 +55,239 @@ const ProfilePage = () => {
           name: formData.name,
           address: formData.address,
           phone: formData.phone,
+          gender: formData.gender,
         },
       );
       toast.success(response.data.message);
-    } catch (error) {
-      console.log(error);
+      await fetchUserData();
+      setActiveTab("view");
+    } catch {
+      toast.error("Error updating profile");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   if (error) {
-    return <div className="error">Lỗi: {error}</div>;
+    return (
+      <div className="bg-red-50 p-4 rounded-lg text-red-600 text-center mt-16 max-w-md mx-auto">
+        <div className="text-xl font-semibold mb-2">Error</div>
+        <p>{error}</p>
+        <button
+          onClick={() => fetchUserData()}
+          className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+        >
+          Try Again
+        </button>
+      </div>
+    );
   }
 
   return (
     <>
-      <div className="flex items-center justify-center">
-        <Link
-          to="/"
-          className="text-4xl font-bold text-green-700 cursor-pointer"
-        >
-          SkinCare
-        </Link>
+      <Header />
+      <div className="bg-gray-50 min-h-screen flex flex-col items-center pt-8 pb-16 px-4">
+        <div className="w-full max-w-2xl">
+          <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+            {/* Profile Header */}
+            <div className="bg-gradient-to-r from-green-600 to-green-400 px-6 py-8 text-white">
+              <div className="flex items-center">
+                <div className="bg-white/20 rounded-full p-3 mr-4">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-10 w-10"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold">
+                    {userData?.name || "User Profile"}
+                  </h1>
+                  <p className="opacity-80">{userData?.user?.email || ""}</p>
+                </div>
+              </div>
+
+              {/* Tab Navigation */}
+              <div className="flex mt-8 border-b border-white/20">
+                <button
+                  className={`pb-2 px-4 text-sm font-medium ${activeTab === "view" ? "border-b-2 border-white" : "opacity-70"}`}
+                  onClick={() => setActiveTab("view")}
+                >
+                  View Profile
+                </button>
+                <button
+                  className={`pb-2 px-4 text-sm font-medium ${activeTab === "edit" ? "border-b-2 border-white" : "opacity-70"}`}
+                  onClick={() => setActiveTab("edit")}
+                >
+                  Edit Profile
+                </button>
+              </div>
+            </div>
+
+            {/* Content Area */}
+            <div className="p-6">
+              {isLoading ? (
+                <div className="py-12 text-center">
+                  <div className="inline-block w-8 h-8 border-4 border-green-600 border-t-transparent rounded-full animate-spin"></div>
+                  <p className="mt-4 text-gray-600">Loading profile data...</p>
+                </div>
+              ) : activeTab === "view" ? (
+                <div className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <ProfileItem
+                      label="Full Name"
+                      value={userData?.name || "Not set"}
+                    />
+                    <ProfileItem
+                      label="Email"
+                      value={userData?.user?.email || "Not available"}
+                    />
+                    <ProfileItem
+                      label="Gender"
+                      value={userData?.gender ? "Male" : "Female"}
+                    />
+                    <ProfileItem
+                      label="Phone"
+                      value={userData?.phone || "Not set"}
+                    />
+                    <ProfileItem
+                      label="Address"
+                      value={userData?.address || "Not set"}
+                    />
+                    <ProfileItem
+                      label="Points"
+                      value={userData?.point || "0"}
+                      badge={true}
+                    />
+                  </div>
+
+                  <div className="mt-8 text-center">
+                    <button
+                      onClick={() => setActiveTab("edit")}
+                      className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-200"
+                    >
+                      Edit Profile
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <form onSubmit={handleSubmit(onSubmit)}>
+                  <div className="space-y-6">
+                    <FormField
+                      label="Full Name"
+                      name="name"
+                      register={register}
+                      validation={{ required: "Full name is required" }}
+                      errors={errors}
+                    />
+
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-gray-700 block">
+                        Gender
+                      </label>
+                      <select
+                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                        {...register("gender")}
+                      >
+                        <option value={true}>Male</option>
+                        <option value={false}>Female</option>
+                      </select>
+                    </div>
+
+                    <FormField
+                      label="Address"
+                      name="address"
+                      register={register}
+                      validation={{ required: "Address is required" }}
+                      errors={errors}
+                    />
+
+                    <FormField
+                      label="Phone Number"
+                      name="phone"
+                      register={register}
+                      validation={{
+                        required: "Phone number is required",
+                        pattern: {
+                          value: /^[0-9]{10,12}$/,
+                          message: "Please enter a valid phone number",
+                        },
+                      }}
+                      errors={errors}
+                    />
+
+                    <div className="flex space-x-4 pt-6">
+                      <button
+                        type="button"
+                        onClick={() => setActiveTab("view")}
+                        className="flex-1 py-3 px-4 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                      >
+                        Cancel
+                      </button>
+
+                      <button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="flex-1 py-3 px-4 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-green-300 flex justify-center items-center"
+                      >
+                        {isSubmitting ? (
+                          <>
+                            <span className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></span>
+                            Updating...
+                          </>
+                        ) : (
+                          "Save Changes"
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
-
-      <form
-        className="max-w-md mx-auto mt-20"
-        onSubmit={handleSubmit(onSubmit)}
-      >
-        <div className="relative z-0 w-full mb-5 group">
-          <input
-            type="text"
-            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-            placeholder=" "
-            {...register("name", { required: "Full name is required" })}
-          />
-          <label className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
-            Full name
-          </label>
-          {errors.fullName && (
-            <span className="text-red-500">{errors.fullName.message}</span>
-          )}
-        </div>
-        <div className="relative z-0 w-full mb-5 group">
-          <input
-            type="text"
-            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-            placeholder=" "
-            {...register("address", { required: "Address is required" })}
-          />
-          <label className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
-            Address
-          </label>
-          {errors.address && (
-            <span className="text-red-500">{errors.address.message}</span>
-          )}
-        </div>
-        <div className="relative z-0 w-full mb-5 group">
-          <input
-            type="text"
-            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-            placeholder=" "
-            {...register("phone", { required: "Phone is required" })}
-          />
-          <label className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
-            Phone
-          </label>
-          {errors.phone && (
-            <span className="text-red-500">{errors.phone.message}</span>
-          )}
-        </div>
-
-        <button
-          type="submit"
-          className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-        >
-          Submit
-        </button>
-      </form>
     </>
   );
 };
+
+// Helper Components
+const ProfileItem = ({ label, value, badge }) => (
+  <div className="bg-gray-50 p-4 rounded-lg">
+    <p className="text-sm text-gray-500 mb-1">{label}</p>
+    {badge ? (
+      <div className="flex items-center">
+        <span className="bg-green-100 text-green-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded">
+          {value} points
+        </span>
+      </div>
+    ) : (
+      <p className="text-gray-900 font-medium">{value}</p>
+    )}
+  </div>
+);
+
+const FormField = ({ label, name, register, validation, errors }) => (
+  <div className="space-y-2">
+    <label className="text-sm font-medium text-gray-700 block">{label}</label>
+    <input
+      type="text"
+      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+      {...register(name, validation)}
+    />
+    {errors[name] && (
+      <p className="text-red-500 text-sm mt-1">{errors[name].message}</p>
+    )}
+  </div>
+);
 
 export default ProfilePage;

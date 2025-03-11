@@ -20,7 +20,8 @@ const Header = () => {
   const token = useSelector((state) => state.user.token);
   const cart = useSelector((state) => state.cart.items);
   const user = useSelector((state) => state.user.user);
-  console.log(user);
+  const customer = useSelector((state) => state.user.customer);
+  console.log("customer header", customer);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -28,6 +29,7 @@ const Header = () => {
     localStorage.removeItem("user"); // Xóa dữ liệu user trong localStorage
     localStorage.removeItem("cart"); // Xóa giỏ hàng trong localStorage (nếu đang lưu)
   };
+  console.log("token", token);
 
   return (
     <header className="bg-white text-black py-4 px-8 flex justify-between items-center shadow-md">
@@ -115,7 +117,7 @@ const Header = () => {
                 </>
               ) : (
                 <>
-                  <LinkItem to={`/profile/${user._id}`} label="Hồ sơ" />
+                  <LinkItem to={`/profile/${customer._id}`} label="Hồ sơ" />
                   <button
                     onClick={handleLogout}
                     className="block w-full text-left px-4 py-2 hover:bg-gray-200"

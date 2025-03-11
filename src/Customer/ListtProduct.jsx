@@ -18,7 +18,7 @@ function ListProduct() {
     const fetchData = async () => {
       try {
         const response = await productService.getAllProduct();
-        setData(response.data);
+        setData(response.data.data);
       } catch (error) {
         toast.error("Error fetching products:", error);
       } finally {
