@@ -36,7 +36,9 @@ import Compare from "../components/Admin/Compare";
 import Review from "../components/Admin/Review";
 import ShipList from "../components/Admin/ShipList";
 import ShipFee from "../components/Admin/ShipFee";
+import Settings from "../components/Admin/Settings";
 
+//Staff
 import StaffLayout from "../components/StaffLayout";
 import OrderManagement from "../components/Staff/OrderManagement";
 import ProductComparison from "../pages/ProductComparison";
@@ -197,7 +199,7 @@ const Router = createBrowserRouter([
         element: <Review />,
       },
       {
-        path: "ship",
+        path: "shipping",
         element: <ShipList />,
       },
       {
@@ -211,6 +213,10 @@ const Router = createBrowserRouter([
       {
         path: "customers",
         element: <CustomerList />,
+      },
+      {
+        path: "settings",
+        element: <Settings />,
       },
     ],
   },

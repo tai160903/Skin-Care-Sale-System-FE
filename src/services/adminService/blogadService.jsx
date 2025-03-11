@@ -1,11 +1,11 @@
-import axios from "axios";
+import axiosClient from "../api.config";
 
-const API_URL = "http://localhost:8080/api/blogs"; // Thay bằng URL API thực tế
+const API_URL = "/api/blogs";
 
 const blogadService = {
   getBlogs: async () => {
     try {
-      const response = await axios.get(API_URL);
+      const response = await axiosClient.get(API_URL);
       return response.data;
     } catch (error) {
       console.error(
@@ -18,9 +18,7 @@ const blogadService = {
 
   createBlog: async (blogData) => {
     try {
-      const response = await axios.post(API_URL, blogData, {
-        headers: { "Content-Type": "application/json" },
-      });
+      const response = await axiosClient.post(API_URL, blogData);
       return response.data;
     } catch (error) {
       console.error(
@@ -33,9 +31,7 @@ const blogadService = {
 
   updateBlog: async (id, blogData) => {
     try {
-      const response = await axios.put(`${API_URL}/${id}`, blogData, {
-        headers: { "Content-Type": "application/json" },
-      });
+      const response = await axiosClient.put(`${API_URL}/${id}`, blogData);
       return response.data;
     } catch (error) {
       console.error(
@@ -48,7 +44,7 @@ const blogadService = {
 
   deleteBlog: async (id) => {
     try {
-      await axios.delete(`${API_URL}/${id}`);
+      await axiosClient.delete(`${API_URL}/${id}`);
       return { success: true, message: "Bài viết đã được xóa thành công" };
     } catch (error) {
       console.error(
