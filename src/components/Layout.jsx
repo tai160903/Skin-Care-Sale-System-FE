@@ -14,13 +14,15 @@ function Layout() {
     "/signup",
     "/verify-email",
     "/forgot-password",
-    "/success",
-    "/cancel",
-    "/profile",
+    "/profile/:userId",
   ];
 
-  const hideHeaderFooter = paths.includes(pathname);
-
+  const hideHeaderFooter = paths.some((path) => {
+    if (path.includes(":userId")) {
+      return pathname.startsWith("/profile/");
+    }
+    return path === pathname;
+  });
   return (
     <>
       {!hideHeaderFooter && (

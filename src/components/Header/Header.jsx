@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { TextField, InputAdornment } from "@mui/material";
 import { LibraryBooksRounded as BlogIcon } from "@mui/icons-material";
 import { RoomRounded as LocationIcon } from "@mui/icons-material";
@@ -15,6 +15,7 @@ import Question from "./Question";
 import { clearCart } from "../../redux/slices/cartSlice";
 
 const Header = () => {
+  const navigate = useNavigate();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dispatch = useDispatch();
   const token = useSelector((state) => state.user.token);
@@ -24,6 +25,7 @@ const Header = () => {
   const handleLogout = () => {
     dispatch(logout());
     dispatch(clearCart());
+    navigate("/");
   };
 
   return (
