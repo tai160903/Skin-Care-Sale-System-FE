@@ -7,7 +7,10 @@ const getBlogs = async () => {
     const response = await axiosClient.get(API_URL);
     return response.data;
   } catch (error) {
-    console.error("Error fetching blogs:", error.response?.data || error.message);
+    console.error(
+      "Error fetching blogs:",
+      error.response?.data || error.message,
+    );
     return [];
   }
 };

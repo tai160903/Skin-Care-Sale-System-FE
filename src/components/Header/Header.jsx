@@ -115,6 +115,10 @@ const Header = () => {
               ) : (
                 <>
                   <LinkItem to={`/profile/${customerId}`} label="Hồ sơ" />
+                  <LinkItem
+                    to={`/order-history/${customerId}`}
+                    label="Lịch sử đặt hàng"
+                  />
                   <button
                     onClick={handleLogout}
                     className="block w-full text-left px-4 py-2 hover:bg-gray-200"
