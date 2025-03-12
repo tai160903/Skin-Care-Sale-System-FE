@@ -16,8 +16,8 @@ import {
   Box,
   Button,
   CircularProgress,
+  Pagination,
 } from "@mui/material";
-
 import RefreshIcon from "@mui/icons-material/Refresh";
 
 const getStatusColor = (status) => {
@@ -37,21 +37,26 @@ const OrderManagement = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("All");
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
     fetchOrders();
-  }, [statusFilter]);
+  }, [statusFilter, page]);
 
   const fetchOrders = async () => {
     setLoading(true);
     try {
       let data;
       if (statusFilter === "All") {
-        data = await orderService.getAllOrders();
+        data = await orderService.getAllOrders(page, 10);
       } else {
-        data = await orderService.getOrdersByStatus(statusFilter);
+        data = await orderService.getOrdersByStatus(statusFilter, page, 10);
       }
-      setOrders(data);
+
+      console.log("Fetched Orders:", data?.data?.data);
+      setOrders(data?.data?.data); // Giả sử API trả về `{ orders: [], totalPages: n }`
+      setTotalPages(data.totalPages);
     } catch (error) {
       toast.error("Failed to fetch orders");
     } finally {
@@ -64,14 +69,15 @@ const OrderManagement = () => {
       await orderService.updateOrderStatus(orderId, newStatus);
       setOrders((prevOrders) =>
         prevOrders.map((order) =>
-          order._id === orderId ? { ...order, order_status: newStatus } : order,
-        ),
+          order._id === orderId ? { ...order, order_status: newStatus } : order
+        )
       );
       toast.success("Order status updated successfully");
     } catch (error) {
-      toast.error("Failed to update order status");
+      toast.error("Failed to update order status", error);
     }
   };
+  console.log("orders", orders);
 
   return (
     <Paper sx={{ padding: 3, borderRadius: 3, backgroundColor: "#f8f9fa" }}>
@@ -91,7 +97,10 @@ const OrderManagement = () => {
 
       <Select
         value={statusFilter}
-        onChange={(e) => setStatusFilter(e.target.value)}
+        onChange={(e) => {
+          setStatusFilter(e.target.value);
+          setPage(1); // Reset về trang đầu khi đổi filter
+        }}
         sx={{ marginBottom: 2, backgroundColor: "white", borderRadius: 2 }}
       >
         <MenuItem value="All">All Orders</MenuItem>
@@ -105,56 +114,68 @@ const OrderManagement = () => {
           <CircularProgress />
         </Box>
       ) : (
-        <TableContainer
-          component={Paper}
-          sx={{ borderRadius: 3, boxShadow: 3 }}
-        >
-          <Table>
-            <TableHead sx={{ backgroundColor: "#1976d2" }}>
-              <TableRow>
-                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                  Order ID
-                </TableCell>
-                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                  Customer ID
-                </TableCell>
-                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                  Order Status
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {orders.map((order) => (
-                <TableRow key={order._id} sx={{ backgroundColor: "white" }}>
-                  <TableCell>{order._id}</TableCell>
-                  <TableCell>{order.customer_id}</TableCell>
-                  <TableCell>
-                    <Select
-                      value={order.order_status}
-                      onChange={(e) =>
-                        handleStatusChange(order._id, e.target.value)
-                      }
-                      sx={{ backgroundColor: "white", borderRadius: 2 }}
-                    >
-                      <MenuItem value="Pending Confirmation">
-                        Pending Confirmation
-                      </MenuItem>
-                      <MenuItem value="Complete Confirmation">
-                        Complete Confirmation
-                      </MenuItem>
-                      <MenuItem value="Cancelled">Cancelled</MenuItem>
-                    </Select>
-                    <Chip
-                      label={order.order_status}
-                      color={getStatusColor(order.order_status)}
-                      sx={{ ml: 2, fontWeight: "bold" }}
-                    />
+        <>
+          <TableContainer
+            component={Paper}
+            sx={{ borderRadius: 3, boxShadow: 3 }}
+          >
+            <Table>
+              <TableHead sx={{ backgroundColor: "#1976d2" }}>
+                <TableRow>
+                  <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                    Order ID
+                  </TableCell>
+                  <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                    Customer ID
+                  </TableCell>
+                  <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                    Order Status
                   </TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+              {orders.map((order)  => (
+                  <TableRow key={order._id} sx={{ backgroundColor: "white" }}>
+                    <TableCell>{order._id}</TableCell>
+                    <TableCell>{order.customer_id}</TableCell>
+                    <TableCell>
+                      <Select
+                        value={order.order_status}
+                        onChange={(e) =>
+                          handleStatusChange(order._id, e.target.value)
+                        }
+                        sx={{ backgroundColor: "white", borderRadius: 2 }}
+                      >
+                        <MenuItem value="Pending Confirmation">
+                          Pending Confirmation
+                        </MenuItem>
+                        <MenuItem value="Complete Confirmation">
+                          Complete Confirmation
+                        </MenuItem>
+                        <MenuItem value="Cancelled">Cancelled</MenuItem>
+                      </Select>
+                      <Chip
+                        label={order.order_status}
+                        color={getStatusColor(order.order_status)}
+                        sx={{ ml: 2, fontWeight: "bold" }}
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+
+          {/* Phân trang */}
+          <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+            <Pagination
+              count={totalPages}
+              page={page}
+              onChange={(event, value) => setPage(value)}
+              color="primary"
+            />
+          </Box>
+        </>
       )}
     </Paper>
   );

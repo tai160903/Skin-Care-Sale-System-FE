@@ -48,7 +48,7 @@ const AdminDashboard = () => {
       return (
         <div className="bg-white p-3 rounded-lg shadow-md border border-gray-200">
           <p className="text-green-700 font-semibold">
-            {payload[0].payload._id}
+            {payload[0].payload.name}
           </p>
           <p className="text-gray-600">
             <span className="font-bold">Total Sold:</span> {payload[0].value}
@@ -115,7 +115,10 @@ const AdminDashboard = () => {
         <ResponsiveContainer width="100%" height={350}>
           <BarChart data={dashboardData.bestSellingProducts}>
             <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.3} />
-            <XAxis dataKey="_id" tick={{ fill: "#4CAF50", fontSize: 14 }} />
+            <XAxis
+              dataKey="productInfo.name"
+              tick={{ fill: "#4CAF50", fontSize: 14 }}
+            />
             <YAxis tick={{ fill: "#4CAF50", fontSize: 14 }} />
             <Tooltip
               content={<CustomTooltip />}

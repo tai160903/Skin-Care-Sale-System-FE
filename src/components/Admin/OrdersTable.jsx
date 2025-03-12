@@ -92,7 +92,7 @@ const OrdersTable = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {orders.map((order) => (
+            {orders.data?.data.map((order) => (
               <TableRow key={order._id} sx={{ backgroundColor: "white" }}>
                 <TableCell sx={{ fontWeight: "bold", color: "#d32f2f" }}>
                   ${order.totalPay.toLocaleString()}

@@ -29,6 +29,22 @@ const userService = {
     }
   },
 
+  createEmployee: async (employeeData) => {
+    try {
+      const response = await axiosClient.post(
+        `${API_URL}/create-employee`,
+        employeeData,
+      );
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Lỗi khi tạo nhân viên:",
+        error.response?.data || error.message,
+      );
+      throw error;
+    }
+  },
+
   updateUser: async (id, userData) => {
     try {
       const response = await axiosClient.put(
