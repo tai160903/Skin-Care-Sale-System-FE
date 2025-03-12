@@ -8,19 +8,28 @@ const shipService = {
       const response = await axiosClient.get(API_BASE_URL);
       return response.data;
     } catch (error) {
-      console.error("Error fetching shippings:", error.response?.data || error.message);
+      console.error(
+        "Error fetching shippings:",
+        error.response?.data || error.message,
+      );
       throw error;
     }
   },
 
   updateShippingStatus: async (id, status) => {
     try {
-      const response = await axiosClient.put(`${API_BASE_URL}/update-status/${id}`, {
-        shipping_status: status,
-      });
+      const response = await axiosClient.put(
+        `${API_BASE_URL}/update-status/${id}`,
+        {
+          shipping_status: status,
+        },
+      );
       return response.data;
     } catch (error) {
-      console.error("Error updating shipping status:", error.response?.data || error.message);
+      console.error(
+        "Error updating shipping status:",
+        error.response?.data || error.message,
+      );
       throw error;
     }
   },

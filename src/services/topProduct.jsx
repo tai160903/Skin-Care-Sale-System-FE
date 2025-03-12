@@ -11,7 +11,10 @@ const useTopProductService = () => {
         const response = await axiosClient.get("/api/products/top-sell");
         setProducts(response.data);
       } catch (error) {
-        console.error("Lỗi khi lấy dữ liệu:", error.response?.data || error.message);
+        console.error(
+          "Lỗi khi lấy dữ liệu:",
+          error.response?.data || error.message,
+        );
       } finally {
         setLoading(false);
       }

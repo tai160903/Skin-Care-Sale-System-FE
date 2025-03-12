@@ -23,6 +23,7 @@ import Map from "../components/Header/Map";
 import Blog from "../components/Header/Blog";
 import OrTrack from "../components/Header/OrTrack";
 import ProfilePage from "../pages/ProfilePage";
+import OrderHistory from "../pages/OrderHistory";
 
 // import Profile from "../components/Header/Profile";
 // admin
@@ -54,7 +55,13 @@ const Router = createBrowserRouter([
     children: [
       {
         path: "",
-        element: <Home />,
+        element: (
+          <ProtectedRoute
+            allowedRoles={["customer", "guest"]} // Allow both customer and guest
+          >
+            <Home />
+          </ProtectedRoute>
+        ),
         errorElement: <Error />,
       },
       {
@@ -64,6 +71,10 @@ const Router = createBrowserRouter([
       {
         path: "signup",
         element: <Signup />,
+      },
+      {
+        path: "order-history/:customer_id",
+        element: <OrderHistory />,
       },
       {
         path: "verify-email",
@@ -151,11 +162,11 @@ const Router = createBrowserRouter([
     ],
   },
   {
-    path: "admin",
+    path: "manager",
     element: (
-      // <ProtectedRoute role="admin">
-      <AdminLayout />
-      // </ProtectedRoute>
+      <ProtectedRoute role="manger">
+        <AdminLayout />
+      </ProtectedRoute>
     ),
     children: [
       {
@@ -223,9 +234,9 @@ const Router = createBrowserRouter([
   {
     path: "staff",
     element: (
-      // <ProtectedRoute role="staff">
-      <StaffLayout />
-      // </ProtectedRoute>
+      <ProtectedRoute role="staff">
+        <StaffLayout />
+      </ProtectedRoute>
     ),
     children: [
       {

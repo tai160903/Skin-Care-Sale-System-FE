@@ -20,20 +20,33 @@ import {
   LocalShipping,
   Menu,
 } from "@mui/icons-material";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { logout } from "../../redux/slices/userSlice";
+import { useDispatch } from "react-redux";
 
 const StaffSidebar = () => {
   const location = useLocation();
   const [open, setOpen] = useState(true);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const toggleSidebar = () => {
     setOpen(!open);
   };
 
+  const handleLogout = () => {
+    dispatch(logout()); // Dispatch the logout action to clear user data
+    navigate("/"); // Navigate to the home page or login page
+  };
+
   const menuItems = [
     { text: "Đơn hàng", icon: <ListAlt />, path: "/staff/orders" },
-    { text: "Hỗ trợ khách hàng", icon: <People />, path: "/staff/supportcustomers" },
+    {
+      text: "Hỗ trợ khách hàng",
+      icon: <People />,
+      path: "/staff/supportcustomers",
+    },
     { text: "Sản phẩm", icon: <ShoppingCart />, path: "/staff/products" },
     { text: "Khuyến mãi", icon: <LocalOffer />, path: "/staff/promotions" },
     { text: "Báo cáo", icon: <BarChart />, path: "/staff/reports" },
@@ -124,8 +137,7 @@ const StaffSidebar = () => {
       <Divider sx={{ backgroundColor: "#2C3E50", margin: "16px 20px" }} />
       <List>
         <ListItem
-          component={Link}
-          to="/logout"
+          onClick={handleLogout} // Trigger logout function here
           sx={{
             bgcolor: "transparent",
             "&:hover": {

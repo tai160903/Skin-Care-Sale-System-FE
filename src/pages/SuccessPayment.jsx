@@ -1,4 +1,4 @@
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { formatCurrency } from "../utils/formatCurrency";
@@ -9,6 +9,8 @@ import { Button, Typography, Box, Paper, Divider } from "@mui/material";
 const SuccessPayment = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const customerId = useSelector((state) => state?.user?.customer?._id);
+
   const data = JSON.parse(localStorage.getItem("order"));
 
   useEffect(() => {
@@ -20,7 +22,7 @@ const SuccessPayment = () => {
   };
 
   const handleViewOrders = () => {
-    navigate("/profile");
+    navigate(`/order-history/${customerId}`);
   };
 
   if (!data) {

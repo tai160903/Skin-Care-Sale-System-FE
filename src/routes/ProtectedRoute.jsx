@@ -2,14 +2,21 @@ import { useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
 import { selectUser } from "../redux/slices/userSlice";
 
-function ProtectedRoute({ children, role }) {
+function ProtectedRoute({ children, allowedRoles = [] }) {
   const user = useSelector(selectUser);
 
+  // If there is no user and allowedRoles contains 'guest', allow the route for guests
+  if (!user && allowedRoles.includes("guest")) {
+    return children;
+  }
+
+  // If the user is not authenticated and does not match any allowed role, redirect to sign-in page
   if (!user || !user.user || !user.user.role) {
     return <Navigate to="/signin" />;
   }
 
-  if (user.user.role !== role) {
+  // If the user's role doesn't match the required role, redirect accordingly
+  if (allowedRoles.length && !allowedRoles.includes(user.user.role)) {
     switch (user.user.role) {
       case "customer":
         return <Navigate to="/" replace />;

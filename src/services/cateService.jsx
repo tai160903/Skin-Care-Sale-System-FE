@@ -15,7 +15,7 @@ const useCategoryService = () => {
         // Gọi API lấy 1 sản phẩm đầu tiên của mỗi danh mục
         const productPromises = categoryList.map(async (category) => {
           const productRes = await axiosClient.get(
-            `/api/products/category/${category}?limit=1`
+            `/api/products/category/${category}?limit=1`,
           );
           return {
             name: category,
@@ -26,7 +26,10 @@ const useCategoryService = () => {
         const categoriesWithProducts = await Promise.all(productPromises);
         setCategories(categoriesWithProducts);
       } catch (error) {
-        console.error("Lỗi khi lấy danh mục:", error.response?.data || error.message);
+        console.error(
+          "Lỗi khi lấy danh mục:",
+          error.response?.data || error.message,
+        );
       } finally {
         setLoading(false);
       }
