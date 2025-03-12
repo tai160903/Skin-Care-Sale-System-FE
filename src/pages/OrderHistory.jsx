@@ -22,7 +22,7 @@ import {
   CreditCard,
   LocalAtm,
 } from "@mui/icons-material";
-import Header from "../components/Header/Header"; // Thêm dòng import này
+import Header from "../components/Header/Header";
 
 const OrderHistory = () => {
   const [orders, setOrders] = useState([]);
@@ -36,7 +36,6 @@ const OrderHistory = () => {
           `http://localhost:8080/api/orders?customer_id=${customer_id}`,
         );
         setOrders(res.data.data?.data || []);
-        console.log("Orders:", res.data.data?.data);
       } catch (error) {
         console.error("Error fetching orders:", error);
       } finally {
@@ -46,6 +45,12 @@ const OrderHistory = () => {
 
     fetchOrders();
   }, [customer_id]);
+
+  // ✅ Tính tổng Total Pay của tất cả đơn hàng
+  const totalPayAllProducts = orders.reduce(
+    (sum, order) => sum + (order.totalPay || 0),
+    0,
+  );
 
   if (loading)
     return (
@@ -61,7 +66,7 @@ const OrderHistory = () => {
 
   return (
     <>
-      <Header /> {/* Thêm Header vào đây */}
+      <Header />
       <TableContainer
         component={Paper}
         sx={{
@@ -92,19 +97,19 @@ const OrderHistory = () => {
                 Order ID
               </TableCell>
               <TableCell sx={{ fontWeight: "bold", color: "#333" }}>
-                Status
+                Total Pay
               </TableCell>
               <TableCell sx={{ fontWeight: "bold", color: "#333" }}>
-                Total Price
+                Discount
               </TableCell>
               <TableCell sx={{ fontWeight: "bold", color: "#333" }}>
-                Payment
+                Order Status
               </TableCell>
               <TableCell sx={{ fontWeight: "bold", color: "#333" }}>
-                Shipping Address
+                Payment Method
               </TableCell>
               <TableCell sx={{ fontWeight: "bold", color: "#333" }}>
-                Shipping Status
+                Order Date
               </TableCell>
             </TableRow>
           </TableHead>
@@ -113,26 +118,47 @@ const OrderHistory = () => {
               <TableRow
                 key={order._id}
                 hover
-                sx={{
-                  transition: "0.3s",
-                  "&:hover": { bgcolor: "#e3f2fd" },
-                }}
+                sx={{ "&:hover": { bgcolor: "#e3f2fd" } }}
               >
-                <TableCell>{order?.order_id?._id || "N/A"}</TableCell>
+                <TableCell>{order?._id || "N/A"}</TableCell>
+                <TableCell>
+                  <Tooltip
+                    title={`${order?.totalPay?.toLocaleString() || "N/A"} VND`}
+                  >
+                    <Typography fontWeight="bold" color="#1976D2">
+                      {order?.totalPay
+                        ? order.totalPay.toLocaleString()
+                        : "N/A"}{" "}
+                      VND
+                    </Typography>
+                  </Tooltip>
+                </TableCell>
+                <TableCell>
+                  <Tooltip
+                    title={`${order?.discount?.toLocaleString() || "0"} %`}
+                  >
+                    <Typography fontWeight="bold" color="#d32f2f">
+                      {order?.discount
+                        ? `-${order.discount.toLocaleString()}`
+                        : "0"}{" "}
+                      %
+                    </Typography>
+                  </Tooltip>
+                </TableCell>
                 <TableCell>
                   <Chip
-                    label={order?.order_id?.order_status || "Unknown"}
+                    label={order?.order_status || "Unknown"}
                     color={
-                      order?.order_id?.order_status === "Completed"
+                      order?.order_status === "Completed"
                         ? "success"
-                        : order?.order_id?.order_status === "Pending"
+                        : order?.order_status === "Pending"
                           ? "warning"
                           : "error"
                     }
                     icon={
-                      order?.order_id?.order_status === "Completed" ? (
+                      order?.order_status === "Completed" ? (
                         <CheckCircle />
-                      ) : order?.order_id?.order_status === "Pending" ? (
+                      ) : order?.order_status === "Pending" ? (
                         <PendingActions />
                       ) : (
                         <Cancel />
@@ -142,23 +168,11 @@ const OrderHistory = () => {
                   />
                 </TableCell>
                 <TableCell>
-                  <Tooltip
-                    title={`${order?.order_id?.finalPrice?.toLocaleString() || "N/A"} VND`}
-                  >
-                    <Typography fontWeight="bold" color="#1976D2">
-                      {order?.order_id?.finalPrice
-                        ? order.order_id.finalPrice.toLocaleString()
-                        : "N/A"}{" "}
-                      VND
-                    </Typography>
-                  </Tooltip>
-                </TableCell>
-                <TableCell>
                   <Chip
-                    label={order?.order_id?.payment_method || "Unknown"}
+                    label={order?.payment_method || "Unknown"}
                     color="primary"
                     icon={
-                      order?.order_id?.payment_method === "Credit Card" ? (
+                      order?.payment_method === "Credit Card" ? (
                         <CreditCard />
                       ) : (
                         <LocalAtm />
@@ -168,34 +182,28 @@ const OrderHistory = () => {
                   />
                 </TableCell>
                 <TableCell>
-                  <Tooltip title={order?.shipping_address || "Unknown"}>
-                    <Typography
-                      noWrap
-                      sx={{
-                        maxWidth: 150,
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                      }}
-                    >
-                      {order?.shipping_address || "N/A"}
-                    </Typography>
-                  </Tooltip>
-                </TableCell>
-                <TableCell>
-                  <Chip
-                    label={order?.shipping_status || "Unknown"}
-                    color={
-                      order?.shipping_status === "Delivered"
-                        ? "success"
-                        : order?.shipping_status === "Processing"
-                          ? "warning"
-                          : "error"
-                    }
-                    sx={{ fontWeight: "bold" }}
-                  />
+                  <Typography fontWeight="bold">
+                    {order?.createdAt
+                      ? new Date(order.createdAt).toLocaleDateString()
+                      : "N/A"}
+                  </Typography>
                 </TableCell>
               </TableRow>
             ))}
+
+            {/* 🔥 Hàng Tổng Cộng - Total Pay Of All Product */}
+            <TableRow sx={{ bgcolor: "#e8f5e9" }}>
+              <TableCell colSpan={5} align="right">
+                <Typography fontWeight="bold" fontSize="1.1rem">
+                  Total Pay Of All Product:
+                </Typography>
+              </TableCell>
+              <TableCell>
+                <Typography fontWeight="bold" fontSize="1.1rem" color="#16a34a">
+                  {totalPayAllProducts.toLocaleString()} VND
+                </Typography>
+              </TableCell>
+            </TableRow>
           </TableBody>
         </Table>
       </TableContainer>

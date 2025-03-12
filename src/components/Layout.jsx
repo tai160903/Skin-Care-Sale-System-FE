@@ -16,13 +16,15 @@ function Layout() {
     "/forgot-password",
     "/profile/:userId",
     "/order-history/:userId", // Thêm đường dẫn này vào danh sách
+    "/order-tracking/:userId",
   ];
 
   const hideHeaderFooter = paths.some((path) => {
     if (path.includes(":userId")) {
       return (
         pathname.startsWith("/profile/") ||
-        pathname.startsWith("/order-history/")
+        pathname.startsWith("/order-history/") ||
+        pathname.startsWith("/order-tracking/")
       );
     }
     return path === pathname;
