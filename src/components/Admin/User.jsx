@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
-import userService from "../../services/userService";
 import {
+  Container,
+  Typography,
+  TextField,
   Button,
   Table,
   TableBody,
@@ -9,158 +11,217 @@ import {
   TableHead,
   TableRow,
   Paper,
-  TextField,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
+  Snackbar,
+  Alert,
+  Box,
+  IconButton,
+  InputAdornment,
+  Divider,
+  Card,
+  CardContent,
+  Tooltip,
 } from "@mui/material";
+import {
+  Add,
+  Email,
+  Lock,
+  Person,
+  Visibility,
+  VisibilityOff,
+  People,
+  VerifiedUser,
+} from "@mui/icons-material";
+import { motion } from "framer-motion";
+import userService from "../../services/userService";
 
 const User = () => {
   const [users, setUsers] = useState([]);
-  const [open, setOpen] = useState(false);
-  const [formData, setFormData] = useState({
-    id: "",
-    fullName: "",
-    email: "",
-    role: "",
-  });
+  const [newEmployee, setNewEmployee] = useState({ email: "", password: "" });
+  const [showPassword, setShowPassword] = useState(false);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
   useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const customers = await userService.getCustomers();
+        const staffs = await userService.getStaffs();
+        setUsers([...customers, ...staffs]);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
     fetchUsers();
   }, []);
 
-  const fetchUsers = async () => {
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setNewEmployee({ ...newEmployee, [name]: value });
+  };
+
+  const handleCreateEmployee = async () => {
     try {
-      const customers = await userService.getCustomers();
-      const staffs = await userService.getStaffs();
-
-      if (!Array.isArray(customers) || !Array.isArray(staffs)) {
-        console.error("API không trả về mảng hợp lệ", { customers, staffs });
-        setUsers([]);
-        return;
-      }
-
-      setUsers([...customers, ...staffs]);
+      const response = await userService.createEmployee(newEmployee);
+      setUsers([...users, response]);
+      setSnackbarMessage("Employee created successfully!");
+      setSnackbarSeverity("success");
+      setNewEmployee({ email: "", password: "" });
     } catch (error) {
-      console.error("Lỗi khi lấy danh sách người dùng:", error);
-      setUsers([]);
+      setSnackbarMessage("Error creating employee!");
+      setSnackbarSeverity("error");
+      setNewEmployee({ email: "", password: "" });
     }
-  };
-
-  const handleOpen = (user) => {
-    setFormData({
-      id: user.id,
-      fullName: user.fullName,
-      email: user.email,
-      role: user.role,
-    });
-    setOpen(true);
-  };
-
-  const handleClose = () => setOpen(false);
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async () => {
-    try {
-      await userService.updateUser(formData.id, formData);
-      fetchUsers();
-      handleClose();
-    } catch (error) {
-      console.error("Lỗi khi cập nhật người dùng:", error);
-    }
-  };
-
-  const handleDelete = async (id) => {
-    if (window.confirm("Bạn có chắc chắn muốn xóa người dùng này?")) {
-      try {
-        await userService.deleteUser(id);
-        fetchUsers();
-      } catch (error) {
-        console.error("Lỗi khi xóa người dùng:", error);
-      }
-    }
+    setOpenSnackbar(true);
   };
 
   return (
-    <div style={{ padding: 20 }}>
-      <h2>Danh sách người dùng</h2>
+    <Container maxWidth="lg" sx={{ my: 4 }}>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1 }}
+      >
+        <Typography
+          variant="h4"
+          align="center"
+          fontWeight="bold"
+          color="primary"
+          gutterBottom
+        >
+          User Management
+        </Typography>
+      </motion.div>
 
-      <TableContainer component={Paper} style={{ marginTop: 20 }}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>ID</TableCell>
-              <TableCell>Họ và Tên</TableCell>
-              <TableCell>Email</TableCell>
-              <TableCell>Vai trò</TableCell>
-              <TableCell>Hành động</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {users.map((user) => (
-              <TableRow key={user.id}>
-                <TableCell>{user.id}</TableCell>
-                <TableCell>{user.fullName}</TableCell>
-                <TableCell>{user.email}</TableCell>
-                <TableCell>{user.role}</TableCell>
-                <TableCell>
-                  <Button
-                    variant="outlined"
-                    color="primary"
-                    onClick={() => handleOpen(user)}
-                    style={{ marginRight: 10 }}
-                  >
-                    Sửa
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    color="secondary"
-                    onClick={() => handleDelete(user.id)}
-                  >
-                    Xóa
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      {/* User List */}
+      <Card sx={{ p: 3, mb: 4, borderRadius: 3, boxShadow: 4 }}>
+        <CardContent>
+          <Typography variant="h5" fontWeight="bold" sx={{ mb: 2 }}>
+            <People sx={{ mr: 1, color: "#1565c0" }} /> User List
+          </Typography>
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableRow sx={{ backgroundColor: "#e3f2fd" }}>
+                  <TableCell sx={{ fontWeight: "bold" }}>Email</TableCell>
+                  <TableCell sx={{ fontWeight: "bold" }}>Role</TableCell>
+                  <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
+                  <TableCell sx={{ fontWeight: "bold" }}>Created At</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {users.map((user) => (
+                  <TableRow key={user._id} hover>
+                    <TableCell>
+                      <Email sx={{ mr: 1, color: "#1565c0" }} /> {user.email}
+                    </TableCell>
+                    <TableCell>
+                      <Person sx={{ mr: 1, color: "#2e7d32" }} /> {user.role}
+                    </TableCell>
+                    <TableCell>
+                      {user.isBanned ? (
+                        <Tooltip title="Banned">
+                          <Typography color="error">Banned</Typography>
+                        </Tooltip>
+                      ) : user.isVerify ? (
+                        <Tooltip title="Verified">
+                          <VerifiedUser sx={{ color: "green" }} />
+                        </Tooltip>
+                      ) : (
+                        "Not Verified"
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {new Date(user.createdAt).toLocaleString()}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </CardContent>
+      </Card>
 
-      {/* Dialog sửa thông tin */}
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Chỉnh sửa người dùng</DialogTitle>
-        <DialogContent>
-          <TextField
-            label="Họ và Tên"
-            name="fullName"
-            value={formData.fullName}
-            onChange={handleChange}
-            fullWidth
-            margin="dense"
-          />
-          <TextField
-            label="Email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            fullWidth
-            margin="dense"
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="secondary">
-            Hủy
-          </Button>
-          <Button onClick={handleSubmit} color="primary">
-            Lưu
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </div>
+      <Divider sx={{ my: 4 }} />
+
+      {/* Add Employee Form */}
+      <Card sx={{ p: 3, borderRadius: 3, boxShadow: 4 }}>
+        <CardContent>
+          <Typography
+            variant="h5"
+            fontWeight="bold"
+            align="center"
+            sx={{ mb: 2 }}
+          >
+            Add New Employee
+          </Typography>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 2,
+              maxWidth: 400,
+              mx: "auto",
+            }}
+          >
+            <TextField
+              label="Email"
+              name="email"
+              value={newEmployee.email}
+              onChange={handleInputChange}
+              fullWidth
+              InputProps={{
+                startAdornment: <Email sx={{ mr: 1, color: "#1565c0" }} />,
+              }}
+            />
+            <TextField
+              label="Password"
+              name="password"
+              type={showPassword ? "text" : "password"}
+              value={newEmployee.password}
+              onChange={handleInputChange}
+              fullWidth
+              InputProps={{
+                startAdornment: <Lock sx={{ mr: 1, color: "#1565c0" }} />,
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton onClick={() => setShowPassword(!showPassword)}>
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+            <Button
+              variant="contained"
+              sx={{
+                backgroundColor: "#1565c0",
+                color: "white",
+                "&:hover": { backgroundColor: "#0d47a1" },
+              }}
+              onClick={handleCreateEmployee}
+              startIcon={<Add />}
+            >
+              Add Employee
+            </Button>
+          </Box>
+        </CardContent>
+      </Card>
+
+      {/* Snackbar */}
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={3000}
+        onClose={() => setOpenSnackbar(false)}
+      >
+        <Alert
+          severity={snackbarSeverity}
+          onClose={() => setOpenSnackbar(false)}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
+    </Container>
   );
 };
 

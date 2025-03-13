@@ -3,72 +3,23 @@ import axios from "axios";
 const API_BASE_URL = "http://localhost:8080/api/orders";
 
 const orderService = {
-  getAllOrders: async () => {
+  getAllOrders: async (page = 1, limit = 10) => {
     try {
       const response = await axios.get(API_BASE_URL, {
+        params: { page, limit }, // Thêm phân trang vào request
         headers: { Accept: "application/json" },
       });
-      return response.data;
+      return response.data; // Giả sử API trả về `{ orders: [], totalPages: n }`
     } catch (error) {
-      console.error("Error fetching orders:", error);
+      console.error("Error fetching paginated orders:", error);
       throw error;
     }
   },
 
-  getOrderById: async (orderId) => {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/${orderId}`, {
-        headers: { Accept: "application/json" },
-      });
-      return response.data;
-    } catch (error) {
-      console.error(`Error fetching order with ID ${orderId}:`, error);
-      throw error;
-    }
-  },
-
-  updateOrderStatus: async (orderId, status) => {
-    try {
-      const response = await axios.put(
-        `${API_BASE_URL}/${orderId}`,
-        {
-          order_status: status,
-        },
-        {
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-        },
-      );
-      return response.data;
-    } catch (error) {
-      console.error(`Error updating order status for ID ${orderId}:`, error);
-      throw error;
-    }
-  },
-
-  getOrdersByCustomerId: async (customerId) => {
-    try {
-      const response = await axios.get(
-        `${API_BASE_URL}/customer/${customerId}`,
-        {
-          headers: { Accept: "application/json" },
-        },
-      );
-      return response.data;
-    } catch (error) {
-      console.error(
-        `Error fetching orders for customer ID ${customerId}:`,
-        error,
-      );
-      throw error;
-    }
-  },
-
-  getOrdersByStatus: async (status) => {
+  getOrdersByStatus: async (status, page = 1, limit = 10) => {
     try {
       const response = await axios.get(`${API_BASE_URL}/status/`, {
+        params: { status, page, limit },
         headers: { Accept: "application/json" },
       });
       return response.data;
@@ -78,20 +29,21 @@ const orderService = {
     }
   },
 
-  getOrdersByCustomerAndStatus: async (customerId, status) => {
+  updateOrderStatus: async (orderId, status) => {
     try {
-      const response = await axios.get(
-        `${API_BASE_URL}/customer-status/${customerId}/${encodeURIComponent(status)}`,
+      const response = await axios.put(
+        `${API_BASE_URL}/${orderId}`,
+        { order_status: status },
         {
-          headers: { Accept: "application/json" },
-        },
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+        }
       );
       return response.data;
     } catch (error) {
-      console.error(
-        `Error fetching orders for customer ${customerId} with status ${status}:`,
-        error,
-      );
+      console.error(`Error updating order status for ID ${orderId}:`, error);
       throw error;
     }
   },
