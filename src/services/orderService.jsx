@@ -39,7 +39,7 @@ const orderService = {
             Accept: "application/json",
             "Content-Type": "application/json",
           },
-        }
+        },
       );
       return response.data;
     } catch (error) {

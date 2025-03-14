@@ -87,7 +87,7 @@ const SkinTypeQuiz = () => {
       const routineResponse = await quizService.getRoutine(
         response.data.result._id,
       );
-      setRoutine(routineResponse.data.routine);
+      setRoutine(routineResponse.data.data);
     } catch (error) {
       toast.error(error.response?.data?.message || "Có lỗi xảy ra!");
     }

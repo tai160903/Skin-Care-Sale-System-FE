@@ -7,9 +7,6 @@ import Verify from "../pages/Verify";
 import ForgotPassword from "../pages/ForgotPassword";
 import ResetPass from "../pages/ResetPass";
 import Layout from "../components/Layout";
-import CustomerDashboard from "../pages/CustomerDashboard";
-import StaffDashboard from "../pages/StaffDashboard";
-import ManagerDashboard from "../pages/ManagerDashboard";
 import ProtectedRoute from "./ProtectedRoute";
 import AdminLayout from "../components/AdminLayout";
 import AdminDashboard from "../pages/AdminDashboard";
@@ -24,9 +21,6 @@ import Blog from "../components/Header/Blog";
 import OrTrack from "../components/Header/OrTrack";
 import ProfilePage from "../pages/ProfilePage";
 import OrderHistory from "../pages/OrderHistory";
-
-// import Profile from "../components/Header/Profile";
-// admin
 import User from "../components/Admin/User";
 import BlogList from "../components/Admin/BlogList";
 import QuizList from "../components/Admin/QuizList";
@@ -38,8 +32,6 @@ import Review from "../components/Admin/Review";
 import ShipList from "../components/Admin/ShipList";
 import ShipFee from "../components/Admin/ShipFee";
 import Settings from "../components/Admin/Settings";
-
-//Staff
 import StaffLayout from "../components/StaffLayout";
 import OrderManagement from "../components/Staff/OrderManagement";
 import ProductComparison from "../pages/ProductComparison";
@@ -55,13 +47,7 @@ const Router = createBrowserRouter([
     children: [
       {
         path: "",
-        element: (
-          <ProtectedRoute
-            allowedRoles={["customer", "guest"]} // Allow both customer and guest
-          >
-            <Home />
-          </ProtectedRoute>
-        ),
+        element: <Home />,
         errorElement: <Error />,
       },
       {
@@ -105,7 +91,7 @@ const Router = createBrowserRouter([
         element: <Blog />,
       },
       {
-        path: "profile/:userId", // Định nghĩa route với userId
+        path: "profile/:userId",
         element: <ProfilePage />,
       },
       {
@@ -113,43 +99,24 @@ const Router = createBrowserRouter([
         element: <ProductComparison />,
       },
       {
-        path: "customer-dashboard",
-        element: (
-          <ProtectedRoute
-            element={<CustomerDashboard />}
-            allowedRoles={["customer"]}
-          />
-        ),
-      },
-      {
-        path: "staff-dashboard",
-        element: (
-          <ProtectedRoute
-            element={<StaffDashboard />}
-            allowedRoles={["staff"]}
-          />
-        ),
-      },
-      {
-        path: "manager-dashboard",
-        element: (
-          <ProtectedRoute
-            element={<ManagerDashboard />}
-            allowedRoles={["manager"]}
-          />
-        ),
-      },
-      {
         path: "product/:id",
         element: <Detail />,
       },
       {
         path: "cart",
-        element: <Cart />,
+        element: (
+          <ProtectedRoute allowedRoles={["customer"]}>
+            <Cart />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "checkout",
-        element: <DraftOrder />,
+        element: (
+          <ProtectedRoute allowedRoles={["customer"]}>
+            <DraftOrder />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "success",
@@ -162,7 +129,7 @@ const Router = createBrowserRouter([
     ],
   },
   {
-    path: "manager",
+    path: "/manager",
     element: (
       <ProtectedRoute role="manger">
         <AdminLayout />
@@ -257,7 +224,6 @@ const Router = createBrowserRouter([
       },
     ],
   },
-
   {
     path: "*",
     element: <Error />,

@@ -81,7 +81,6 @@ const Compare = () => {
         So sánh sản phẩm
       </Typography>
 
-      {/* Dropdown chọn sản phẩm */}
       <Select value="" displayEmpty onChange={handleSelectProduct} fullWidth>
         <MenuItem value="" disabled>
           Chọn sản phẩm để so sánh
@@ -93,7 +92,6 @@ const Compare = () => {
         ))}
       </Select>
 
-      {/* Bảng so sánh */}
       {selectedProducts.length > 0 && (
         <TableContainer component={Paper} sx={{ mt: 3 }}>
           <Table>
