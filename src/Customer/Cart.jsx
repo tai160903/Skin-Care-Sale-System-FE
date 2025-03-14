@@ -74,7 +74,7 @@ const Cart = () => {
   const handleCheckout = () => {
     if (!customerId) {
       toast.error("Bạn cần đăng nhập để thanh toán!");
-      navigate("/signin"); // Điều hướng đến trang đăng nhập
+      navigate("/signin");
       return;
     }
 

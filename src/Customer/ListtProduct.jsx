@@ -1,66 +1,51 @@
 import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { login } from "../redux/slices/userSlice";
+import { useNavigate, useLocation } from "react-router-dom"; // ✅ Use location for query params
 import productService from "../services/productService";
 import {
   Card,
   CardContent,
   Typography,
-  CircularProgress,
   Rating,
+  Pagination,
+  Box,
 } from "@mui/material";
 import { toast } from "react-toastify";
 import { formatCurrency } from "../utils/formatCurrency";
 
 function ListProduct() {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const queryParams = new URLSearchParams(location.search);
+  const initialPage = parseInt(queryParams.get("page")) || 1;
+
+  const [page, setPage] = useState(initialPage);
+  const [limit] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
   const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await productService.getAllProduct();
+        const response = await productService.getAllProduct({ page, limit });
         setData(response.data.data);
+        setTotalPages(response.data.totalPages);
       } catch (error) {
-        toast.error(error.response.data.message);
-      } finally {
-        setLoading(false);
+        toast.error(
+          error.response?.data?.message || "Failed to fetch products",
+        );
       }
     };
     fetchData();
-  }, []);
 
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get("access_token");
-    const user = urlParams.get("user")
-      ? JSON.parse(urlParams.get("user"))
-      : null;
-    const customer = urlParams.get("customer")
-      ? JSON.parse(urlParams.get("customer"))
-      : null;
+    const newParams = new URLSearchParams();
+    newParams.set("page", page);
+    navigate(`?${newParams.toString()}`, { replace: true });
+  }, [page, limit, navigate]);
 
-    if (token && user) {
-      dispatch(
-        login({
-          user: {
-            id: user?._doc?._id,
-            email: user?._doc?.email,
-            role: user?._doc?.role,
-          },
-          token,
-          customer: customer?._doc,
-        }),
-      );
-    }
-
-    setTimeout(() => {
-      window.history.replaceState({}, document.title, window.location.pathname);
-    }, 1000);
-  }, [dispatch]);
+  const handlePageChange = (event, value) => {
+    setPage(value);
+  };
 
   const handleProductClick = (id) => {
     navigate(`/product/${id}`);
@@ -72,11 +57,7 @@ function ListProduct() {
         Gợi ý cho bạn
       </Typography>
 
-      {loading ? (
-        <div className="flex justify-center items-center h-64">
-          <CircularProgress />
-        </div>
-      ) : (
+      <>
         <div className="flex flex-wrap gap-6 justify-start">
           {data.map((item, index) => (
             <Card
@@ -140,7 +121,18 @@ function ListProduct() {
             </Card>
           ))}
         </div>
-      )}
+
+        <Box display="flex" justifyContent="center" sx={{ mt: 4 }}>
+          <Pagination
+            count={totalPages}
+            page={page}
+            onChange={handlePageChange}
+            color="primary"
+            showFirstButton
+            showLastButton
+          />
+        </Box>
+      </>
     </div>
   );
 }
