@@ -1,17 +1,15 @@
 import { useRef, useState } from "react";
 import { supabase } from "../supabaseClient";
+import { Box, Button } from "@mui/material";
 
-const UploadImage = () => {
+const UploadImage = ({ onUploadSuccess }) => {
   const [image, setImage] = useState(null);
   const [previewUrl, setPreviewUrl] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
   const [loading, setLoading] = useState(false);
 
   const fileInputRef = useRef(null);
 
-  const handleChooseFile = () => {
-    fileInputRef.current.click();
-  };
+  const handleChooseFile = () => fileInputRef.current.click();
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -37,70 +35,32 @@ const UploadImage = () => {
       const { data: publicUrl } = supabase.storage
         .from("skincare")
         .getPublicUrl(fileName);
-      setImageUrl(publicUrl.publicUrl);
-      console.log("File đã được upload thành công:", data);
+
+      onUploadSuccess(publicUrl.publicUrl);
     }
 
     setLoading(false);
   };
 
   return (
-    <div style={{ textAlign: "center", padding: "20px" }}>
-      <input
-        type="file"
-        ref={fileInputRef}
-        onChange={handleFileChange}
-        accept="image/*"
-        style={{ display: "none" }}
-      />
+    <Box display="flex" flexDirection="column" alignItems="center" gap={1} mt={2}>
+      <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" hidden />
 
-      <button
-        onClick={handleChooseFile}
-        style={{
-          backgroundColor: "#007bff",
-          color: "white",
-          padding: "10px 20px",
-          border: "none",
-          borderRadius: "5px",
-          cursor: "pointer",
-          marginBottom: "10px",
-        }}
-      >
+      {/* Sửa lỗi thiếu dấu `}` */}
+      <Button variant="contained" color="primary" onClick={handleChooseFile}>
         Chọn ảnh
-      </button>
+      </Button>
 
       {previewUrl && (
-        <img
-          src={previewUrl}
-          alt="Preview"
-          style={{ width: "150px", marginTop: "10px", borderRadius: "10px" }}
-        />
+        <img src={previewUrl} alt="Preview" 
+          style={{ width: "150px", borderRadius: "10px", border: "1px solid #ddd", padding: "5px" }} />
       )}
 
-      <button
-        onClick={handleUpload}
-        disabled={loading}
-        style={{
-          backgroundColor: loading ? "#6c757d" : "#28a745",
-          color: "white",
-          padding: "10px 20px",
-          border: "none",
-          borderRadius: "5px",
-          cursor: loading ? "not-allowed" : "pointer",
-          marginTop: "10px",
-        }}
-      >
+      <Button variant="contained" color="success" onClick={handleUpload} disabled={loading}
+        sx={{ mt: 1, width: "150px" }}>
         {loading ? "Đang tải..." : "Upload"}
-      </button>
-
-      {imageUrl && (
-        <img
-          src={imageUrl}
-          alt="Uploaded"
-          style={{ width: "200px", marginTop: "10px", borderRadius: "10px" }}
-        />
-      )}
-    </div>
+      </Button>
+    </Box>
   );
 };
 
