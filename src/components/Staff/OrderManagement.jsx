@@ -69,8 +69,8 @@ const OrderManagement = () => {
       await orderService.updateOrderStatus(orderId, newStatus);
       setOrders((prevOrders) =>
         prevOrders.map((order) =>
-          order._id === orderId ? { ...order, order_status: newStatus } : order
-        )
+          order._id === orderId ? { ...order, order_status: newStatus } : order,
+        ),
       );
       toast.success("Order status updated successfully");
     } catch (error) {
@@ -134,7 +134,7 @@ const OrderManagement = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-              {orders.map((order)  => (
+                {orders.map((order) => (
                   <TableRow key={order._id} sx={{ backgroundColor: "white" }}>
                     <TableCell>{order._id}</TableCell>
                     <TableCell>{order.customer_id}</TableCell>

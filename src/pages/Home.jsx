@@ -10,11 +10,41 @@ import Blog from "../components/Header/Blog";
 import { Container, Box } from "@mui/material";
 import Adv from "../components/Header/Adv";
 import UploadImage from "../components/UploadImage";
+import { login } from "../redux/slices/userSlice";
 
 function Home() {
   const dispatch = useDispatch();
   const customer = useSelector((state) => state.user.customer);
   const [isFetched, setIsFetched] = useState(false);
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get("access_token");
+    const user = urlParams.get("user")
+      ? JSON.parse(urlParams.get("user"))
+      : null;
+    const customer = urlParams.get("customer")
+      ? JSON.parse(urlParams.get("customer"))
+      : null;
+
+    if (token && user) {
+      dispatch(
+        login({
+          user: {
+            id: user?._doc?._id,
+            email: user?._doc?.email,
+            role: user?._doc?.role,
+          },
+          token,
+          customer: customer?._doc,
+        }),
+      );
+    }
+
+    setTimeout(() => {
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }, 1000);
+  }, [dispatch]);
 
   console.log("customer", customer);
   useEffect(() => {
@@ -22,7 +52,6 @@ function Home() {
       if (customer && !isFetched) {
         try {
           const response = await cartService.getCart(customer._id);
-          console.log("response", response);
           dispatch(
             setCart({
               items: response.data.items,
@@ -44,16 +73,13 @@ function Home() {
     <Box>
       <Adv />
       <Container maxWidth="xl" sx={{ mt: 4 }}>
-        {/* Top sản phẩm */}
         <Box sx={{ mb: 10 }}>
           <TopProduct />
         </Box>
 
-        {/* Danh mục sản phẩm */}
         <Box sx={{ mb: 5 }}>
           <Category />
         </Box>
-        {/* Danh sách sản phẩm */}
         <Box sx={{ mb: 5 }}>
           <ListProduct />
         </Box>
