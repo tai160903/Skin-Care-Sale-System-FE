@@ -79,7 +79,7 @@ const Router = createBrowserRouter([
         element: <SkinTypeQuiz />,
       },
       {
-        path: "order-tracking",
+        path: "order-tracking/:customer_id",
         element: <OrTrack />,
       },
       {
