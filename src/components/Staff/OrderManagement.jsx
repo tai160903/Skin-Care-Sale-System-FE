@@ -47,20 +47,34 @@ const OrderManagement = () => {
   const fetchOrders = async () => {
     setLoading(true);
     try {
-      let data;
+      let response;
       if (statusFilter === "All") {
-        data = await orderService.getAllOrders(page, 10);
+        response = await orderService.getAllOrders(page, 10); // Thêm limit
       } else {
-        data = await orderService.getOrdersByStatus(statusFilter, page, 10);
+        response = await orderService.getOrdersByStatus(statusFilter, page, 10);
       }
-
-      console.log("Fetched Orders:", data?.data?.data);
-      setOrders(data?.data?.data); // Giả sử API trả về `{ orders: [], totalPages: n }`
-      setTotalPages(data.totalPages);
+  
+      console.log("Fetched Orders:", response?.data?.data?.data);
+      setOrders( response?.data?.data?.data || []);
+      console.log("TotalPages", response?.data);
+      setTotalPages(response?.data?.data.totalPages || 1);
     } catch (error) {
       toast.error("Failed to fetch orders");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const getStatusLabel = (status) => {
+    switch (status?.toLowerCase()) {
+      case "pending confirmation":
+        return "Đang chờ xác nhận";
+      case "complete confirmation":
+        return "Đã hoàn thành";
+      case "cancelled":
+        return "Đơn Hàng đã bị Hủy";
+      default:
+        return status;
     }
   };
 
@@ -146,16 +160,13 @@ const OrderManagement = () => {
                         }
                         sx={{ backgroundColor: "white", borderRadius: 2 }}
                       >
-                        <MenuItem value="Pending Confirmation">
-                          Pending Confirmation
+                        <MenuItem value="confirmed">
+                          XÁC NHẬN ĐƠN HÀNG
                         </MenuItem>
-                        <MenuItem value="Complete Confirmation">
-                          Complete Confirmation
-                        </MenuItem>
-                        <MenuItem value="Cancelled">Cancelled</MenuItem>
+                        <MenuItem value="Cancelled">HỦY ĐƠN HÀNG</MenuItem>
                       </Select>
                       <Chip
-                        label={order.order_status}
+                        label={getStatusLabel(order.order_status)}
                         color={getStatusColor(order.order_status)}
                         sx={{ ml: 2, fontWeight: "bold" }}
                       />
