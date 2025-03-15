@@ -34,13 +34,14 @@ const DraftOrder = () => {
 
   useEffect(() => {
     const fetchShippingFee = async () => {
-      if (address?.province && address?.district) {
+      if (address?.ward && address?.district) {
         try {
           const response = await shipfeeService.getShipfee(
-            address.province,
-            address.district,
+            address.district.DistrictID,
+            address.ward.WardCode,
+            cart.length,
           );
-          setShippingFee(response.data.shiping_price);
+          setShippingFee(response.data.data.total);
         } catch (error) {
           toast.error(
             error.response?.data?.message || "Lỗi khi lấy phí vận chuyển",
@@ -50,7 +51,7 @@ const DraftOrder = () => {
       }
     };
     fetchShippingFee();
-  }, [address.province, address.district]);
+  }, [address.ward, address.district]);
 
   const totalAmount = cart.reduce((sum, item) => {
     const originalPrice = Number(item.product_id?.price) || 0;
@@ -92,9 +93,10 @@ const DraftOrder = () => {
       const orderData = {
         customerId: customer._id,
         totalPay: finalAmount,
-        address,
+        address: `${address.street}, ${address.ward.WardName}, ${address.district.DistrictName}, ${address.province.ProvinceName}`,
         phone,
         discounted,
+        shipping_price: shippingFee,
         payment_method: paymentType,
       };
 

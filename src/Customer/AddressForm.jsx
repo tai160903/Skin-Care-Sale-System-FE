@@ -6,23 +6,22 @@ import {
   MenuItem,
   TextField,
 } from "@mui/material";
-import addressService from "../services/addressServide";
+import addressService from "../services/addressService";
 import { toast } from "react-toastify";
 
 const AddressForm = ({ onAddressChange }) => {
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
-  const [province, setProvince] = useState("");
-  const [district, setDistrict] = useState("");
-  const [ward, setWard] = useState("");
+  const [province, setProvince] = useState(null);
+  const [district, setDistrict] = useState(null);
+  const [ward, setWard] = useState(null);
   const [street, setStreet] = useState("");
 
   useEffect(() => {
     const fetchProvinces = async () => {
       try {
         const res = await addressService.getProvince();
-
         setProvinces(res?.data?.data || []);
       } catch (error) {
         toast.error("Lỗi lấy danh sách tỉnh/thành:", error);
@@ -32,41 +31,47 @@ const AddressForm = ({ onAddressChange }) => {
     fetchProvinces();
   }, []);
 
-  const handleProvinceChange = async (province) => {
-    setProvince(province);
-    setDistrict("");
-    setWard("");
+  const handleProvinceChange = async (provinceId) => {
+    const selectedProvince = provinces.find((p) => p.ProvinceID === provinceId);
+
+    setProvince(selectedProvince);
+    setDistrict(null);
+    setWard(null);
     setDistricts([]);
     setWards([]);
 
     try {
-      const res = await addressService.getDistrict(province);
+      const res = await addressService.getDistrict(provinceId);
       setDistricts(res?.data?.data || []);
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error("Lỗi lấy danh sách quận/huyện:", error);
     }
 
-    updateAddress("province", province);
+    updateAddress("province", selectedProvince);
   };
 
-  const handleDistrictChange = async (district) => {
-    setDistrict(district);
-    setWard("");
+  const handleDistrictChange = async (districtId) => {
+    const selectedDistrict = districts.find((d) => d.DistrictID === districtId);
+
+    setDistrict(selectedDistrict);
+    setWard(null);
     setWards([]);
 
     try {
-      const res = await addressService.getWard(district);
+      const res = await addressService.getWard(districtId);
       setWards(res?.data?.data || []);
     } catch (error) {
       toast.error("Lỗi lấy danh sách phường/xã:", error);
     }
 
-    updateAddress("district", district);
+    updateAddress("district", selectedDistrict);
   };
 
-  const handleWardChange = (ward) => {
-    setWard(ward);
-    updateAddress("ward", ward);
+  const handleWardChange = (wardCode) => {
+    const selectedWard = wards.find((w) => w.WardCode === wardCode);
+
+    setWard(selectedWard);
+    updateAddress("ward", selectedWard);
   };
 
   const handleStreetChange = (street) => {
@@ -88,12 +93,12 @@ const AddressForm = ({ onAddressChange }) => {
       <FormControl fullWidth className="mt-4">
         <InputLabel>Tỉnh/Thành phố</InputLabel>
         <Select
-          value={province}
+          value={province ? province.ProvinceID : ""}
           onChange={(e) => handleProvinceChange(e.target.value)}
         >
           {provinces.map((province, index) => (
-            <MenuItem key={index} value={province}>
-              {province}
+            <MenuItem key={index} value={province.ProvinceID}>
+              {province.ProvinceName}
             </MenuItem>
           ))}
         </Select>
@@ -102,12 +107,12 @@ const AddressForm = ({ onAddressChange }) => {
       <FormControl fullWidth className="mt-4" disabled={!province}>
         <InputLabel>Quận/Huyện</InputLabel>
         <Select
-          value={district}
+          value={district ? district.DistrictID : ""}
           onChange={(e) => handleDistrictChange(e.target.value)}
         >
           {districts.map((district, index) => (
-            <MenuItem key={index} value={district}>
-              {district}
+            <MenuItem key={index} value={district.DistrictID}>
+              {district.DistrictName}
             </MenuItem>
           ))}
         </Select>
@@ -115,10 +120,13 @@ const AddressForm = ({ onAddressChange }) => {
 
       <FormControl fullWidth className="mt-4" disabled={!district}>
         <InputLabel>Phường/Xã</InputLabel>
-        <Select value={ward} onChange={(e) => handleWardChange(e.target.value)}>
+        <Select
+          value={ward ? ward.WardCode : ""}
+          onChange={(e) => handleWardChange(e.target.value)}
+        >
           {wards.map((ward, index) => (
-            <MenuItem key={index} value={ward}>
-              {ward}
+            <MenuItem key={index} value={ward.WardCode}>
+              {ward.WardName}
             </MenuItem>
           ))}
         </Select>
