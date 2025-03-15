@@ -40,6 +40,7 @@ import CustomerList from "../components/Admin/CustomerList";
 import ProductManagement from "../components/Staff/ProductManagement";
 import PromotionManagement from "../components/Staff/PromotionManagement";
 import CustomerSupport from "../components/Staff/CustomerSupport";
+import ShipManagement from "../components/Staff/ShipManagement";
 const Router = createBrowserRouter([
   {
     path: "/",
@@ -222,6 +223,10 @@ const Router = createBrowserRouter([
         path: "supportcustomers",
         element: <CustomerSupport />,
       },
+      {
+        path: "shipmanager",
+        element: <ShipManagement/>,
+      },
     ],
   },
   {
@@ -231,3 +236,6 @@ const Router = createBrowserRouter([
 ]);
 
 export default Router;
+
+
+

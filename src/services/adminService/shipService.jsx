@@ -3,9 +3,10 @@ import axiosClient from "../api.config";
 const API_BASE_URL = "/api/shippings";
 
 const shipService = {
-  getAllShippings: async () => {
+
+  getAllShippings: async ({ page, limit }) => {
     try {
-      const response = await axiosClient.get(API_BASE_URL);
+      const response = await axiosClient.get(`${API_BASE_URL}?page=${page}&limit=${limit}`);
       return response.data;
     } catch (error) {
       console.error(

@@ -1,23 +1,44 @@
 import { useEffect, useState } from "react";
-import { getAllShipments } from "../../services/adminService/shipService";
+import shipService from "../../services/adminService/shipService";
 import { toast } from "react-toastify";
+import { Box, Pagination } from "@mui/material";
 
 const ShipManagement = () => {
   const [shipments, setShipments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
+
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "Pending":
+        return "bg-yellow-500";
+      case "Shipping":
+        return "bg-blue-500";
+      case "Delivered":
+        return "bg-green-500";
+      case "Cancelled":
+        return "bg-red-500";
+      default:
+        return "bg-gray-200";
+    }
+  };
 
   useEffect(() => {
     fetchShipments();
-  }, []);
+  }, [page]);
 
   const fetchShipments = async () => {
     setLoading(true);
     try {
-      const response = await getAllShipments();
-      console.log("Shipments Data:", response.data);
+      const response = await shipService.getAllShippings({ page, limit: 10 });
+      console.log("Shipments Data:", response?.data?.data);
 
-      if (response.data && Array.isArray(response.data)) {
-        setShipments(response.data);
+      if (response.data?.data && Array.isArray(response.data.data)) {
+        setShipments(response.data.data);
+        setTotalPages(response.data.totalPages);
       } else {
         setShipments([]);
       }
@@ -27,6 +48,19 @@ const ShipManagement = () => {
       setShipments([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const updateShipmentStatus = async (id, newStatus) => {
+    try {
+      const response = await shipService.updateShippingStatus(id, newStatus);
+      if (response.status === 200) {
+        toast.success("Cập nhật trạng thái thành công!");
+        fetchShipments(); // Làm mới danh sách sau khi cập nhật
+      }
+    } catch (error) {
+      console.error("Error updating status:", error);
+      toast.error("Không thể cập nhật trạng thái!");
     }
   };
 
@@ -53,13 +87,11 @@ const ShipManagement = () => {
               <tr>
                 <th className="p-3 text-left">Order ID</th>
                 <th className="p-3 text-left">Total Price</th>
-                <th className="p-3 text-left">Shipping Fee</th>
-                <th className="p-3 text-left">Order Status</th>
-                <th className="p-3 text-left">Payment Method</th>
                 <th className="p-3 text-left">Shipping Address</th>
                 <th className="p-3 text-left">Phone</th>
                 <th className="p-3 text-left">Shipping Status</th>
                 <th className="p-3 text-left">Created At</th>
+                <th className="p-3 text-left">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -69,16 +101,53 @@ const ShipManagement = () => {
                     key={shipment._id}
                     className="border-b hover:bg-gray-100 transition"
                   >
-                    <td className="p-3">{shipment.order_id}</td>
-                    <td className="p-3">${shipment.totalPrice.toFixed(2)}</td>
-                    <td className="p-3">${shipment.shipping_fee.toFixed(2)}</td>
-                    <td className="p-3">{shipment.order_status}</td>
-                    <td className="p-3">{shipment.payment_method}</td>
+                    <td className="p-3">{shipment.order_id._id}</td>
+                    <td className="p-3">
+                      ${shipment.order_id.totalPay.toFixed(2)}
+                    </td>
                     <td className="p-3">{shipment.shipping_address}</td>
                     <td className="p-3">{shipment.shipping_phone}</td>
-                    <td className="p-3">{shipment.shipping_status}</td>
+                    <td className="p-3 flex items-center gap-2">
+                      {/* Hiển thị trạng thái với màu sắc */}
+                      <span className={`px-3 py-1 rounded text-white ${getStatusColor(shipment.shipping_status)}`}>
+                        {shipment.shipping_status}
+                      </span>
+
+                      {/* Wrapper chứa dropdown */}
+                      <div className="relative">
+                        {/* Select ẩn nhưng vẫn hoạt động */}
+                        <select
+                          value={shipment.shipping_status}
+                          onChange={(e) => updateShipmentStatus(shipment._id, e.target.value)}
+                          className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
+                        >
+                          {["Shipping", "Delivered"].map((status) => (
+                            <option key={status} value={status}>
+                              {status}
+                            </option>
+                          ))}
+                        </select>
+
+                        {/* Mũi tên dropdown */}
+                        <span className="px-2 py-1 border rounded bg-gray-200 cursor-pointer">
+                          ▼
+                        </span>
+                      </div>
+                    </td>
+
+                  
                     <td className="p-3">
                       {new Date(shipment.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className="p-3">
+                      <button
+                        onClick={() =>
+                          updateShipmentStatus(shipment._id, "Cancelled")
+                        }
+                      className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition"
+                      >
+                        CẬP NHẬT
+                      </button>
                     </td>
                   </tr>
                 ))
@@ -93,6 +162,15 @@ const ShipManagement = () => {
           </table>
         </div>
       )}
+
+      <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+        <Pagination
+          count={totalPages}
+          page={page}
+          onChange={(event, value) => setPage(value)}
+          color="primary"
+        />
+      </Box>
     </div>
   );
 };
