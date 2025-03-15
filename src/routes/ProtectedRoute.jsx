@@ -10,7 +10,18 @@ function ProtectedRoute({ children, allowedRoles = [] }) {
   }
 
   if (allowedRoles.length && !allowedRoles.includes(user.role)) {
-    return <Navigate to={user.role === "manager" ? "/manager" : "/"} replace />;
+    return (
+      <Navigate
+        to={
+          user.role === "manager"
+            ? "/manager"
+            : user.role === "staff"
+              ? "/staff"
+              : "/"
+        }
+        replace
+      />
+    );
   }
 
   return children;
