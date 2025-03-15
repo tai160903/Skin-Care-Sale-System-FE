@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import productService from "../../services/productService";
+import skintypeService from "../../services/adminService/skinTypeService";
 import { toast } from "react-toastify";
+import Pagination from "@mui/material/Pagination";
 import {
   Table,
   TableBody,
@@ -30,6 +32,12 @@ const ProductList = () => {
   const [loading, setLoading] = useState(true);
   const [category, setCategory] = useState("All");
   const [open, setOpen] = useState(false);
+  const [page, setPage] = useState(1);
+  const [limit] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
+  const [skinTypes, setSkinTypes] = useState([]);
+  const [editingProduct, setEditingProduct] = useState(null);
+
   const [newProduct, setNewProduct] = useState({
     name: "",
     category: "",
@@ -45,14 +53,16 @@ const ProductList = () => {
 
   useEffect(() => {
     fetchProducts();
-  }, [category]);
+    fetchSkinTypes();
+  }, [page]);
 
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const response = await productService.getAllProduct();
-      if (response.data && Array.isArray(response.data.data)) {
+      const response = await productService.getAllProduct({ page, limit });
+      if (response?.data && Array.isArray(response.data.data)) {
         setProducts(response.data.data);
+        setTotalPages(response?.data?.totalPages || 1);
       } else {
         setProducts([]);
       }
@@ -64,37 +74,43 @@ const ProductList = () => {
     }
   };
 
+  const fetchSkinTypes = async () => {
+    try {
+      const response = await skintypeService.getSkinTypes();
+      setSkinTypes(response.data);
+    } catch (error) {
+      toast.error("Failed to fetch skin types");
+    }
+  };
+
   const handleCreateProduct = async () => {
     try {
       await productService.createProduct(newProduct);
       toast.success("Product created successfully!");
       setOpen(false);
-      fetchProducts(); // Refresh danh sách sản phẩm
+      fetchProducts();
     } catch (error) {
       toast.error("Failed to create product");
     }
   };
 
+  const handleEditProduct = (product) => {
+    console.log("product:", product);
+    setEditingProduct(product);
+    setOpen(true);
+  };
 
-  // fake skintypes
-  const mockSkinTypes = [
-    { _id: "1", name: "Dry" },
-    { _id: "2", name: "Oily" },
-    { _id: "3", name: "Combination" },
-    { _id: "4", name: "Sensitive" },
-    { _id: "5", name: "Normal" }
-  ];
-  
-  const [skinTypes, setSkinTypes] = useState([]);
-  
-  useEffect(() => {
-    // Giả lập API call bằng setTimeout
-    setTimeout(() => {
-      setSkinTypes(mockSkinTypes);
-    }, 500);
-  }, []);
-
-
+  const handleUpdateProduct = async () => {
+    try {
+      await productService.updateProduct(editingProduct._id, editingProduct);
+      toast.success("Product updated successfully!");
+      setOpen(false);
+      setEditingProduct(null);
+      fetchProducts();
+    } catch (error) {
+      toast.error("Failed to update product");
+    }
+  };
 
   return (
     <Paper sx={{ padding: 3, borderRadius: 3, backgroundColor: "#f8f9fa" }}>
@@ -138,10 +154,22 @@ const ProductList = () => {
           <Table>
             <TableHead>
               <TableRow sx={{ backgroundColor: "#1976d2" }}>
-                {["Image", "Name", "Category", "Price", "Stock", "Discount (%)"].map((header) => (
+                {[
+                  "Image",
+                  "Name",
+                  "Category",
+                  "Price",
+                  "Stock",
+                  "Discount (%)",
+                  "Actions",
+                ].map((header) => (
                   <TableCell
                     key={header}
-                    sx={{ color: "white", fontWeight: "bold", textAlign: "center" }}
+                    sx={{
+                      color: "white",
+                      fontWeight: "bold",
+                      textAlign: "center",
+                    }}
                   >
                     {header}
                   </TableCell>
@@ -153,16 +181,31 @@ const ProductList = () => {
                 products.map((product, index) => (
                   <TableRow
                     key={index}
-                    sx={{ "&:nth-of-type(odd)": { backgroundColor: "#f9f9f9" } }}
+                    sx={{
+                      "&:nth-of-type(odd)": { backgroundColor: "#f9f9f9" },
+                    }}
                   >
                     <TableCell align="center">
                       <Avatar src={product.image} alt={product.name} />
                     </TableCell>
                     <TableCell>{product.name}</TableCell>
                     <TableCell align="center">{product.category}</TableCell>
-                    <TableCell align="center">${product.price.toFixed(2)}</TableCell>
+                    <TableCell align="center">
+                      ${product.price.toFixed(2)}
+                    </TableCell>
                     <TableCell align="center">{product.stock}</TableCell>
-                    <TableCell align="center">{product.discountPercentage}%</TableCell>
+                    <TableCell align="center">
+                      {product.discountPercentage}%
+                    </TableCell>
+                    <TableCell align="center">
+                      <Button
+                        variant="contained"
+                        color="warning"
+                        onClick={() => handleEditProduct(product)}
+                      >
+                        Edit
+                      </Button>
+                    </TableCell>
                   </TableRow>
                 ))
               ) : (
@@ -178,76 +221,102 @@ const ProductList = () => {
       )}
 
       {/* Dialog tạo sản phẩm */}
-  <Dialog open={open} onClose={() => setOpen(false)} maxWidth="sm" fullWidth>
-  <DialogTitle sx={{ textAlign: "center", fontWeight: "bold" }}>
-    Create New Product
-  </DialogTitle>
-  <DialogContent>
-    <Box display="flex" flexDirection="column" gap={2}>
-      <TextField label="Name" fullWidth value={newProduct.name}
-        onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })} />
-
-      <TextField label="Category" fullWidth value={newProduct.category}
-        onChange={(e) => setNewProduct({ ...newProduct, category: e.target.value })} />
-
-      {/* Dropdown chọn Skin Type */}
-      <FormControl fullWidth>
-        <InputLabel>Skin Type</InputLabel>
-        <Select
-          value={newProduct.skinType || ""}
-          onChange={(e) => setNewProduct({ ...newProduct, skinType: e.target.value })}
+      <Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle sx={{ textAlign: "center", fontWeight: "bold" }}>
+          {editingProduct ? "Edit Product" : "Create New Product"}
+        </DialogTitle>
+        <DialogContent>
+          <Box display="flex" flexDirection="column" gap={2}>
+            {Object.keys(newProduct).map((key) =>
+              key === "skinType" ? (
+                <FormControl fullWidth key={key}>
+                  <InputLabel>Skin Type</InputLabel>
+                  <Select
+                    value={
+                      (editingProduct
+                        ? editingProduct[key]
+                        : newProduct[key]) || ""
+                    }
+                    onChange={(e) => {
+                      editingProduct
+                        ? setEditingProduct({
+                            ...editingProduct,
+                            [key]: e.target.value,
+                          })
+                        : setNewProduct({
+                            ...newProduct,
+                            [key]: e.target.value,
+                          });
+                    }}
+                  >
+                    {skinTypes.map((type) => (
+                      <MenuItem key={type._id} value={type._id}>
+                        {type.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              ) : (
+                key !== "image" && (
+                  <TextField
+                    key={key}
+                    label={key}
+                    fullWidth
+                    value={
+                      (editingProduct
+                        ? editingProduct[key]
+                        : newProduct[key]) || ""
+                    }
+                    onChange={(e) => {
+                      editingProduct
+                        ? setEditingProduct({
+                            ...editingProduct,
+                            [key]: e.target.value,
+                          })
+                        : setNewProduct({
+                            ...newProduct,
+                            [key]: e.target.value,
+                          });
+                    }}
+                  />
+                )
+              ),
+            )}
+            <UploadImage
+              onUploadSuccess={(url) => {
+                if (editingProduct) {
+                  setEditingProduct({ ...editingProduct, image: url });
+                } else {
+                  setNewProduct({ ...newProduct, image: url });
+                }
+              }}
+            />
+          </Box>
+        </DialogContent>
+        <DialogActions
+          sx={{ justifyContent: "center", gap: 2, paddingBottom: 2 }}
         >
-          {skinTypes.map((type) => (
-            <MenuItem key={type._id} value={type._id}>
-              {type.name}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-
-      <TextField label="Ingredient" fullWidth value={newProduct.ingredient || ""}
-        onChange={(e) => setNewProduct({ ...newProduct, ingredient: e.target.value })} />
-
-      <Box display="flex" gap={2}>
-        <TextField label="Price" type="number" fullWidth value={newProduct.price}
-          onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })} />
-        <TextField label="Stock" type="number" fullWidth value={newProduct.stock}
-          onChange={(e) => setNewProduct({ ...newProduct, stock: e.target.value })} />
-      </Box>
-
-      <TextField label="Description" fullWidth value={newProduct.description}
-        onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })} />
-
-      <TextField label="UserManual" fullWidth value={newProduct.userManual}
-        onChange={(e) => setNewProduct({ ...newProduct, userManual: e.target.value })} />
-
-      <TextField label="Virtuel" fullWidth value={newProduct.vvirtuel}
-        onChange={(e) => setNewProduct({ ...newProduct, virtuel: e.target.value })} />
-
-      {/* Upload Image */}
-      <UploadImage onUploadSuccess={(url) => setNewProduct({ ...newProduct, image: url })} />
-
-      {/* Hiển thị ảnh sau khi upload */}
-      {newProduct.image && (
-        <Box display="flex" justifyContent="center">
-          <img src={newProduct.image} alt="Uploaded" 
-            style={{ width: "120px", borderRadius: "10px", border: "1px solid #ccc", padding: "5px" }} />
-        </Box>
-      )}
-    </Box>
-  </DialogContent>
-
-  <DialogActions sx={{ justifyContent: "center", gap: 2, paddingBottom: 2 }}>
-    <Button onClick={() => setOpen(false)} color="secondary" variant="outlined">
-      Cancel
-    </Button>
-    <Button onClick={handleCreateProduct} color="primary" variant="contained">
-      Create
-    </Button>
-  </DialogActions>
-</Dialog>
-
-    
+          <Button
+            onClick={() => setOpen(false)}
+            color="secondary"
+            variant="outlined"
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={editingProduct ? handleUpdateProduct : handleCreateProduct}
+            color="primary"
+            variant="contained"
+          >
+            {editingProduct ? "Update" : "Create"}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Paper>
   );
 };

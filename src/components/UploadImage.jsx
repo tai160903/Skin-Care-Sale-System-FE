@@ -43,8 +43,20 @@ const UploadImage = ({ onUploadSuccess }) => {
   };
 
   return (
-    <Box display="flex" flexDirection="column" alignItems="center" gap={1} mt={2}>
-      <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" hidden />
+    <Box
+      display="flex"
+      flexDirection="column"
+      alignItems="center"
+      gap={1}
+      mt={2}
+    >
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleFileChange}
+        accept="image/*"
+        hidden
+      />
 
       {/* Sửa lỗi thiếu dấu `}` */}
       <Button variant="contained" color="primary" onClick={handleChooseFile}>
@@ -52,12 +64,25 @@ const UploadImage = ({ onUploadSuccess }) => {
       </Button>
 
       {previewUrl && (
-        <img src={previewUrl} alt="Preview" 
-          style={{ width: "150px", borderRadius: "10px", border: "1px solid #ddd", padding: "5px" }} />
+        <img
+          src={previewUrl}
+          alt="Preview"
+          style={{
+            width: "150px",
+            borderRadius: "10px",
+            border: "1px solid #ddd",
+            padding: "5px",
+          }}
+        />
       )}
 
-      <Button variant="contained" color="success" onClick={handleUpload} disabled={loading}
-        sx={{ mt: 1, width: "150px" }}>
+      <Button
+        variant="contained"
+        color="success"
+        onClick={handleUpload}
+        disabled={loading}
+        sx={{ mt: 1, width: "150px" }}
+      >
         {loading ? "Đang tải..." : "Upload"}
       </Button>
     </Box>
