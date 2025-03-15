@@ -69,7 +69,7 @@ const Header = () => {
 
       <nav className="flex items-center space-x-6">
         <Link
-          to="/order-tracking"
+          to={`/order-tracking/${customerId}`}
           className="flex items-center text-gray-700 hover:text-green-700 space-x-2"
         >
           <ShippingIcon className="text-[#326f51] text-xl" />
