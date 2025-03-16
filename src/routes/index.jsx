@@ -40,68 +40,26 @@ import CustomerList from "../components/Admin/CustomerList";
 import ProductManagement from "../components/Staff/ProductManagement";
 import PromotionManagement from "../components/Staff/PromotionManagement";
 import CustomerSupport from "../components/Staff/CustomerSupport";
+
 const Router = createBrowserRouter([
   {
     path: "/",
     element: <Layout />,
     children: [
-      {
-        path: "",
-        element: <Home />,
-        errorElement: <Error />,
-      },
-      {
-        path: "signin",
-        element: <Signin />,
-      },
-      {
-        path: "signup",
-        element: <Signup />,
-      },
-      {
-        path: "order-history/:customer_id",
-        element: <OrderHistory />,
-      },
-      {
-        path: "verify-email",
-        element: <Verify />,
-      },
-      {
-        path: "forgot-password",
-        element: <ForgotPassword />,
-      },
-      {
-        path: "verify-reset-password",
-        element: <ResetPass />,
-      },
-      {
-        path: "question",
-        element: <SkinTypeQuiz />,
-      },
-      {
-        path: "order-tracking/:customer_id",
-        element: <OrTrack />,
-      },
-      {
-        path: "store-location",
-        element: <Map />,
-      },
-      {
-        path: "blog",
-        element: <Blog />,
-      },
-      {
-        path: "profile/:userId",
-        element: <ProfilePage />,
-      },
-      {
-        path: "comparison",
-        element: <ProductComparison />,
-      },
-      {
-        path: "product/:id",
-        element: <Detail />,
-      },
+      { path: "", element: <Home />, errorElement: <Error /> },
+      { path: "signin", element: <Signin /> },
+      { path: "signup", element: <Signup /> },
+      { path: "order-history/:customer_id", element: <OrderHistory /> },
+      { path: "verify-email", element: <Verify /> },
+      { path: "forgot-password", element: <ForgotPassword /> },
+      { path: "verify-reset-password", element: <ResetPass /> },
+      { path: "question", element: <SkinTypeQuiz /> },
+      { path: "order-tracking/:customer_id", element: <OrTrack /> },
+      { path: "store-location", element: <Map /> },
+      { path: "blog", element: <Blog /> },
+      { path: "profile/:userId", element: <ProfilePage /> },
+      { path: "comparison", element: <ProductComparison /> },
+      { path: "product/:id", element: <Detail /> },
       {
         path: "cart",
         element: (
@@ -118,116 +76,46 @@ const Router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
-      {
-        path: "success",
-        element: <SuccessPayment />,
-      },
-      {
-        path: "cancel",
-        element: <CancelPayment />,
-      },
+      { path: "success", element: <SuccessPayment /> },
+      { path: "cancel", element: <CancelPayment /> },
     ],
   },
   {
-    path: "/manager",
+    path: "/admin",
     element: (
-      <ProtectedRoute role="manger">
+      <ProtectedRoute allowedRoles={["admin"]}>
         <AdminLayout />
       </ProtectedRoute>
     ),
     children: [
-      {
-        path: "",
-        element: <AdminDashboard />,
-      },
-      {
-        path: "users",
-        element: <User />,
-      },
-      {
-        path: "blog",
-        element: <BlogList />,
-      },
-      {
-        path: "faqs",
-        element: <QuizList />,
-      },
-      {
-        path: "promotions",
-        element: <PromoList />,
-      },
-      {
-        path: "products",
-        element: <ProductList />,
-      },
-      {
-        path: "orders",
-        element: <OrdersTable />,
-      },
-      {
-        path: "reports",
-        element: <AdminDashboard />,
-      },
-      {
-        path: "compare",
-        element: <Compare />,
-      },
-      {
-        path: "reviews",
-        element: <Review />,
-      },
-      {
-        path: "shipping",
-        element: <ShipList />,
-      },
-      {
-        path: "shipfee",
-        element: <ShipFee />,
-      },
-      {
-        path: "staff",
-        element: <StaffList />,
-      },
-      {
-        path: "customers",
-        element: <CustomerList />,
-      },
-      {
-        path: "settings",
-        element: <Settings />,
-      },
+      { path: "", element: <AdminDashboard /> },
+      { path: "users", element: <User /> },
+      { path: "blog", element: <BlogList /> },
+      { path: "faqs", element: <QuizList /> },
+      { path: "promotions", element: <PromoList /> },
+      { path: "products", element: <ProductList /> },
+      { path: "orders", element: <OrdersTable /> },
+      { path: "reviews", element: <Review /> },
+      { path: "shipping", element: <ShipList /> },
+      { path: "staff", element: <StaffList /> },
+      { path: "customers", element: <CustomerList /> },
     ],
   },
   {
-    path: "staff",
+    path: "/staff",
     element: (
-      <ProtectedRoute role="staff">
+      <ProtectedRoute allowedRoles={["staff"]}>
         <StaffLayout />
       </ProtectedRoute>
     ),
     children: [
-      {
-        path: "orders",
-        element: <OrderManagement />,
-      },
-      {
-        path: "products",
-        element: <ProductManagement />,
-      },
-      {
-        path: "promotions",
-        element: <PromotionManagement />,
-      },
-      {
-        path: "supportcustomers",
-        element: <CustomerSupport />,
-      },
+      { path: "orders", element: <OrderManagement /> },
+      { path: "products", element: <ProductManagement /> },
+      { path: "promotions", element: <PromotionManagement /> },
+      { path: "supportcustomers", element: <CustomerSupport /> },
     ],
   },
-  {
-    path: "*",
-    element: <Error />,
-  },
+  { path: "*", element: <Error /> },
 ]);
 
 export default Router;

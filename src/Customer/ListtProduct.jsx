@@ -25,7 +25,6 @@ function ListProduct() {
   const [totalPages, setTotalPages] = useState(1);
   const [data, setData] = useState([]);
 
-  // Fetch sản phẩm khi page hoặc limit thay đổi
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -39,16 +38,15 @@ function ListProduct() {
       }
     };
     fetchData();
-  }, [page, limit]); // ✅ Không include navigate để tránh vòng lặp vô hạn
+  }, [page, limit]);
 
-  // Cập nhật URL khi page thay đổi
   useEffect(() => {
     const newParams = new URLSearchParams(location.search);
     if (parseInt(newParams.get("page")) !== page) {
       newParams.set("page", page);
       navigate(`?${newParams.toString()}`, { replace: true });
     }
-  }, [page, location.search, navigate]); // ✅ Chỉ chạy khi page hoặc URL thay đổi
+  }, [page, location.search, navigate]);
 
   const handlePageChange = (event, value) => {
     setPage(value);
