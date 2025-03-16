@@ -23,7 +23,6 @@ import {
   LocalOffer,
   Science,
   Compare,
-  BarChart,
   Settings,
   Group,
   AdminPanelSettings,
@@ -52,53 +51,43 @@ const Sidebar = () => {
       title: "Quản lý chính",
       icon: <AdminPanelSettings />,
       items: [
-        { text: "Dashboard", icon: <Dashboard />, path: "/manager/" },
-        { text: "Blog", icon: <Article />, path: "/manager/blog" },
+        { text: "Dashboard", icon: <Dashboard />, path: "" },
+        { text: "Blog", icon: <Article />, path: "/admin/blog" },
         {
           text: "Khuyến mãi",
           icon: <LocalOffer />,
-          path: "/manager/promotions",
+          path: "/admin/promotions",
         },
-        { text: "Báo cáo", icon: <BarChart />, path: "/manager/reports" },
       ],
     },
     {
       title: "Quản lý sản phẩm",
       icon: <Inventory />,
       items: [
-        { text: "Đơn hàng", icon: <ListAlt />, path: "/manager/orders" },
-        { text: "Sản phẩm", icon: <ShoppingCart />, path: "/manager/products" },
-        {
-          text: "So sánh sản phẩm",
-          icon: <Compare />,
-          path: "/manager/compare",
-        },
+        { text: "Đơn hàng", icon: <ListAlt />, path: "/admin/orders" },
+        { text: "Sản phẩm", icon: <ShoppingCart />, path: "/admin/products" },
         {
           text: "Kế hoạch chăm sóc da",
           icon: <Science />,
           path: "/admin/skincare-plans",
         },
-        { text: "Đánh giá", icon: <Star />, path: "/manager/reviews" },
-        { text: "Shipfee", icon: <Star />, path: "/manager/shipfee" },
-        { text: "Shipping", icon: <Star />, path: "/manager/shipping" },
+        { text: "Đánh giá", icon: <Star />, path: "/admin/reviews" },
+        { text: "Shipping", icon: <Star />, path: "/admin/shipping" },
       ],
     },
     {
       title: "Quản lý người dùng",
       icon: <People />,
       items: [
-        { text: "Người dùng", icon: <ListAlt />, path: "/manager/users" },
-        { text: "Khách hàng", icon: <People />, path: "/manager/customers" },
-        { text: "Nhân viên", icon: <Group />, path: "/manager/staff" },
+        { text: "Người dùng", icon: <ListAlt />, path: "/admin/users" },
+        { text: "Khách hàng", icon: <People />, path: "/admin/customers" },
+        { text: "Nhân viên", icon: <Group />, path: "/admin/staff" },
       ],
     },
     {
       title: "Hỗ trợ & Cài đặt",
       icon: <Settings />,
-      items: [
-        { text: "FAQs", icon: <LiveHelp />, path: "/manager/faqs" },
-        { text: "Cài đặt", icon: <Settings />, path: "/manager/settings" },
-      ],
+      items: [{ text: "FAQs", icon: <LiveHelp />, path: "/admin/faqs" }],
     },
   ];
 

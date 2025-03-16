@@ -10,7 +10,8 @@ const productService = {
 
   updateProduct: (id, data) => axiosClient.put(`/api/products/${id}`, data),
 
-  disableProduct: (id) => axiosClient.put(`/api/products/disable-product/${id}`),
+  disableProduct: (id) =>
+    axiosClient.put(`/api/products/disable-product/${id}`),
 };
 
 export default productService;

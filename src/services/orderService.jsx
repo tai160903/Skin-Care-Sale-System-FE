@@ -5,7 +5,7 @@ const API_BASE_URL = "http://localhost:8080/api/orders";
 const orderService = {
   getAllOrders: ({ page, limit }) =>
     axios.get(`${API_BASE_URL}?page=${page}&limit=${limit}`),
-  
+
   // getOrdersByStatus: async (status, page = 1, limit = 10) => {
   //   try {
   //     const response = await axios.get(`${API_BASE_URL}/status/`, {

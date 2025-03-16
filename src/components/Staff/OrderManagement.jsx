@@ -53,9 +53,9 @@ const OrderManagement = () => {
       } else {
         response = await orderService.getOrdersByStatus(statusFilter, page, 10);
       }
-  
+
       console.log("Fetched Orders:", response?.data?.data?.data);
-      setOrders( response?.data?.data?.data || []);
+      setOrders(response?.data?.data?.data || []);
       console.log("TotalPages", response?.data);
       setTotalPages(response?.data?.data.totalPages || 1);
     } catch (error) {
@@ -160,9 +160,7 @@ const OrderManagement = () => {
                         }
                         sx={{ backgroundColor: "white", borderRadius: 2 }}
                       >
-                        <MenuItem value="confirmed">
-                          XÁC NHẬN ĐƠN HÀNG
-                        </MenuItem>
+                        <MenuItem value="confirmed">XÁC NHẬN ĐƠN HÀNG</MenuItem>
                         <MenuItem value="Cancelled">HỦY ĐƠN HÀNG</MenuItem>
                       </Select>
                       <Chip
