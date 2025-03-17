@@ -9,8 +9,6 @@ const ShipManagement = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-
-
   const getStatusColor = (status) => {
     switch (status) {
       case "Pending":
@@ -109,7 +107,9 @@ const ShipManagement = () => {
                     <td className="p-3">{shipment.shipping_phone}</td>
                     <td className="p-3 flex items-center gap-2">
                       {/* Hiển thị trạng thái với màu sắc */}
-                      <span className={`px-3 py-1 rounded text-white ${getStatusColor(shipment.shipping_status)}`}>
+                      <span
+                        className={`px-3 py-1 rounded text-white ${getStatusColor(shipment.shipping_status)}`}
+                      >
                         {shipment.shipping_status}
                       </span>
 
@@ -118,7 +118,9 @@ const ShipManagement = () => {
                         {/* Select ẩn nhưng vẫn hoạt động */}
                         <select
                           value={shipment.shipping_status}
-                          onChange={(e) => updateShipmentStatus(shipment._id, e.target.value)}
+                          onChange={(e) =>
+                            updateShipmentStatus(shipment._id, e.target.value)
+                          }
                           className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
                         >
                           {["Shipping", "Delivered"].map((status) => (
@@ -135,7 +137,6 @@ const ShipManagement = () => {
                       </div>
                     </td>
 
-                  
                     <td className="p-3">
                       {new Date(shipment.createdAt).toLocaleDateString()}
                     </td>
@@ -144,7 +145,7 @@ const ShipManagement = () => {
                         onClick={() =>
                           updateShipmentStatus(shipment._id, "Cancelled")
                         }
-                      className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition"
+                        className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition"
                       >
                         CẬP NHẬT
                       </button>

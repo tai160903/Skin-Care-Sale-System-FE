@@ -225,7 +225,7 @@ const Router = createBrowserRouter([
       },
       {
         path: "shipmanager",
-        element: <ShipManagement/>,
+        element: <ShipManagement />,
       },
     ],
   },
@@ -236,6 +236,3 @@ const Router = createBrowserRouter([
 ]);
 
 export default Router;
-
-
-

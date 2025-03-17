@@ -20,7 +20,7 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions
+  DialogActions,
 } from "@mui/material";
 import RefreshIcon from "@mui/icons-material/Refresh";
 
@@ -30,7 +30,7 @@ const OrderManagement = () => {
   const [statusFilter, setStatusFilter] = useState("All");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  
+
   // State để mở modal xác nhận
   const [openConfirmModal, setOpenConfirmModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
@@ -102,8 +102,10 @@ const OrderManagement = () => {
       await orderService.updateOrderStatus(selectedOrder._id, newStatus);
       setOrders((prevOrders) =>
         prevOrders.map((order) =>
-          order._id === selectedOrder._id ? { ...order, order_status: newStatus } : order
-        )
+          order._id === selectedOrder._id
+            ? { ...order, order_status: newStatus }
+            : order,
+        ),
       );
       toast.success("Cập nhật trạng thái đơn hàng thành công");
     } catch (error) {
@@ -149,13 +151,22 @@ const OrderManagement = () => {
         </Box>
       ) : (
         <>
-          <TableContainer component={Paper} sx={{ borderRadius: 3, boxShadow: 3 }}>
+          <TableContainer
+            component={Paper}
+            sx={{ borderRadius: 3, boxShadow: 3 }}
+          >
             <Table>
               <TableHead sx={{ backgroundColor: "#1976d2" }}>
                 <TableRow>
-                  <TableCell sx={{ color: "white", fontWeight: "bold" }}>Order ID</TableCell>
-                  <TableCell sx={{ color: "white", fontWeight: "bold" }}>Customer ID</TableCell>
-                  <TableCell sx={{ color: "white", fontWeight: "bold" }}>Order Status</TableCell>
+                  <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                    Order ID
+                  </TableCell>
+                  <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                    Customer ID
+                  </TableCell>
+                  <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                    Order Status
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -164,41 +175,43 @@ const OrderManagement = () => {
                     <TableCell>{order._id}</TableCell>
                     <TableCell>{order.customer_id}</TableCell>
                     <TableCell>
-                    <Select
-  value={order.order_status}
-  onChange={(e) => handleOpenConfirmModal(order, e.target.value)}
-  sx={{
-    backgroundColor: "white",
-    borderRadius: 2,
-    minWidth: "140px",
-    padding: "5px 10px",
-    "& .MuiSelect-select": {
-      display: "flex",
-      alignItems: "center",
-      fontWeight: "bold",
-      textAlign: "center",
-    },
-    "& .MuiOutlinedInput-notchedOutline": {
-      borderColor: "#ddd", // Viền mờ hơn cho đẹp
-    },
-    "&:hover .MuiOutlinedInput-notchedOutline": {
-      borderColor: "#1976d2", // Hiệu ứng viền khi hover
-    },
-    "& .MuiSvgIcon-root": {
-      color: "#1976d2", // Màu mũi tên dropdown
-    },
-    boxShadow: 1, // Hiệu ứng bóng nhẹ
-  }}
-  displayEmpty
-  renderValue={(selected) => getStatusLabel(selected)}
->
-  <MenuItem value="confirmed">XÁC NHẬN ĐƠN HÀNG</MenuItem>
-  <MenuItem value="Cancelled">HỦY ĐƠN HÀNG</MenuItem>
-</Select>
+                      <Select
+                        value={order.order_status}
+                        onChange={(e) =>
+                          handleOpenConfirmModal(order, e.target.value)
+                        }
+                        sx={{
+                          backgroundColor: "white",
+                          borderRadius: 2,
+                          minWidth: "140px",
+                          padding: "5px 10px",
+                          "& .MuiSelect-select": {
+                            display: "flex",
+                            alignItems: "center",
+                            fontWeight: "bold",
+                            textAlign: "center",
+                          },
+                          "& .MuiOutlinedInput-notchedOutline": {
+                            borderColor: "#ddd", // Viền mờ hơn cho đẹp
+                          },
+                          "&:hover .MuiOutlinedInput-notchedOutline": {
+                            borderColor: "#1976d2", // Hiệu ứng viền khi hover
+                          },
+                          "& .MuiSvgIcon-root": {
+                            color: "#1976d2", // Màu mũi tên dropdown
+                          },
+                          boxShadow: 1, // Hiệu ứng bóng nhẹ
+                        }}
+                        displayEmpty
+                        renderValue={(selected) => getStatusLabel(selected)}
+                      >
+                        <MenuItem value="confirmed">XÁC NHẬN ĐƠN HÀNG</MenuItem>
+                        <MenuItem value="Cancelled">HỦY ĐƠN HÀNG</MenuItem>
+                      </Select>
                       <Chip
-                      label={getStatusLabel(order.order_status)}
-                      color={getStatusColor(order.order_status)}
-                      sx={{ ml: 2, fontWeight: "bold" }}
+                        label={getStatusLabel(order.order_status)}
+                        color={getStatusColor(order.order_status)}
+                        sx={{ ml: 2, fontWeight: "bold" }}
                       />
                     </TableCell>
                   </TableRow>
@@ -219,10 +232,15 @@ const OrderManagement = () => {
       )}
 
       {/* Modal xác nhận */}
-      <Dialog open={openConfirmModal} onClose={() => setOpenConfirmModal(false)}>
+      <Dialog
+        open={openConfirmModal}
+        onClose={() => setOpenConfirmModal(false)}
+      >
         <DialogTitle>Xác nhận thay đổi</DialogTitle>
         <DialogContent>
-          <Typography>Bạn có chắc chắn muốn thay đổi trạng thái đơn hàng?</Typography>
+          <Typography>
+            Bạn có chắc chắn muốn thay đổi trạng thái đơn hàng?
+          </Typography>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpenConfirmModal(false)} color="error">
