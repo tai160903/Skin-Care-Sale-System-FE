@@ -117,7 +117,7 @@ const ShipList = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredShippings.map((ship) => (
+            {/* {filteredShippings.map((ship) => (
               <TableRow
                 key={ship._id}
                 sx={{ "&:nth-of-type(odd)": { backgroundColor: "#fafafa" } }}
@@ -131,7 +131,7 @@ const ShipList = () => {
                 </TableCell>
                 <TableCell>{ship.reason || "N/A"}</TableCell>
               </TableRow>
-            ))}
+            ))} */}
           </TableBody>
         </Table>
       </TableContainer>

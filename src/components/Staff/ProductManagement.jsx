@@ -36,7 +36,7 @@ const ProductManagement = () => {
         setProducts([]);
       }
     } catch (error) {
-      toast.error("Failed to fetch products");
+      toast.error("Failed to fetch products", error);
       setProducts([]);
     } finally {
       setLoading(false);

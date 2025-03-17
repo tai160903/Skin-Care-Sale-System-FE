@@ -27,11 +27,8 @@ import QuizList from "../components/Admin/QuizList";
 import PromoList from "../components/Admin/PromoList";
 import ProductList from "../components/Admin/ProductList";
 import OrdersTable from "../components/Admin/OrdersTable";
-import Compare from "../components/Admin/Compare";
 import Review from "../components/Admin/Review";
 import ShipList from "../components/Admin/ShipList";
-import ShipFee from "../components/Admin/ShipFee";
-import Settings from "../components/Admin/Settings";
 import StaffLayout from "../components/StaffLayout";
 import OrderManagement from "../components/Staff/OrderManagement";
 import ProductComparison from "../pages/ProductComparison";
@@ -41,68 +38,26 @@ import ProductManagement from "../components/Staff/ProductManagement";
 import PromotionManagement from "../components/Staff/PromotionManagement";
 import CustomerSupport from "../components/Staff/CustomerSupport";
 import ShipManagement from "../components/Staff/ShipManagement";
+import ProfileLayout from "../components/Header/ProfileLayout";
+
 const Router = createBrowserRouter([
   {
     path: "/",
     element: <Layout />,
     children: [
-      {
-        path: "",
-        element: <Home />,
-        errorElement: <Error />,
-      },
-      {
-        path: "signin",
-        element: <Signin />,
-      },
-      {
-        path: "signup",
-        element: <Signup />,
-      },
-      {
-        path: "order-history/:customer_id",
-        element: <OrderHistory />,
-      },
-      {
-        path: "verify-email",
-        element: <Verify />,
-      },
-      {
-        path: "forgot-password",
-        element: <ForgotPassword />,
-      },
-      {
-        path: "verify-reset-password",
-        element: <ResetPass />,
-      },
-      {
-        path: "question",
-        element: <SkinTypeQuiz />,
-      },
-      {
-        path: "order-tracking/:customer_id",
-        element: <OrTrack />,
-      },
-      {
-        path: "store-location",
-        element: <Map />,
-      },
-      {
-        path: "blog",
-        element: <Blog />,
-      },
-      {
-        path: "profile/:userId",
-        element: <ProfilePage />,
-      },
-      {
-        path: "comparison",
-        element: <ProductComparison />,
-      },
-      {
-        path: "product/:id",
-        element: <Detail />,
-      },
+      { path: "", element: <Home />, errorElement: <Error /> },
+      { path: "signin", element: <Signin /> },
+      { path: "signup", element: <Signup /> },
+      { path: "order-history/:customeId", element: <OrderHistory /> },
+      { path: "verify-email", element: <Verify /> },
+      { path: "forgot-password", element: <ForgotPassword /> },
+      { path: "verify-reset-password", element: <ResetPass /> },
+      { path: "question", element: <SkinTypeQuiz /> },
+      { path: "order-tracking/:customer_id", element: <OrTrack /> },
+      { path: "store-location", element: <Map /> },
+      { path: "blog", element: <Blog /> },
+      { path: "comparison", element: <ProductComparison /> },
+      { path: "product/:id", element: <Detail /> },
       {
         path: "cart",
         element: (
@@ -112,6 +67,19 @@ const Router = createBrowserRouter([
         ),
       },
       {
+        path: "profile/:customerId",
+        element: (
+          <ProtectedRoute allowedRoles={["customer"]}>
+            <ProfileLayout />
+          </ProtectedRoute>
+        ),
+        children: [
+          { path: "", element: <ProfilePage /> },
+          { path: "orderhistory", element: <OrderHistory /> },
+        ],
+      },
+
+      {
         path: "checkout",
         element: (
           <ProtectedRoute allowedRoles={["customer"]}>
@@ -119,90 +87,35 @@ const Router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
-      {
-        path: "success",
-        element: <SuccessPayment />,
-      },
-      {
-        path: "cancel",
-        element: <CancelPayment />,
-      },
+      { path: "success", element: <SuccessPayment /> },
+      { path: "cancel", element: <CancelPayment /> },
     ],
   },
   {
-    path: "/manager",
+    path: "/admin",
     element: (
-      <ProtectedRoute role="manger">
+      <ProtectedRoute allowedRoles={["admin"]}>
         <AdminLayout />
       </ProtectedRoute>
     ),
     children: [
-      {
-        path: "",
-        element: <AdminDashboard />,
-      },
-      {
-        path: "users",
-        element: <User />,
-      },
-      {
-        path: "blog",
-        element: <BlogList />,
-      },
-      {
-        path: "faqs",
-        element: <QuizList />,
-      },
-      {
-        path: "promotions",
-        element: <PromoList />,
-      },
-      {
-        path: "products",
-        element: <ProductList />,
-      },
-      {
-        path: "orders",
-        element: <OrdersTable />,
-      },
-      {
-        path: "reports",
-        element: <AdminDashboard />,
-      },
-      {
-        path: "compare",
-        element: <Compare />,
-      },
-      {
-        path: "reviews",
-        element: <Review />,
-      },
-      {
-        path: "shipping",
-        element: <ShipList />,
-      },
-      {
-        path: "shipfee",
-        element: <ShipFee />,
-      },
-      {
-        path: "staff",
-        element: <StaffList />,
-      },
-      {
-        path: "customers",
-        element: <CustomerList />,
-      },
-      {
-        path: "settings",
-        element: <Settings />,
-      },
+      { path: "", element: <AdminDashboard /> },
+      { path: "users", element: <User /> },
+      { path: "blog", element: <BlogList /> },
+      { path: "faqs", element: <QuizList /> },
+      { path: "promotions", element: <PromoList /> },
+      { path: "products", element: <ProductList /> },
+      { path: "orders", element: <OrdersTable /> },
+      { path: "reviews", element: <Review /> },
+      { path: "shipping", element: <ShipList /> },
+      { path: "staff", element: <StaffList /> },
+      { path: "customers", element: <CustomerList /> },
     ],
   },
   {
-    path: "staff",
+    path: "/staff",
     element: (
-      <ProtectedRoute role="staff">
+      <ProtectedRoute allowedRoles={["staff"]}>
         <StaffLayout />
       </ProtectedRoute>
     ),
@@ -229,10 +142,7 @@ const Router = createBrowserRouter([
       },
     ],
   },
-  {
-    path: "*",
-    element: <Error />,
-  },
+  { path: "*", element: <Error /> },
 ]);
 
 export default Router;

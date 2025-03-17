@@ -6,8 +6,6 @@ const orderService = {
   getAllOrders: async ({ page, limit }) =>
     axios.get(`${API_BASE_URL}?page=${page}&limit=${limit}`),
 
-  
-
   updateOrderStatus: async (orderId, status) => {
     try {
       console.log("status:", status);

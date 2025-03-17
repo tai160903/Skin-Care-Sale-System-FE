@@ -1,4 +1,4 @@
-import { Outlet, useLocation } from "react-router-dom";
+import { matchPath, Outlet, useLocation } from "react-router-dom";
 import Header from "./Header/Header";
 import Footer from "./Footer";
 import Nav from "./Header/Nav";
@@ -15,21 +15,12 @@ function Layout() {
     "/verify-email",
     "/forgot-password",
     "/profile/:userId",
-    "/order-history/:userId", // Thêm đường dẫn này vào danh sách
+    "/order-history/:customerId",
     "/order-tracking/:userId",
+    "/profile/:customerId/orderhistory",
   ];
 
-  const hideHeaderFooter = paths.some((path) => {
-    if (path.includes(":userId")) {
-      return (
-        pathname.startsWith("/profile/") ||
-        pathname.startsWith("/order-history/") ||
-        pathname.startsWith("/order-tracking/")
-      );
-    }
-    return path === pathname;
-  });
-
+  const hideHeaderFooter = paths.some((path) => matchPath(path, pathname));
   return (
     <>
       {!hideHeaderFooter && (

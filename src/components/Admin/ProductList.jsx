@@ -39,6 +39,8 @@ const ProductList = () => {
   const [editingProduct, setEditingProduct] = useState(null);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [categories, setCategories] = useState([]);
+
 
   const [newProduct, setNewProduct] = useState({
     name: "",
@@ -50,13 +52,16 @@ const ProductList = () => {
     ingredient: "",
     description: "",
     userManual: "",
-    virtuel: "",
+    weight : "",
+    virtue: "",
   });
 
   useEffect(() => {
     fetchProducts();
     fetchSkinTypes();
+    fetchCategories();
   }, [page]);
+
 
   const handleOpenConfirmDialog = (product) => {
     setSelectedProduct(product);
@@ -65,7 +70,6 @@ const ProductList = () => {
 
   const handleConfirmDisable = async () => {
     if (!selectedProduct) return;
-
     try {
       await productService.updateProduct(selectedProduct._id, {
         isDisabled: !selectedProduct.isDisabled,
@@ -87,6 +91,7 @@ const ProductList = () => {
     try {
       const response = await productService.getAllProduct({ page, limit });
       if (response?.data && Array.isArray(response.data.data)) {
+        console.log(response.data.data);
         setProducts(response.data.data);
         setTotalPages(response?.data?.totalPages || 1);
       } else {
@@ -109,6 +114,15 @@ const ProductList = () => {
     }
   };
 
+  const fetchCategories = async () => {
+    try {
+      const response = await productService.getCategories();
+      setCategories(response.data);
+    } catch (error) {
+      toast.error("Failed to fetch categories");
+    }
+  };
+
   const handleCreateProduct = async () => {
     try {
       await productService.createProduct(newProduct);
@@ -120,19 +134,6 @@ const ProductList = () => {
     }
   };
 
-  const handleDisableProduct = async (product) => {
-    try {
-      await productService.updateProduct(product._id, {
-        isDisabled: !product.isDisabled,
-      });
-      toast.success(
-        `Product ${product.isDisabled ? "enabled" : "disabled"} successfully!`,
-      );
-      fetchProducts();
-    } catch (error) {
-      toast.error("Failed to update product status");
-    }
-  };
 
   const handleEditProduct = (product) => {
     console.log("product:", product);
@@ -195,12 +196,13 @@ const ProductList = () => {
             <TableHead>
               <TableRow sx={{ backgroundColor: "#1976d2" }}>
                 {[
-                  "Image",
-                  "Name",
-                  "Category",
-                  "Price",
-                  "Stock",
-                  "Discount (%)",
+                  "Hình Ảnh",
+                  "Tên",
+                  "Loại",
+                  "Loại Da",
+                  "Giá",
+                  "Kho",
+                  "Giảm Giá (%)",
                   "Actions",
                 ].map((header) => (
                   <TableCell
@@ -229,7 +231,10 @@ const ProductList = () => {
                       <Avatar src={product.image} alt={product.name} />
                     </TableCell>
                     <TableCell>{product.name}</TableCell>
-                    <TableCell align="center">{product.category}</TableCell>
+                    <TableCell align="center">{product.category.name}</TableCell>
+                    <TableCell align="center">
+                      {product.skinType.VNname}
+                    </TableCell>
                     <TableCell align="center">
                       ${product.price.toFixed(2)}
                     </TableCell>
@@ -269,83 +274,83 @@ const ProductList = () => {
         </TableContainer>
       )}
 
-      {/* Dialog tạo sản phẩm */}
+    
       <Dialog
-        open={open}
-        onClose={() => setOpen(false)}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle sx={{ textAlign: "center", fontWeight: "bold" }}>
-          {editingProduct ? "Edit Product" : "Create New Product"}
-        </DialogTitle>
-        <DialogContent>
-          <Box display="flex" flexDirection="column" gap={2}>
-            {Object.keys(newProduct).map((key) =>
-              key === "skinType" ? (
-                <FormControl fullWidth key={key}>
-                  <InputLabel>Skin Type</InputLabel>
-                  <Select
-                    value={
-                      (editingProduct
-                        ? editingProduct[key]
-                        : newProduct[key]) || ""
-                    }
-                    onChange={(e) => {
-                      editingProduct
-                        ? setEditingProduct({
-                            ...editingProduct,
-                            [key]: e.target.value,
-                          })
-                        : setNewProduct({
-                            ...newProduct,
-                            [key]: e.target.value,
-                          });
-                    }}
-                  >
-                    {skinTypes.map((type) => (
-                      <MenuItem key={type._id} value={type._id}>
-                        {type.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              ) : (
-                key !== "image" && (
-                  <TextField
-                    key={key}
-                    label={key}
-                    fullWidth
-                    value={
-                      (editingProduct
-                        ? editingProduct[key]
-                        : newProduct[key]) || ""
-                    }
-                    onChange={(e) => {
-                      editingProduct
-                        ? setEditingProduct({
-                            ...editingProduct,
-                            [key]: e.target.value,
-                          })
-                        : setNewProduct({
-                            ...newProduct,
-                            [key]: e.target.value,
-                          });
-                    }}
-                  />
-                )
-              ),
-            )}
-            <UploadImage
-              onUploadSuccess={(url) => {
-                if (editingProduct) {
-                  setEditingProduct({ ...editingProduct, image: url });
-                } else {
-                  setNewProduct({ ...newProduct, image: url });
-                }
+  open={open}
+  onClose={() => setOpen(false)}
+  maxWidth="sm"
+  fullWidth
+>
+  <DialogTitle sx={{ textAlign: "center", fontWeight: "bold" }}>
+    {editingProduct ? "Edit Product" : "Create New Product"}
+  </DialogTitle>
+  <DialogContent>
+    <Box display="flex" flexDirection="column" gap={2}>
+      {Object.keys(newProduct).map((key) =>
+        key === "skinType" || key === "category" ? (
+          <FormControl fullWidth key={key}>
+            <InputLabel>{key === "skinType" ? "Skin Type" : "Category"}</InputLabel>
+            <Select
+              value={
+                (editingProduct
+                  ? editingProduct[key]
+                  : newProduct[key]) || ""
+              }
+              onChange={(e) => {
+                editingProduct
+                  ? setEditingProduct({
+                      ...editingProduct,
+                      [key]: e.target.value,
+                    })
+                  : setNewProduct({
+                      ...newProduct,
+                      [key]: e.target.value,
+                    });
+              }}
+            >
+              {(key === "skinType" ? skinTypes : categories).map((item) => (
+                <MenuItem key={item._id} value={item._id}>
+                  {item.VNname}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        ) : (
+          key !== "image" && (
+            <TextField
+              key={key}
+              label={key}
+              fullWidth
+              value={
+                (editingProduct
+                  ? editingProduct[key]
+                  : newProduct[key]) || ""
+              }
+              onChange={(e) => {
+                editingProduct
+                  ? setEditingProduct({
+                      ...editingProduct,
+                      [key]: e.target.value,
+                    })
+                  : setNewProduct({
+                      ...newProduct,
+                      [key]: e.target.value,
+                    });
               }}
             />
-          </Box>
+          )
+        ),
+      )}
+      <UploadImage
+        onUploadSuccess={(url) => {
+          if (editingProduct) {
+            setEditingProduct({ ...editingProduct, image: url });
+          } else {
+            setNewProduct({ ...newProduct, image: url });
+          }
+        }}
+      />
+    </Box>
         </DialogContent>
         <DialogActions
           sx={{ justifyContent: "center", gap: 2, paddingBottom: 2 }}

@@ -4,6 +4,9 @@ const productService = {
   getAllProduct: ({ page, limit }) =>
     axiosClient.get(`/api/products?page=${page}&limit=${limit}`),
 
+  getCategories: () =>
+    axiosClient.get("/api/categories"),
+
   getProductById: (id) => axiosClient.get(`/api/products/${id}`),
 
   createProduct: (data) => axiosClient.post("/api/products", data),
