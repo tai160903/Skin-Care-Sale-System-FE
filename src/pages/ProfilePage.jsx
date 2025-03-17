@@ -3,10 +3,9 @@ import { useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { toast } from "react-toastify";
-import Header from "../components/Header/Header";
 
 const ProfilePage = () => {
-  const { userId } = useParams();
+  const { customerId } = useParams();
   const [error, setError] = useState(null);
   const [userData, setUserData] = useState({});
   const [isLoading, setIsLoading] = useState(true);
@@ -24,7 +23,7 @@ const ProfilePage = () => {
     setIsLoading(true);
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/users/customer/${userId}`,
+        `http://localhost:8080/api/users/customer/${customerId}`,
       );
       const data = response.data.data;
       setUserData(data);
@@ -40,17 +39,17 @@ const ProfilePage = () => {
   };
 
   useEffect(() => {
-    if (!userId) {
+    if (!customerId) {
       return;
     }
     fetchUserData();
-  }, [userId]);
+  }, [customerId]);
 
   const onSubmit = async (formData) => {
     setIsSubmitting(true);
     try {
       const response = await axios.put(
-        `http://localhost:8080/api/users/customer/${userId}`,
+        `http://localhost:8080/api/users/customer/${customerId}`,
         {
           name: formData.name,
           address: formData.address,
@@ -70,7 +69,7 @@ const ProfilePage = () => {
 
   if (error) {
     return (
-      <div className="bg-red-50 p-4 rounded-lg text-red-600 text-center mt-16 max-w-md mx-auto">
+      <div className="bg-red-50 p-4 rounded-lg text-red-600 text-center mt-4 max-w-md mx-auto">
         <div className="text-xl font-semibold mb-2">Error</div>
         <p>{error}</p>
         <button
@@ -85,8 +84,7 @@ const ProfilePage = () => {
 
   return (
     <>
-      <Header />
-      <div className="bg-gray-50 min-h-screen flex flex-col items-center pt-8 pb-16 px-4">
+      <div className="min-h-screen flex flex-col items-center">
         <div className="w-full max-w-2xl">
           <div className="bg-white rounded-xl shadow-lg overflow-hidden">
             {/* Profile Header */}

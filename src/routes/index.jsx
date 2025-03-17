@@ -27,11 +27,8 @@ import QuizList from "../components/Admin/QuizList";
 import PromoList from "../components/Admin/PromoList";
 import ProductList from "../components/Admin/ProductList";
 import OrdersTable from "../components/Admin/OrdersTable";
-import Compare from "../components/Admin/Compare";
 import Review from "../components/Admin/Review";
 import ShipList from "../components/Admin/ShipList";
-import ShipFee from "../components/Admin/ShipFee";
-import Settings from "../components/Admin/Settings";
 import StaffLayout from "../components/StaffLayout";
 import OrderManagement from "../components/Staff/OrderManagement";
 import ProductComparison from "../pages/ProductComparison";
@@ -40,7 +37,7 @@ import CustomerList from "../components/Admin/CustomerList";
 import ProductManagement from "../components/Staff/ProductManagement";
 import PromotionManagement from "../components/Staff/PromotionManagement";
 import CustomerSupport from "../components/Staff/CustomerSupport";
-
+import ProfileLayout from "../components/Header/ProfileLayout";
 const Router = createBrowserRouter([
   {
     path: "/",
@@ -49,7 +46,7 @@ const Router = createBrowserRouter([
       { path: "", element: <Home />, errorElement: <Error /> },
       { path: "signin", element: <Signin /> },
       { path: "signup", element: <Signup /> },
-      { path: "order-history/:customer_id", element: <OrderHistory /> },
+      { path: "order-history/:customeId", element: <OrderHistory /> },
       { path: "verify-email", element: <Verify /> },
       { path: "forgot-password", element: <ForgotPassword /> },
       { path: "verify-reset-password", element: <ResetPass /> },
@@ -57,7 +54,6 @@ const Router = createBrowserRouter([
       { path: "order-tracking/:customer_id", element: <OrTrack /> },
       { path: "store-location", element: <Map /> },
       { path: "blog", element: <Blog /> },
-      { path: "profile/:userId", element: <ProfilePage /> },
       { path: "comparison", element: <ProductComparison /> },
       { path: "product/:id", element: <Detail /> },
       {
@@ -68,6 +64,19 @@ const Router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      {
+        path: "profile/:customerId",
+        element: (
+          <ProtectedRoute allowedRoles={["customer"]}>
+            <ProfileLayout />
+          </ProtectedRoute>
+        ),
+        children: [
+          { path: "", element: <ProfilePage /> },
+          { path: "orderhistory", element: <OrderHistory /> },
+        ],
+      },
+
       {
         path: "checkout",
         element: (

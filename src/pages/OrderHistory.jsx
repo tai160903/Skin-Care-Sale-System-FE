@@ -22,18 +22,18 @@ import {
   CreditCard,
   LocalAtm,
 } from "@mui/icons-material";
-import Header from "../components/Header/Header";
 
 const OrderHistory = () => {
   const [orders, setOrders] = useState([]);
-  const { customer_id } = useParams();
+  const { customerId } = useParams();
+  console.log("customer_id", customerId);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:8080/api/orders?customer_id=${customer_id}`,
+          `http://localhost:8080/api/orders?customer_id=${customerId}?limit=50`,
         );
         setOrders(res.data.data?.data || []);
       } catch (error) {
@@ -44,7 +44,7 @@ const OrderHistory = () => {
     };
 
     fetchOrders();
-  }, [customer_id]);
+  }, [customerId]);
 
   // ✅ Tính tổng Total Pay của tất cả đơn hàng
   const totalPayAllProducts = orders.reduce(
@@ -66,7 +66,6 @@ const OrderHistory = () => {
 
   return (
     <>
-      <Header />
       <TableContainer
         component={Paper}
         sx={{
