@@ -22,7 +22,6 @@ import {
   LiveHelp,
   LocalOffer,
   Science,
-  Compare,
   Settings,
   Group,
   AdminPanelSettings,
@@ -87,7 +86,7 @@ const Sidebar = () => {
     {
       title: "Hỗ trợ & Cài đặt",
       icon: <Settings />,
-      items: [{ text: "FAQs", icon: <LiveHelp />, path: "/admin/faqs" }],
+      items: [{ text: "Quiz", icon: <LiveHelp />, path: "/admin/faqs" }],
     },
   ];
 

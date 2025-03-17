@@ -13,6 +13,7 @@ import {
   Box,
   Chip,
   Tooltip,
+  Pagination,
 } from "@mui/material";
 import { useParams } from "react-router-dom";
 import {
@@ -26,16 +27,23 @@ import {
 const OrderHistory = () => {
   const [orders, setOrders] = useState([]);
   const { customerId } = useParams();
-  console.log("customer_id", customerId);
   const [loading, setLoading] = useState(true);
+  const queryParams = new URLSearchParams(location.search);
+  const initialPage = parseInt(queryParams.get("page")) || 1;
+  const [page, setPage] = useState(initialPage);
+  const [limit] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
+        // const res = await orderService.getOrderbyId({ page, limit });
         const res = await axios.get(
-          `http://localhost:8080/api/orders?customer_id=${customerId}?limit=50`,
+          `http://localhost:8080/api/orders?page=${page}&limit=${limit}`,
         );
-        setOrders(res.data.data?.data || []);
+        console.log(res.data);
+        setTotalPages(res.data.totalPages);
+        setOrders(res.data.data || []);
       } catch (error) {
         console.error("Error fetching orders:", error);
       } finally {
@@ -44,13 +52,16 @@ const OrderHistory = () => {
     };
 
     fetchOrders();
-  }, [customerId]);
+  }, [customerId, page, limit]);
 
-  // ✅ Tính tổng Total Pay của tất cả đơn hàng
   const totalPayAllProducts = orders.reduce(
     (sum, order) => sum + (order.totalPay || 0),
     0,
   );
+
+  const handlePageChange = (event, value) => {
+    setPage(value);
+  };
 
   if (loading)
     return (
@@ -65,51 +76,42 @@ const OrderHistory = () => {
     );
 
   return (
-    <>
-      <TableContainer
-        component={Paper}
+    <Box sx={{ maxWidth: "95%", mx: "auto", my: 3 }}>
+      <Typography
+        variant="h5"
         sx={{
-          borderRadius: 3,
-          boxShadow: 4,
-          overflow: "hidden",
-          maxWidth: "95%",
-          mx: "auto",
-          my: 3,
+          p: 2,
+          fontWeight: "bold",
+          color: "#fff",
+          bgcolor: "#16a34a",
+          textAlign: "center",
+          borderRadius: "8px 8px 0 0",
         }}
       >
-        <Typography
-          variant="h5"
-          sx={{
-            p: 2,
-            fontWeight: "bold",
-            color: "#fff",
-            bgcolor: "#16a34a",
-            textAlign: "center",
-          }}
-        >
-          Order History
-        </Typography>
+        Order History
+      </Typography>
+      <TableContainer
+        component={Paper}
+        sx={{ borderRadius: 3, boxShadow: 4, overflow: "hidden" }}
+      >
         <Table>
           <TableHead>
             <TableRow sx={{ bgcolor: "#f5f5f5" }}>
-              <TableCell sx={{ fontWeight: "bold", color: "#333" }}>
-                Order ID
-              </TableCell>
-              <TableCell sx={{ fontWeight: "bold", color: "#333" }}>
-                Total Pay
-              </TableCell>
-              <TableCell sx={{ fontWeight: "bold", color: "#333" }}>
-                Discount
-              </TableCell>
-              <TableCell sx={{ fontWeight: "bold", color: "#333" }}>
-                Order Status
-              </TableCell>
-              <TableCell sx={{ fontWeight: "bold", color: "#333" }}>
-                Payment Method
-              </TableCell>
-              <TableCell sx={{ fontWeight: "bold", color: "#333" }}>
-                Order Date
-              </TableCell>
+              {[
+                "Order ID",
+                "Total Pay",
+                "Discount",
+                "Order Status",
+                "Payment Method",
+                "Order Date",
+              ].map((header) => (
+                <TableCell
+                  key={header}
+                  sx={{ fontWeight: "bold", color: "#333" }}
+                >
+                  {header}
+                </TableCell>
+              ))}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -189,8 +191,6 @@ const OrderHistory = () => {
                 </TableCell>
               </TableRow>
             ))}
-
-            {/* 🔥 Hàng Tổng Cộng - Total Pay Of All Product */}
             <TableRow sx={{ bgcolor: "#e8f5e9" }}>
               <TableCell colSpan={5} align="right">
                 <Typography fontWeight="bold" fontSize="1.1rem">
@@ -206,7 +206,17 @@ const OrderHistory = () => {
           </TableBody>
         </Table>
       </TableContainer>
-    </>
+      <Box display="flex" justifyContent="center" sx={{ mt: 4 }}>
+        <Pagination
+          count={totalPages}
+          page={page}
+          onChange={handlePageChange}
+          color="primary"
+          showFirstButton
+          showLastButton
+        />
+      </Box>
+    </Box>
   );
 };
 

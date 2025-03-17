@@ -33,11 +33,11 @@ const ProfileSidebar = () => {
   };
 
   const menuItems = [
-    { text: "Đơn hàng", icon: <ListAlt />, path: `/profile/${customerId}` },
+    { text: "Ho so", icon: <People />, path: `/profile/${customerId}` },
     {
-      text: "Hỗ trợ khách hàng",
-      icon: <People />,
-      path: `/profile/${customerId}/orderhistory`,
+      text: "Lich su don hang",
+      icon: <ListAlt />,
+      path: `/profile/${customerId}/order-tracking`,
     },
   ];
 

@@ -1,8 +1,9 @@
 import { Box } from "@mui/material";
-import { Outlet } from "react-router-dom";
+import { Outlet, useParams } from "react-router-dom";
 import ProfileSidebar from "./ProfileSidebar";
 
 const ProfileLayout = () => {
+  const { customerId } = useParams();
   return (
     <Box sx={{ display: "flex", height: "100vh", overflow: "hidden" }}>
       <ProfileSidebar />
@@ -14,7 +15,7 @@ const ProfileLayout = () => {
         }}
       >
         <Box sx={{ flexGrow: 1, p: 3, overflow: "auto" }}>
-          <Outlet />
+          <Outlet context={{ customerId }} />
         </Box>
       </Box>
     </Box>
