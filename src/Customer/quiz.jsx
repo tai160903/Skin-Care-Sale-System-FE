@@ -98,7 +98,7 @@ const SkinTypeQuiz = () => {
   }
 
   return (
-    <div className="flex flex-col items-center min-h-screen bg-gradient-to-br from-green-100 to-blue-100 p-6">
+    <div className="flex flex-col items-center min-h-screen bg-gradient-to-br p-6">
       <Paper className="p-8 rounded-2xl shadow-2xl w-full max-w-lg bg-white transition-all">
         <h1 className="text-3xl font-semibold text-center mb-6 text-gray-800">
           Chọn loại da của bạn
@@ -160,32 +160,32 @@ const SkinTypeQuiz = () => {
 
       {routine && (
         <motion.div
-          className="mt-8 p-6 bg-white rounded-2xl shadow-lg max-w-2xl"
+          className="mt-8 p-8 bg-white rounded-3xl shadow-2xl max-w-3xl"
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <h2 className="text-2xl font-semibold text-center text-gray-800 mb-4">
-            🌿 Routine chăm sóc da đề xuất
+          <h2 className="text-3xl font-bold text-center text-gray-900 mb-6">
+            🌿 Routine Chăm Sóc Da Đề Xuất
           </h2>
           <ul className="space-y-6">
             {routine.steps.map((step, index) => (
               <motion.li
                 key={step.stepNumber}
-                className="bg-blue-50 p-6 rounded-lg shadow-md border-l-4 border-blue-600"
+                className="bg-gradient-to-r from-blue-50 to-white p-6 rounded-2xl shadow-md border-l-8 border-blue-500 hover:shadow-xl transition-all duration-300"
                 initial={{ opacity: 0, x: -50 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.1 }}
               >
-                <h3 className="text-lg font-semibold text-blue-800">
+                <h3 className="text-lg font-bold text-blue-900">
                   Bước {step.stepNumber}: {step.title}
                 </h3>
-                <p className="text-gray-700 mt-1">{step.description}</p>
+                <p className="text-gray-700 mt-2">{step.description}</p>
 
-                {/* Hiển thị sản phẩm đẹp hơn */}
+                {/* Sản phẩm đề xuất */}
                 {step.recommendProducts?.length > 0 && (
                   <div className="mt-4">
-                    <h4 className="text-md font-semibold text-gray-600 mb-2">
+                    <h4 className="text-md font-semibold text-gray-600 mb-3">
                       🛍 Sản phẩm đề xuất:
                     </h4>
                     <div className="grid grid-cols-2 gap-4">
@@ -193,17 +193,17 @@ const SkinTypeQuiz = () => {
                         <a
                           key={product._id}
                           href={`/product/${product._id}`}
-                          className="bg-white rounded-lg shadow-lg p-3 transition-transform transform hover:scale-105 border border-gray-200"
+                          className="bg-white rounded-xl shadow-md p-4 transition-transform transform hover:scale-105 hover:shadow-lg border border-gray-200 flex flex-col items-center"
                         >
                           <img
                             src={product.image}
                             alt={product.name}
-                            className="w-full h-24 object-cover rounded-md"
+                            className="w-28 h-28 object-cover rounded-lg"
                           />
-                          <p className="text-gray-800 font-medium mt-2 text-center">
+                          <p className="text-gray-800 font-medium mt-3 text-center">
                             {product.name}
                           </p>
-                          <p className="text-blue-600 font-semibold text-center">
+                          <p className="text-blue-600 font-bold text-lg text-center mt-1">
                             {formatCurrency(product.price)}
                           </p>
                         </a>

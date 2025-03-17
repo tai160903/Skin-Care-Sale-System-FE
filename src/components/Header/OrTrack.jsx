@@ -12,6 +12,9 @@ import {
   Typography,
   Box,
   Chip,
+  Button,
+  ButtonGroup,
+  TextField,
 } from "@mui/material";
 import { useParams } from "react-router-dom";
 import {
@@ -22,9 +25,12 @@ import {
 } from "@mui/icons-material";
 import Header from "../../components/Header/Header";
 
-const OrderTracking = () => {
+const OrderTr = () => {
   const [orders, setOrders] = useState([]);
+  const [filteredOrders, setFilteredOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState("All");
+  const [searchDate, setSearchDate] = useState("");
   const { customer_id } = useParams();
 
   useEffect(() => {
@@ -33,36 +39,40 @@ const OrderTracking = () => {
         const res = await axios.get(
           `http://localhost:8080/api/shippings?customer_id=${customer_id}`,
         );
-
         console.log("API Response:", res.data);
 
         if (res.data && res.data.data && Array.isArray(res.data.data.data)) {
           setOrders(res.data.data.data);
+          setFilteredOrders(res.data.data.data);
         } else {
           setOrders([]);
+          setFilteredOrders([]);
         }
       } catch (error) {
         console.error("Error fetching order tracking data:", error);
         setOrders([]);
+        setFilteredOrders([]);
       } finally {
         setLoading(false);
       }
     };
-
     fetchOrders();
   }, [customer_id]);
 
-  if (loading)
-    return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        minHeight="50vh"
-      >
-        <CircularProgress size={50} />
-      </Box>
-    );
+  useEffect(() => {
+    let filtered = orders;
+    if (filter !== "All") {
+      filtered = filtered.filter((order) => order.shipping_status === filter);
+    }
+    if (searchDate) {
+      filtered = filtered.filter(
+        (order) =>
+          order.createdAt &&
+          new Date(order.createdAt).toISOString().split("T")[0] === searchDate,
+      );
+    }
+    setFilteredOrders(filtered);
+  }, [filter, searchDate, orders]);
 
   const getPaymentChip = (method) => {
     switch (method?.toLowerCase()) {
@@ -81,9 +91,41 @@ const OrderTracking = () => {
     }
   };
 
+  if (loading)
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="50vh"
+      >
+        <CircularProgress size={50} />
+      </Box>
+    );
+
   return (
     <>
       <Header />
+      <Box display="flex" justifyContent="center" my={2} gap={2}>
+        <ButtonGroup variant="contained">
+          {["All", "Pending", "Cancelled", "Shipped"].map((status) => (
+            <Button
+              key={status}
+              color={filter === status ? "primary" : "secondary"}
+              onClick={() => setFilter(status)}
+            >
+              {status}
+            </Button>
+          ))}
+        </ButtonGroup>
+        <TextField
+          type="date"
+          label="Search by Date"
+          InputLabelProps={{ shrink: true }}
+          value={searchDate}
+          onChange={(e) => setSearchDate(e.target.value)}
+        />
+      </Box>
       <TableContainer
         component={Paper}
         sx={{
@@ -131,8 +173,8 @@ const OrderTracking = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {orders.length > 0 ? (
-              orders.map((order) => {
+            {filteredOrders.length > 0 ? (
+              filteredOrders.map((order) => {
                 const paymentInfo = getPaymentChip(
                   order.order_id?.payment_method,
                 );
@@ -152,7 +194,9 @@ const OrderTracking = () => {
                             ? "primary"
                             : order.shipping_status === "Pending"
                               ? "warning"
-                              : "default"
+                              : order.shipping_status === "Cancelled"
+                                ? "error"
+                                : "default"
                         }
                         icon={<LocalShipping />}
                         sx={{ fontWeight: "bold" }}
@@ -191,4 +235,4 @@ const OrderTracking = () => {
   );
 };
 
-export default OrderTracking;
+export default OrderTr;

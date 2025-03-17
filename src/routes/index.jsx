@@ -39,7 +39,7 @@ import PromotionManagement from "../components/Staff/PromotionManagement";
 import CustomerSupport from "../components/Staff/CustomerSupport";
 import ShipManagement from "../components/Staff/ShipManagement";
 import ProfileLayout from "../components/Header/ProfileLayout";
-
+import OrderTracking from "../pages/OrderTracking";
 const Router = createBrowserRouter([
   {
     path: "/",
@@ -75,7 +75,7 @@ const Router = createBrowserRouter([
         ),
         children: [
           { path: "", element: <ProfilePage /> },
-          { path: "orderhistory", element: <OrderHistory /> },
+          { path: "order-tracking", element: <OrderTracking /> },
         ],
       },
 
