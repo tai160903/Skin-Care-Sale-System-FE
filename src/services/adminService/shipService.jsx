@@ -18,12 +18,12 @@ const shipService = {
     }
   },
 
-  updateShippingStatus: async (id, status) => {
+  updateShippingStatus: async (id, reason) => {
     try {
       const response = await axiosClient.put(
-        `${API_BASE_URL}/update-status/${id}`,
+        `${API_BASE_URL}/update-reason/${id}`,
         {
-          shipping_status: status,
+          reason: reason,
         },
       );
       return response.data;

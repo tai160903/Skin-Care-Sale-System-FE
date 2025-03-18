@@ -43,14 +43,16 @@ const OrderManagement = () => {
   const fetchOrders = async () => {
     setLoading(true);
     try {
+      const limit = 10;
       let response;
       if (statusFilter === "All") {
-        response = await orderService.getAllOrders(page, 10);
+          response = await orderService.getAllOrders({page,limit} );
+          console.log("check:",response?.data?.data?.docs);
       } else {
         response = await orderService.getOrdersByStatus(statusFilter, page, 10);
       }
 
-      setOrders(response?.data?.data?.data || []);
+      setOrders(response?.data?.data?.docs || []);
       setTotalPages(response?.data?.data?.totalPages || 1);
     } catch (error) {
       toast.error("Failed to fetch orders");
@@ -167,6 +169,9 @@ const OrderManagement = () => {
                   <TableCell sx={{ color: "white", fontWeight: "bold" }}>
                     Order Status
                   </TableCell>
+                  <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                    Time
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -214,6 +219,7 @@ const OrderManagement = () => {
                         sx={{ ml: 2, fontWeight: "bold" }}
                       />
                     </TableCell>
+                    <TableCell>{new Date(order.createdAt).toLocaleString("vi-VN")}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>

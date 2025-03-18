@@ -40,6 +40,7 @@ import CustomerSupport from "../components/Staff/CustomerSupport";
 import ShipManagement from "../components/Staff/ShipManagement";
 import ProfileLayout from "../components/Header/ProfileLayout";
 import OrderTracking from "../pages/OrderTracking";
+import OrderDetail from "../Customer/OrderDetail";
 const Router = createBrowserRouter([
   {
     path: "/",
@@ -58,6 +59,7 @@ const Router = createBrowserRouter([
       { path: "blog", element: <Blog /> },
       { path: "comparison", element: <ProductComparison /> },
       { path: "product/:id", element: <Detail /> },
+      { path: "/order-detail/:order_id", element: <OrderDetail /> },
       {
         path: "cart",
         element: (

@@ -1,13 +1,18 @@
 import { useEffect, useState } from "react";
 import shipService from "../../services/adminService/shipService";
 import { toast } from "react-toastify";
-import { Box, Pagination } from "@mui/material";
+import { Box, Pagination, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button } from "@mui/material";
 
 const ShipManagement = () => {
   const [shipments, setShipments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+
+  // State quản lý Dialog cập nhật trạng thái
+  const [openDialog, setOpenDialog] = useState(false);
+  const [selectedShipment, setSelectedShipment] = useState(null);
+  const [reason, setReason] = useState("");
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -32,8 +37,6 @@ const ShipManagement = () => {
     setLoading(true);
     try {
       const response = await shipService.getAllShippings({ page, limit: 10 });
-      console.log("Shipments Data:", response?.data?.data);
-
       if (response.data?.data && Array.isArray(response.data.data)) {
         setShipments(response.data.data);
         setTotalPages(response.data.totalPages);
@@ -49,17 +52,39 @@ const ShipManagement = () => {
     }
   };
 
-  const updateShipmentStatus = async (id, newStatus) => {
+  const updateShipmentStatus = async () => {
+    if (!selectedShipment) return;
+  
     try {
-      const response = await shipService.updateShippingStatus(id, newStatus);
-      if (response.status === 200) {
+      const response = await shipService.updateShippingStatus(selectedShipment._id, reason);
+      console.log("Update response:", response); 
+  
+      if (response && response._id) {
         toast.success("Cập nhật trạng thái thành công!");
-        fetchShipments(); // Làm mới danh sách sau khi cập nhật
+        fetchShipments();
+        handleCloseDialog();
+      } else {
+        toast.error("Không thể cập nhật trạng thái! Kiểm tra lại API.");
       }
     } catch (error) {
       console.error("Error updating status:", error);
       toast.error("Không thể cập nhật trạng thái!");
     }
+  };
+  
+
+  // Mở dialog
+  const handleOpenDialog = (shipment) => {
+    setSelectedShipment(shipment);
+    setReason("");
+    setOpenDialog(true);
+  };
+
+  // Đóng dialog
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+    setSelectedShipment(null);
+    setReason("");
   };
 
   return (
@@ -106,45 +131,18 @@ const ShipManagement = () => {
                     <td className="p-3">{shipment.shipping_address}</td>
                     <td className="p-3">{shipment.shipping_phone}</td>
                     <td className="p-3 flex items-center gap-2">
-                      {/* Hiển thị trạng thái với màu sắc */}
                       <span
                         className={`px-3 py-1 rounded text-white ${getStatusColor(shipment.shipping_status)}`}
                       >
                         {shipment.shipping_status}
                       </span>
-
-                      {/* Wrapper chứa dropdown */}
-                      <div className="relative">
-                        {/* Select ẩn nhưng vẫn hoạt động */}
-                        <select
-                          value={shipment.shipping_status}
-                          onChange={(e) =>
-                            updateShipmentStatus(shipment._id, e.target.value)
-                          }
-                          className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
-                        >
-                          {["Shipping", "Delivered"].map((status) => (
-                            <option key={status} value={status}>
-                              {status}
-                            </option>
-                          ))}
-                        </select>
-
-                        {/* Mũi tên dropdown */}
-                        <span className="px-2 py-1 border rounded bg-gray-200 cursor-pointer">
-                          ▼
-                        </span>
-                      </div>
                     </td>
-
                     <td className="p-3">
                       {new Date(shipment.createdAt).toLocaleDateString()}
                     </td>
                     <td className="p-3">
                       <button
-                        onClick={() =>
-                          updateShipmentStatus(shipment._id, "Cancelled")
-                        }
+                        onClick={() => handleOpenDialog(shipment)}
                         className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition"
                       >
                         CẬP NHẬT
@@ -172,6 +170,35 @@ const ShipManagement = () => {
           color="primary"
         />
       </Box>
+
+      {/* Dialog nhập lý do */}
+      <Dialog open={openDialog} onClose={handleCloseDialog}>
+        <DialogTitle>Xác nhận cập nhật trạng thái</DialogTitle>
+        <DialogContent>
+          <TextField
+            label="Lý do Hủy"
+            fullWidth
+            multiline
+            rows={3}
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+            variant="outlined"
+            margin="dense"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog} color="secondary">
+            Hủy
+          </Button>
+          <Button
+            onClick={updateShipmentStatus}
+            color="primary"
+            disabled={!reason.trim()}
+          >
+            Xác nhận
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };

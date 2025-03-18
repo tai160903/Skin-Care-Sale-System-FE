@@ -41,7 +41,6 @@ const ProductList = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [categories, setCategories] = useState([]);
 
-
   const [newProduct, setNewProduct] = useState({
     name: "",
     category: "",
@@ -52,7 +51,7 @@ const ProductList = () => {
     ingredient: "",
     description: "",
     userManual: "",
-    weight : "",
+    weight: "",
     virtue: "",
   });
 
@@ -61,7 +60,6 @@ const ProductList = () => {
     fetchSkinTypes();
     fetchCategories();
   }, [page]);
-
 
   const handleOpenConfirmDialog = (product) => {
     setSelectedProduct(product);
@@ -133,7 +131,6 @@ const ProductList = () => {
       toast.error("Failed to create product");
     }
   };
-
 
   const handleEditProduct = (product) => {
     console.log("product:", product);
@@ -231,7 +228,9 @@ const ProductList = () => {
                       <Avatar src={product.image} alt={product.name} />
                     </TableCell>
                     <TableCell>{product.name}</TableCell>
-                    <TableCell align="center">{product.category.name}</TableCell>
+                    <TableCell align="center">
+                      {product.category.name}
+                    </TableCell>
                     <TableCell align="center">
                       {product.skinType.VNname}
                     </TableCell>
@@ -274,83 +273,86 @@ const ProductList = () => {
         </TableContainer>
       )}
 
-    
       <Dialog
-  open={open}
-  onClose={() => setOpen(false)}
-  maxWidth="sm"
-  fullWidth
->
-  <DialogTitle sx={{ textAlign: "center", fontWeight: "bold" }}>
-    {editingProduct ? "Edit Product" : "Create New Product"}
-  </DialogTitle>
-  <DialogContent>
-    <Box display="flex" flexDirection="column" gap={2}>
-      {Object.keys(newProduct).map((key) =>
-        key === "skinType" || key === "category" ? (
-          <FormControl fullWidth key={key}>
-            <InputLabel>{key === "skinType" ? "Skin Type" : "Category"}</InputLabel>
-            <Select
-              value={
-                (editingProduct
-                  ? editingProduct[key]
-                  : newProduct[key]) || ""
-              }
-              onChange={(e) => {
-                editingProduct
-                  ? setEditingProduct({
-                      ...editingProduct,
-                      [key]: e.target.value,
-                    })
-                  : setNewProduct({
-                      ...newProduct,
-                      [key]: e.target.value,
-                    });
-              }}
-            >
-              {(key === "skinType" ? skinTypes : categories).map((item) => (
-                <MenuItem key={item._id} value={item._id}>
-                  {item.VNname}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        ) : (
-          key !== "image" && (
-            <TextField
-              key={key}
-              label={key}
-              fullWidth
-              value={
-                (editingProduct
-                  ? editingProduct[key]
-                  : newProduct[key]) || ""
-              }
-              onChange={(e) => {
-                editingProduct
-                  ? setEditingProduct({
-                      ...editingProduct,
-                      [key]: e.target.value,
-                    })
-                  : setNewProduct({
-                      ...newProduct,
-                      [key]: e.target.value,
-                    });
+        open={open}
+        onClose={() => setOpen(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle sx={{ textAlign: "center", fontWeight: "bold" }}>
+          {editingProduct ? "Edit Product" : "Create New Product"}
+        </DialogTitle>
+        <DialogContent>
+          <Box display="flex" flexDirection="column" gap={2}>
+            {Object.keys(newProduct).map((key) =>
+              key === "skinType" || key === "category" ? (
+                <FormControl fullWidth key={key}>
+                  <InputLabel>
+                    {key === "skinType" ? "Skin Type" : "Category"}
+                  </InputLabel>
+                  <Select
+                    value={
+                      (editingProduct
+                        ? editingProduct[key]
+                        : newProduct[key]) || ""
+                    }
+                    onChange={(e) => {
+                      editingProduct
+                        ? setEditingProduct({
+                            ...editingProduct,
+                            [key]: e.target.value,
+                          })
+                        : setNewProduct({
+                            ...newProduct,
+                            [key]: e.target.value,
+                          });
+                    }}
+                  >
+                    {(key === "skinType" ? skinTypes : categories).map(
+                      (item) => (
+                        <MenuItem key={item._id} value={item._id}>
+                          {item.VNname}
+                        </MenuItem>
+                      ),
+                    )}
+                  </Select>
+                </FormControl>
+              ) : (
+                key !== "image" && (
+                  <TextField
+                    key={key}
+                    label={key}
+                    fullWidth
+                    value={
+                      (editingProduct
+                        ? editingProduct[key]
+                        : newProduct[key]) || ""
+                    }
+                    onChange={(e) => {
+                      editingProduct
+                        ? setEditingProduct({
+                            ...editingProduct,
+                            [key]: e.target.value,
+                          })
+                        : setNewProduct({
+                            ...newProduct,
+                            [key]: e.target.value,
+                          });
+                    }}
+                  />
+                )
+              ),
+            )}
+            <UploadImage
+              onUploadSuccess={(url) => {
+                if (editingProduct) {
+                  setEditingProduct({ ...editingProduct, image: url });
+                } else {
+                  setNewProduct({ ...newProduct, image: url });
+                }
               }}
             />
-          )
-        ),
-      )}
-      <UploadImage
-        onUploadSuccess={(url) => {
-          if (editingProduct) {
-            setEditingProduct({ ...editingProduct, image: url });
-          } else {
-            setNewProduct({ ...newProduct, image: url });
-          }
-        }}
-      />
-    </Box>
+          </Box>
         </DialogContent>
         <DialogActions
           sx={{ justifyContent: "center", gap: 2, paddingBottom: 2 }}

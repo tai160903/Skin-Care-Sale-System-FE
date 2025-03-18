@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import {
   Table,
@@ -16,7 +17,6 @@ import {
   ButtonGroup,
   TextField,
 } from "@mui/material";
-import { useParams } from "react-router-dom";
 import {
   LocalShipping,
   CreditCard,
@@ -32,6 +32,8 @@ const OrderTr = () => {
   const [filter, setFilter] = useState("All");
   const [searchDate, setSearchDate] = useState("");
   const { customer_id } = useParams();
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -103,6 +105,10 @@ const OrderTr = () => {
       </Box>
     );
 
+  const handleViewDetails = (orderId) => {
+    navigate(`/order-detail/${orderId}`);
+  };
+
   return (
     <>
       <Header />
@@ -153,22 +159,25 @@ const OrderTr = () => {
           <TableHead>
             <TableRow sx={{ bgcolor: "#f5f5f5" }}>
               <TableCell sx={{ fontWeight: "bold", color: "#333" }}>
-                Order Tracking
+                Theo dõi đơn hàng
               </TableCell>
               <TableCell sx={{ fontWeight: "bold", color: "#333" }}>
-                Phone Number
+                Số điện thoại
               </TableCell>
               <TableCell sx={{ fontWeight: "bold", color: "#333" }}>
-                Shipping Status
+                Trạng thái giao hàng
               </TableCell>
               <TableCell sx={{ fontWeight: "bold", color: "#333" }}>
-                Address
+                Địa chỉ
               </TableCell>
               <TableCell sx={{ fontWeight: "bold", color: "#333" }}>
-                Payment Method
+                Phương thức thanh toán
               </TableCell>
               <TableCell sx={{ fontWeight: "bold", color: "#333" }}>
-                Date
+                Ngày
+              </TableCell>
+              <TableCell sx={{ fontWeight: "bold", color: "#333" }}>
+                Hành động
               </TableCell>
             </TableRow>
           </TableHead>
@@ -215,6 +224,15 @@ const OrderTr = () => {
                       {order.createdAt
                         ? new Date(order.createdAt).toLocaleDateString()
                         : "N/A"}
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => handleViewDetails(order.order_id._id)}
+                      >
+                        Xem chi tiết
+                      </Button>
                     </TableCell>
                   </TableRow>
                 );

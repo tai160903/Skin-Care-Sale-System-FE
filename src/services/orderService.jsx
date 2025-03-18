@@ -3,6 +3,7 @@ import axios from "axios";
 const API_BASE_URL = "http://localhost:8080/api/orders";
 
 const orderService = {
+
   getAllOrders: async ({ page, limit }) =>
     axios.get(`${API_BASE_URL}?page=${page}&limit=${limit}`),
 
@@ -11,6 +12,7 @@ const orderService = {
       const response = await axios.get(`${API_BASE_URL}/${orderId}`, {
         headers: { Accept: "application/json" },
       });
+      console.log("API Response:", response.data);
       return response.data;
     } catch (error) {
       console.error(`Error fetching order with ID ${orderId}:`, error);
