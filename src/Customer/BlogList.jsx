@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
-import { getBlogs } from "../../services/blogServive";
+import { getBlogs } from "../services/blogServive";
 import {
   Grid,
   Card,
@@ -11,10 +11,10 @@ import {
   Box,
 } from "@mui/material";
 
-const Blog = () => {
+const BlogList = () => {
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate(); // Hook để điều hướng
+  const navigate = useNavigate(); // Hook điều hướng
 
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -48,30 +48,25 @@ const Blog = () => {
         variant="h4"
         gutterBottom
         align="center"
-        fontWeight={700}
-        color="primary"
-        sx={{ mb: 4 }}
+        fontWeight={600}
+        color="green"
       >
         Tin Tức & Cẩm Nang
       </Typography>
-      <Grid container spacing={4} justifyContent="center">
-        {blogs.slice(0, 16).map((blog) => (
+      <Grid container spacing={3} justifyContent="center">
+        {blogs.slice(0, 4).map((blog) => (
           <Grid item xs={12} sm={6} md={4} lg={3} key={blog._id}>
             <Card
               onClick={() => navigate(`/blog/${blog._id}`)} // Điều hướng đến trang chi tiết
               sx={{
                 cursor: "pointer",
                 transition: "0.3s",
-                "&:hover": {
-                  transform: "translateY(-5px)",
-                  boxShadow: 6,
-                },
+                "&:hover": { transform: "scale(1.05)" },
                 boxShadow: 3,
-                borderRadius: 3,
-                height: 380,
+                borderRadius: 2,
+                height: 350, // Cố định chiều cao của Card
                 display: "flex",
                 flexDirection: "column",
-                overflow: "hidden",
               }}
             >
               {blog.image && (
@@ -81,24 +76,22 @@ const Blog = () => {
                   alt={blog.title}
                   sx={{
                     width: "100%",
-                    height: 200,
+                    height: 180, // Cố định chiều cao ảnh
                     objectFit: "cover",
                   }}
                 />
               )}
-              <CardContent sx={{ flex: 1, p: 2 }}>
-                <Typography variant="h6" fontWeight="bold" sx={{ mb: 1 }}>
-                  {blog.title.length > 60
-                    ? blog.title.slice(0, 57) + "..."
-                    : blog.title}
+              <CardContent sx={{ flex: 1 }}>
+                <Typography variant="h6" fontWeight="bold">
+                  {blog.title}
                 </Typography>
                 <Typography
                   variant="body2"
                   color="textSecondary"
-                  sx={{ fontSize: "0.9rem", lineHeight: 1.5 }}
+                  sx={{ mt: 1 }}
                 >
-                  {blog.content.length > 120
-                    ? blog.content.slice(0, 120) + "..."
+                  {blog.content.length > 100
+                    ? blog.content.slice(0, 100) + "..."
                     : blog.content}
                 </Typography>
               </CardContent>
@@ -110,4 +103,4 @@ const Blog = () => {
   );
 };
 
-export default Blog;
+export default BlogList;

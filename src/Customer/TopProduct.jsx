@@ -1,3 +1,8 @@
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { addToCart } from "../redux/slices/cartSlice";
+import cartService from "../services/cartService";
+import { toast } from "react-toastify";
 import useTopProductService from "../services/topProduct";
 import {
   Container,
@@ -29,6 +34,31 @@ const settings = {
 
 const TopProduct = () => {
   const { products, loading } = useTopProductService();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const customerId = useSelector((state) => state.user.customer?._id);
+
+  const handleBuyNow = async (product) => {
+    if (!customerId) {
+      toast.error("Bạn phải đăng nhập trước!");
+      localStorage.setItem("redirectAfterLogin", window.location.pathname);
+      setTimeout(() => navigate("/signin"), 1000);
+      return;
+    }
+
+    try {
+      await cartService.addToCart({
+        productId: product._id,
+        quantity: 1,
+        customerId,
+      });
+
+      dispatch(addToCart({ product, quantity: 1 }));
+      navigate("/cart");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Lỗi khi thêm vào giỏ hàng");
+    }
+  };
 
   if (loading)
     return (
@@ -49,7 +79,6 @@ const TopProduct = () => {
         p: 3,
         borderRadius: "10px",
         minWidth: "100%",
-        mx: 0,
       }}
     >
       <Typography variant="h5" fontWeight="bold" color="green" sx={{ mb: 2 }}>
@@ -188,6 +217,7 @@ const TopProduct = () => {
                 color="primary"
                 size="small"
                 sx={{ mt: 1, borderRadius: "20px", textTransform: "none" }}
+                onClick={() => handleBuyNow(product)}
               >
                 Mua ngay
               </Button>
