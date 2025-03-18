@@ -62,7 +62,7 @@ const Router = createBrowserRouter([
       { path: "blog", element: <Blog /> },
       { path: "blog/:id", element: <BlogDetail /> },
       { path: "comparison", element: <ProductComparison /> },
-      { path: "product/:id", element: <Detail /> },
+      { path: "product/detail/:id", element: <Detail /> },
       { path: "/order-detail/:order_id", element: <OrderDetail /> },
       {
         path: "cart",
@@ -74,11 +74,7 @@ const Router = createBrowserRouter([
       },
       {
         path: "profile/:customerId",
-        element: (
-          <ProtectedRoute allowedRoles={["customer"]}>
-            <ProfileLayout />
-          </ProtectedRoute>
-        ),
+        element: <ProfileLayout />,
         children: [
           { path: "", element: <ProfilePage /> },
           { path: "order-tracking", element: <OrderTracking /> },
