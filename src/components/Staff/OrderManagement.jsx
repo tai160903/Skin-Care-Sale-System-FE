@@ -46,8 +46,8 @@ const OrderManagement = () => {
       const limit = 10;
       let response;
       if (statusFilter === "All") {
-          response = await orderService.getAllOrders({page,limit} );
-          console.log("check:",response?.data?.data?.docs);
+        response = await orderService.getAllOrders({ page, limit });
+        console.log("check:", response?.data?.data?.docs);
       } else {
         response = await orderService.getOrdersByStatus(statusFilter, page, 10);
       }
@@ -219,7 +219,9 @@ const OrderManagement = () => {
                         sx={{ ml: 2, fontWeight: "bold" }}
                       />
                     </TableCell>
-                    <TableCell>{new Date(order.createdAt).toLocaleString("vi-VN")}</TableCell>
+                    <TableCell>
+                      {new Date(order.createdAt).toLocaleString("vi-VN")}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>

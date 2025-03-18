@@ -42,6 +42,8 @@ import ShipManagement from "../components/Staff/ShipManagement";
 import ProfileLayout from "../components/Header/ProfileLayout";
 import OrderTracking from "../pages/OrderTracking";
 import OrderDetail from "../Customer/OrderDetail";
+import ChangePassword from "../pages/ChangePassword";
+
 const Router = createBrowserRouter([
   {
     path: "/",
@@ -58,7 +60,7 @@ const Router = createBrowserRouter([
       { path: "order-tracking/:customer_id", element: <OrTrack /> },
       { path: "store-location", element: <Map /> },
       { path: "blog", element: <Blog /> },
-      { path: "blog/:id", element: <BlogDetail /> }, // Route mới để xem chi tiết bài viết
+      { path: "blog/:id", element: <BlogDetail /> },
       { path: "comparison", element: <ProductComparison /> },
       { path: "product/:id", element: <Detail /> },
       { path: "/order-detail/:order_id", element: <OrderDetail /> },
@@ -80,9 +82,9 @@ const Router = createBrowserRouter([
         children: [
           { path: "", element: <ProfilePage /> },
           { path: "order-tracking", element: <OrderTracking /> },
+          { path: "change-password", element: <ChangePassword /> },
         ],
       },
-
       {
         path: "checkout",
         element: (
@@ -124,26 +126,11 @@ const Router = createBrowserRouter([
       </ProtectedRoute>
     ),
     children: [
-      {
-        path: "orders",
-        element: <OrderManagement />,
-      },
-      {
-        path: "products",
-        element: <ProductManagement />,
-      },
-      {
-        path: "promotions",
-        element: <PromotionManagement />,
-      },
-      {
-        path: "supportcustomers",
-        element: <CustomerSupport />,
-      },
-      {
-        path: "shipmanager",
-        element: <ShipManagement />,
-      },
+      { path: "orders", element: <OrderManagement /> },
+      { path: "products", element: <ProductManagement /> },
+      { path: "promotions", element: <PromotionManagement /> },
+      { path: "supportcustomers", element: <CustomerSupport /> },
+      { path: "shipmanager", element: <ShipManagement /> },
     ],
   },
   { path: "*", element: <Error /> },
