@@ -3,7 +3,6 @@ import axios from "axios";
 const API_BASE_URL = "http://localhost:8080/api/orders";
 
 const orderService = {
-
   getAllOrders: async ({ page, limit }) =>
     axios.get(`${API_BASE_URL}?page=${page}&limit=${limit}`),
 

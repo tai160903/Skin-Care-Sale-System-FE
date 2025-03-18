@@ -2,12 +2,16 @@ import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import productService from "../services/productService";
 import {
+  Box,
   Card,
   CardContent,
+  CardMedia,
   Typography,
   Rating,
   Pagination,
-  Box,
+  Container,
+  Grid,
+  CircularProgress,
 } from "@mui/material";
 import { toast } from "react-toastify";
 import { formatCurrency } from "../utils/formatCurrency";
@@ -23,17 +27,19 @@ function ListProduct() {
   const [limit] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true);
         const response = await productService.getAllProduct({ page, limit });
         setData(response.data.data);
         setTotalPages(response.data.totalPages);
       } catch (error) {
-        toast.error(
-          error.response?.data?.message || "Failed to fetch products",
-        );
+        toast.error(error.response?.data?.message || "Không thể tải sản phẩm");
+      } finally {
+        setLoading(false);
       }
     };
     fetchData();
@@ -52,90 +58,157 @@ function ListProduct() {
   };
 
   const handleProductClick = (id) => {
-    navigate(`/product/${id}`);
+    navigate(`/product/detail/${id}`);
   };
 
+  if (loading) {
+    return (
+      <Box sx={{ display: "flex", justifyContent: "center", py: 10 }}>
+        <CircularProgress size={50} thickness={4} />
+      </Box>
+    );
+  }
+
   return (
-    <div className="p-10">
-      <Typography variant="h5" fontWeight="bold" color="green" sx={{ mb: 3 }}>
-        Gợi ý cho bạn
+    <Container maxWidth="lg" sx={{ py: 6 }}>
+      <Typography
+        variant="h4"
+        fontWeight="bold"
+        color="primary.main"
+        sx={{ mb: 4, textAlign: "center", textTransform: "uppercase" }}
+      >
+        Gợi Ý Cho Bạn
       </Typography>
 
-      <div className="flex flex-wrap gap-6 justify-start">
-        {data.map((item, index) => (
-          <Card
-            key={index}
-            className="min-w-[220px] max-w-[250px] flex-1 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 cursor-pointer border border-gray-200"
-            onClick={() => handleProductClick(item._id)}
-          >
-            <div className="relative">
-              <img
-                src={item.image}
-                alt={item.name}
-                className="w-full h-60 object-cover rounded-t-xl"
-              />
-              {item.discountPercentage > 0 && (
-                <span className="absolute top-3 left-3 bg-red-500 text-white text-sm font-bold px-2 py-1 rounded">
-                  -{item.discountPercentage}%
-                </span>
-              )}
-            </div>
+      <Grid container spacing={3}>
+        {data.map((item) => (
+          <Grid item xs={12} sm={6} md={4} lg={3} key={item._id}>
+            <Card
+              sx={{
+                maxWidth: 300,
+                mx: "auto",
+                borderRadius: 3,
+                overflow: "hidden",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                transition: "all 0.3s ease",
+                cursor: "pointer",
+                "&:hover": {
+                  transform: "translateY(-8px)",
+                  boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
+                },
+              }}
+              onClick={() => handleProductClick(item._id)}
+            >
+              {/* Ảnh sản phẩm */}
+              <Box sx={{ position: "relative" }}>
+                <CardMedia
+                  component="img"
+                  height="200"
+                  image={item.image || "https://via.placeholder.com/200"}
+                  alt={item.name}
+                  sx={{ objectFit: "cover" }}
+                />
+                {item.discountPercentage > 0 && (
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      top: 10,
+                      left: 10,
+                      bgcolor: "error.main",
+                      color: "white",
+                      px: 1.5,
+                      py: 0.5,
+                      borderRadius: 1,
+                      fontSize: "0.85rem",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    -{item.discountPercentage}%
+                  </Box>
+                )}
+              </Box>
 
-            <CardContent className="p-4">
-              <Typography
-                variant="h6"
-                fontWeight="bold"
-                className="text-center text-gray-800 truncate"
-              >
-                {item.name}
-              </Typography>
-              <div className="flex justify-center mt-2">
+              {/* Nội dung sản phẩm */}
+              <CardContent sx={{ textAlign: "center", py: 3 }}>
+                <Typography
+                  variant="h6"
+                  fontWeight="medium"
+                  noWrap
+                  sx={{ color: "text.primary", mb: 1 }}
+                >
+                  {item.name}
+                </Typography>
+
                 <Rating
-                  name="read-only"
-                  value={item.rating}
+                  value={item.rating || 0}
                   precision={0.5}
                   readOnly
                   size="small"
+                  sx={{ mb: 1 }}
                 />
-              </div>
-              <p className="text-gray-500 text-sm text-center mt-1 truncate">
-                {item.description}
-              </p>
 
-              <div className="mt-4 flex justify-center items-center gap-2">
-                {item.discountPercentage > 0 ? (
-                  <>
-                    <span className="text-lg font-bold text-red-500">
-                      {formatCurrency(
-                        item.price * (1 - item.discountPercentage / 100),
-                      )}
-                    </span>
-                    <span className="text-sm font-medium text-gray-500 line-through">
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{
+                    mb: 2,
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {item.description}
+                </Typography>
+
+                <Box display="flex" justifyContent="center" gap={1}>
+                  {item.discountPercentage > 0 ? (
+                    <>
+                      <Typography
+                        variant="h6"
+                        color="error.main"
+                        fontWeight="bold"
+                      >
+                        {formatCurrency(
+                          item.price * (1 - item.discountPercentage / 100),
+                        )}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ textDecoration: "line-through" }}
+                      >
+                        {formatCurrency(item.price)}
+                      </Typography>
+                    </>
+                  ) : (
+                    <Typography
+                      variant="h6"
+                      color="success.main"
+                      fontWeight="bold"
+                    >
                       {formatCurrency(item.price)}
-                    </span>
-                  </>
-                ) : (
-                  <span className="text-lg font-bold text-green-600">
-                    {formatCurrency(item.price)}
-                  </span>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+                    </Typography>
+                  )}
+                </Box>
+              </CardContent>
+            </Card>
+          </Grid>
         ))}
-      </div>
+      </Grid>
 
-      <Box display="flex" justifyContent="center" sx={{ mt: 4 }}>
+      <Box display="flex" justifyContent="center" sx={{ mt: 6 }}>
         <Pagination
           count={totalPages}
           page={page}
           onChange={handlePageChange}
           color="primary"
+          size="large"
           showFirstButton
           showLastButton
+          sx={{ "& .MuiPaginationItem-root": { borderRadius: 2 } }}
         />
       </Box>
-    </div>
+    </Container>
   );
 }
 

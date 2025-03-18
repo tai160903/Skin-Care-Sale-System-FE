@@ -13,7 +13,6 @@ import {
   Grid,
   Card,
   CardContent,
-  CardActions,
   Avatar,
 } from "@mui/material";
 import quizService from "../services/quizService";
@@ -22,6 +21,7 @@ import { toast } from "react-toastify";
 import { motion } from "framer-motion";
 import { formatCurrency } from "../utils/formatCurrency";
 
+import { useNavigate } from "react-router-dom";
 const SkinTypeQuiz = () => {
   const [questions, setQuestions] = useState([]);
   const [selectedAnswers, setSelectedAnswers] = useState({});
@@ -31,6 +31,7 @@ const SkinTypeQuiz = () => {
   const customer = useSelector((state) => state?.user?.customer);
   const customerId = customer?._id;
 
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchQuizData = async () => {
       try {
@@ -103,6 +104,24 @@ const SkinTypeQuiz = () => {
 
   if (loading) {
     return <LinearProgress />;
+  }
+
+  if (!customerId) {
+    return (
+      <div className="flex flex-col items-center justify-center mx-auto h-screen w-1/3">
+        <Typography variant="h5" className="text-center text-gray-700">
+          Vui lòng đăng nhập để làm bài kiểm tra
+        </Typography>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => navigate("/signin")}
+          className="w-full mt-4"
+        >
+          Đăng nhập ngay
+        </Button>
+      </div>
+    );
   }
 
   return (

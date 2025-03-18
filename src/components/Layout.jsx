@@ -1,7 +1,6 @@
 import { matchPath, Outlet, useLocation } from "react-router-dom";
 import Header from "./Header/Header";
 import Footer from "./Footer";
-import Nav from "./Header/Nav";
 import Banner from "./Header/Banner";
 
 function Layout() {
@@ -28,7 +27,6 @@ function Layout() {
         <header>
           <Banner />
           <Header />
-          <Nav />
         </header>
       )}
       <main className="min-h-screen">

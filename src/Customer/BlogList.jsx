@@ -14,7 +14,7 @@ import {
 const BlogList = () => {
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate(); // Hook điều hướng
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchBlogs = async () => {
