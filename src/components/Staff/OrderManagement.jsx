@@ -17,21 +17,12 @@ import {
   Button,
   CircularProgress,
   Pagination,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
 import RefreshIcon from "@mui/icons-material/Refresh";
-
-const getStatusColor = (status) => {
-  switch (status?.toLowerCase()) {
-    case "pending confirmation":
-      return "warning";
-    case "complete confirmation":
-      return "success";
-    case "cancelled":
-      return "error";
-    default:
-      return "default";
-  }
-};
 
 const OrderManagement = () => {
   const [orders, setOrders] = useState([]);
@@ -40,6 +31,11 @@ const OrderManagement = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
+  // State để mở modal xác nhận
+  const [openConfirmModal, setOpenConfirmModal] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [newStatus, setNewStatus] = useState("");
+
   useEffect(() => {
     fetchOrders();
   }, [statusFilter, page]);
@@ -47,17 +43,17 @@ const OrderManagement = () => {
   const fetchOrders = async () => {
     setLoading(true);
     try {
+      const limit = 10;
       let response;
       if (statusFilter === "All") {
-        response = await orderService.getAllOrders(page, 10); // Thêm limit
+          response = await orderService.getAllOrders({page,limit} );
+          console.log("check:",response?.data?.data?.docs);
       } else {
         response = await orderService.getOrdersByStatus(statusFilter, page, 10);
       }
 
-      console.log("Fetched Orders:", response?.data?.data?.data);
-      setOrders(response?.data?.data?.data || []);
-      console.log("TotalPages", response?.data);
-      setTotalPages(response?.data?.data.totalPages || 1);
+      setOrders(response?.data?.data?.docs || []);
+      setTotalPages(response?.data?.data?.totalPages || 1);
     } catch (error) {
       toast.error("Failed to fetch orders");
     } finally {
@@ -67,9 +63,11 @@ const OrderManagement = () => {
 
   const getStatusLabel = (status) => {
     switch (status?.toLowerCase()) {
-      case "pending confirmation":
+      case "pending":
         return "Đang chờ xác nhận";
-      case "complete confirmation":
+      case "confirmed":
+        return "Đã xác nhận";
+      case "completed":
         return "Đã hoàn thành";
       case "cancelled":
         return "Đơn Hàng đã bị Hủy";
@@ -78,20 +76,46 @@ const OrderManagement = () => {
     }
   };
 
-  const handleStatusChange = async (orderId, newStatus) => {
-    try {
-      await orderService.updateOrderStatus(orderId, newStatus);
-      setOrders((prevOrders) =>
-        prevOrders.map((order) =>
-          order._id === orderId ? { ...order, order_status: newStatus } : order,
-        ),
-      );
-      toast.success("Order status updated successfully");
-    } catch (error) {
-      toast.error("Failed to update order status", error);
+  const getStatusColor = (status) => {
+    switch (status?.toLowerCase()) {
+      case "pending":
+        return "warning";
+      case "confirmed":
+        return "info";
+      case "completed":
+        return "success";
+      case "cancelled":
+        return "error";
+      default:
+        return "default";
     }
   };
-  console.log("orders", orders);
+  // Mở modal xác nhận khi chọn trạng thái mới
+  const handleOpenConfirmModal = (order, status) => {
+    setSelectedOrder(order);
+    setNewStatus(status);
+    setOpenConfirmModal(true);
+  };
+
+  // Xác nhận thay đổi trạng thái đơn hàng
+  const handleConfirmStatusChange = async () => {
+    if (!selectedOrder) return;
+    try {
+      await orderService.updateOrderStatus(selectedOrder._id, newStatus);
+      setOrders((prevOrders) =>
+        prevOrders.map((order) =>
+          order._id === selectedOrder._id
+            ? { ...order, order_status: newStatus }
+            : order,
+        ),
+      );
+      toast.success("Cập nhật trạng thái đơn hàng thành công");
+    } catch (error) {
+      console.error("Error updating order status:", error.error);
+      toast.error(error.error);
+      setOpenConfirmModal(false);
+    }
+  };
 
   return (
     <Paper sx={{ padding: 3, borderRadius: 3, backgroundColor: "#f8f9fa" }}>
@@ -113,7 +137,7 @@ const OrderManagement = () => {
         value={statusFilter}
         onChange={(e) => {
           setStatusFilter(e.target.value);
-          setPage(1); // Reset về trang đầu khi đổi filter
+          setPage(1);
         }}
         sx={{ marginBottom: 2, backgroundColor: "white", borderRadius: 2 }}
       >
@@ -145,6 +169,9 @@ const OrderManagement = () => {
                   <TableCell sx={{ color: "white", fontWeight: "bold" }}>
                     Order Status
                   </TableCell>
+                  <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                    Time
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -156,9 +183,32 @@ const OrderManagement = () => {
                       <Select
                         value={order.order_status}
                         onChange={(e) =>
-                          handleStatusChange(order._id, e.target.value)
+                          handleOpenConfirmModal(order, e.target.value)
                         }
-                        sx={{ backgroundColor: "white", borderRadius: 2 }}
+                        sx={{
+                          backgroundColor: "white",
+                          borderRadius: 2,
+                          minWidth: "140px",
+                          padding: "5px 10px",
+                          "& .MuiSelect-select": {
+                            display: "flex",
+                            alignItems: "center",
+                            fontWeight: "bold",
+                            textAlign: "center",
+                          },
+                          "& .MuiOutlinedInput-notchedOutline": {
+                            borderColor: "#ddd", // Viền mờ hơn cho đẹp
+                          },
+                          "&:hover .MuiOutlinedInput-notchedOutline": {
+                            borderColor: "#1976d2", // Hiệu ứng viền khi hover
+                          },
+                          "& .MuiSvgIcon-root": {
+                            color: "#1976d2", // Màu mũi tên dropdown
+                          },
+                          boxShadow: 1, // Hiệu ứng bóng nhẹ
+                        }}
+                        displayEmpty
+                        renderValue={(selected) => getStatusLabel(selected)}
                       >
                         <MenuItem value="confirmed">XÁC NHẬN ĐƠN HÀNG</MenuItem>
                         <MenuItem value="Cancelled">HỦY ĐƠN HÀNG</MenuItem>
@@ -169,13 +219,13 @@ const OrderManagement = () => {
                         sx={{ ml: 2, fontWeight: "bold" }}
                       />
                     </TableCell>
+                    <TableCell>{new Date(order.createdAt).toLocaleString("vi-VN")}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
           </TableContainer>
 
-          {/* Phân trang */}
           <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
             <Pagination
               count={totalPages}
@@ -186,6 +236,27 @@ const OrderManagement = () => {
           </Box>
         </>
       )}
+
+      {/* Modal xác nhận */}
+      <Dialog
+        open={openConfirmModal}
+        onClose={() => setOpenConfirmModal(false)}
+      >
+        <DialogTitle>Xác nhận thay đổi</DialogTitle>
+        <DialogContent>
+          <Typography>
+            Bạn có chắc chắn muốn thay đổi trạng thái đơn hàng?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenConfirmModal(false)} color="error">
+            Hủy
+          </Button>
+          <Button onClick={handleConfirmStatusChange} color="primary">
+            Xác nhận
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Paper>
   );
 };

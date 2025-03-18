@@ -3,9 +3,11 @@ import axiosClient from "../api.config";
 const API_BASE_URL = "/api/shippings";
 
 const shipService = {
-  getAllShippings: async () => {
+  getAllShippings: async ({ page, limit }) => {
     try {
-      const response = await axiosClient.get(API_BASE_URL);
+      const response = await axiosClient.get(
+        `${API_BASE_URL}?page=${page}&limit=${limit}`,
+      );
       return response.data;
     } catch (error) {
       console.error(
@@ -16,12 +18,12 @@ const shipService = {
     }
   },
 
-  updateShippingStatus: async (id, status) => {
+  updateShippingStatus: async (id, reason) => {
     try {
       const response = await axiosClient.put(
-        `${API_BASE_URL}/update-status/${id}`,
+        `${API_BASE_URL}/update-reason/${id}`,
         {
-          shipping_status: status,
+          reason: reason,
         },
       );
       return response.data;

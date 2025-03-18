@@ -39,6 +39,7 @@ const ProductList = () => {
   const [editingProduct, setEditingProduct] = useState(null);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [categories, setCategories] = useState([]);
 
   const [newProduct, setNewProduct] = useState({
     name: "",
@@ -50,12 +51,14 @@ const ProductList = () => {
     ingredient: "",
     description: "",
     userManual: "",
-    virtuel: "",
+    weight: "",
+    virtue: "",
   });
 
   useEffect(() => {
     fetchProducts();
     fetchSkinTypes();
+    fetchCategories();
   }, [page]);
 
   const handleOpenConfirmDialog = (product) => {
@@ -65,7 +68,6 @@ const ProductList = () => {
 
   const handleConfirmDisable = async () => {
     if (!selectedProduct) return;
-
     try {
       await productService.updateProduct(selectedProduct._id, {
         isDisabled: !selectedProduct.isDisabled,
@@ -87,6 +89,7 @@ const ProductList = () => {
     try {
       const response = await productService.getAllProduct({ page, limit });
       if (response?.data && Array.isArray(response.data.data)) {
+        console.log(response.data.data);
         setProducts(response.data.data);
         setTotalPages(response?.data?.totalPages || 1);
       } else {
@@ -109,6 +112,15 @@ const ProductList = () => {
     }
   };
 
+  const fetchCategories = async () => {
+    try {
+      const response = await productService.getCategories();
+      setCategories(response.data);
+    } catch (error) {
+      toast.error("Failed to fetch categories");
+    }
+  };
+
   const handleCreateProduct = async () => {
     try {
       await productService.createProduct(newProduct);
@@ -117,20 +129,6 @@ const ProductList = () => {
       fetchProducts();
     } catch (error) {
       toast.error("Failed to create product");
-    }
-  };
-
-  const handleDisableProduct = async (product) => {
-    try {
-      await productService.updateProduct(product._id, {
-        isDisabled: !product.isDisabled,
-      });
-      toast.success(
-        `Product ${product.isDisabled ? "enabled" : "disabled"} successfully!`,
-      );
-      fetchProducts();
-    } catch (error) {
-      toast.error("Failed to update product status");
     }
   };
 
@@ -195,12 +193,13 @@ const ProductList = () => {
             <TableHead>
               <TableRow sx={{ backgroundColor: "#1976d2" }}>
                 {[
-                  "Image",
-                  "Name",
-                  "Category",
-                  "Price",
-                  "Stock",
-                  "Discount (%)",
+                  "Hình Ảnh",
+                  "Tên",
+                  "Loại",
+                  "Loại Da",
+                  "Giá",
+                  "Kho",
+                  "Giảm Giá (%)",
                   "Actions",
                 ].map((header) => (
                   <TableCell
@@ -229,7 +228,12 @@ const ProductList = () => {
                       <Avatar src={product.image} alt={product.name} />
                     </TableCell>
                     <TableCell>{product.name}</TableCell>
-                    <TableCell align="center">{product.category}</TableCell>
+                    <TableCell align="center">
+                      {product.category.name}
+                    </TableCell>
+                    <TableCell align="center">
+                      {product.skinType.VNname}
+                    </TableCell>
                     <TableCell align="center">
                       ${product.price.toFixed(2)}
                     </TableCell>
@@ -269,7 +273,6 @@ const ProductList = () => {
         </TableContainer>
       )}
 
-      {/* Dialog tạo sản phẩm */}
       <Dialog
         open={open}
         onClose={() => setOpen(false)}
@@ -282,9 +285,11 @@ const ProductList = () => {
         <DialogContent>
           <Box display="flex" flexDirection="column" gap={2}>
             {Object.keys(newProduct).map((key) =>
-              key === "skinType" ? (
+              key === "skinType" || key === "category" ? (
                 <FormControl fullWidth key={key}>
-                  <InputLabel>Skin Type</InputLabel>
+                  <InputLabel>
+                    {key === "skinType" ? "Skin Type" : "Category"}
+                  </InputLabel>
                   <Select
                     value={
                       (editingProduct
@@ -303,11 +308,13 @@ const ProductList = () => {
                           });
                     }}
                   >
-                    {skinTypes.map((type) => (
-                      <MenuItem key={type._id} value={type._id}>
-                        {type.name}
-                      </MenuItem>
-                    ))}
+                    {(key === "skinType" ? skinTypes : categories).map(
+                      (item) => (
+                        <MenuItem key={item._id} value={item._id}>
+                          {item.VNname}
+                        </MenuItem>
+                      ),
+                    )}
                   </Select>
                 </FormControl>
               ) : (
