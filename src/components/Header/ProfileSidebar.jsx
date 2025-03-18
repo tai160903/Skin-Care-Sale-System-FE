@@ -10,7 +10,13 @@ import {
   IconButton,
   Tooltip,
 } from "@mui/material";
-import { ListAlt, People, ExitToApp, Menu } from "@mui/icons-material";
+import {
+  ListAlt,
+  People,
+  ExitToApp,
+  Menu,
+  Settings,
+} from "@mui/icons-material";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { logout } from "../../redux/slices/userSlice";
@@ -38,6 +44,11 @@ const ProfileSidebar = () => {
       text: "Lich su don hang",
       icon: <ListAlt />,
       path: `/profile/${customerId}/order-tracking`,
+    },
+    {
+      text: "Doi mat khau",
+      icon: <Settings />,
+      path: `/profile/:customerId/change-password`,
     },
   ];
 
