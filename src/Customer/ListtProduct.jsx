@@ -16,7 +16,6 @@ function ListProduct() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Lấy page từ URL, nếu không có thì mặc định là 1
   const queryParams = new URLSearchParams(location.search);
   const initialPage = parseInt(queryParams.get("page")) || 1;
 
