@@ -18,6 +18,7 @@ import SuccessPayment from "../pages/SuccessPayment";
 import CancelPayment from "../pages/CancelPayment";
 import Map from "../components/Header/Map";
 import Blog from "../components/Header/Blog";
+import BlogDetail from "../components/Header/BlogDetail";
 import OrTrack from "../components/Header/OrTrack";
 import ProfilePage from "../pages/ProfilePage";
 import OrderHistory from "../pages/OrderHistory";
@@ -55,6 +56,7 @@ const Router = createBrowserRouter([
       { path: "order-tracking/:customer_id", element: <OrTrack /> },
       { path: "store-location", element: <Map /> },
       { path: "blog", element: <Blog /> },
+      { path: "blog/:id", element: <BlogDetail /> }, // Route mới để xem chi tiết bài viết
       { path: "comparison", element: <ProductComparison /> },
       { path: "product/:id", element: <Detail /> },
       {

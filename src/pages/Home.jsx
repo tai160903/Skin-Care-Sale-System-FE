@@ -6,7 +6,7 @@ import { setCart } from "../redux/slices/cartSlice";
 import { toast } from "react-toastify";
 import TopProduct from "../Customer/TopProduct";
 import Category from "../Customer/Category";
-import Blog from "../components/Header/Blog";
+import BlogList from "../Customer/BlogList";
 import { Container, Box } from "@mui/material";
 import Adv from "../components/Header/Adv";
 import UploadImage from "../components/UploadImage";
@@ -84,7 +84,7 @@ function Home() {
           <ListProduct />
         </Box>
         <Box sx={{ mb: 6 }}>
-          <Blog />
+          <BlogList />
         </Box>
         <div>
           <h2>Upload Ảnh với Supabase Storage</h2>

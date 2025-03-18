@@ -15,4 +15,17 @@ const getBlogs = async () => {
   }
 };
 
-export { getBlogs };
+const getBlogById = async (id) => {
+  try {
+    const response = await axiosClient.get(`${API_URL}/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error(
+      `Error fetching blog with ID ${id}:`,
+      error.response?.data || error.message,
+    );
+    return null;
+  }
+};
+
+export { getBlogs, getBlogById };
