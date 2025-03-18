@@ -19,6 +19,7 @@ function Layout() {
     "/order-tracking/:userId",
     "/profile/:customerId/orderhistory",
     "/profile/:customerId/order-tracking",
+    "/profile/:customerId/change-password",
   ];
 
   const hideHeaderFooter = paths.some((path) => matchPath(path, pathname));

@@ -1,7 +1,16 @@
 import { useEffect, useState } from "react";
 import shipService from "../../services/adminService/shipService";
 import { toast } from "react-toastify";
-import { Box, Pagination, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button } from "@mui/material";
+import {
+  Box,
+  Pagination,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Button,
+} from "@mui/material";
 
 const ShipManagement = () => {
   const [shipments, setShipments] = useState([]);
@@ -54,11 +63,14 @@ const ShipManagement = () => {
 
   const updateShipmentStatus = async () => {
     if (!selectedShipment) return;
-  
+
     try {
-      const response = await shipService.updateShippingStatus(selectedShipment._id, reason);
-      console.log("Update response:", response); 
-  
+      const response = await shipService.updateShippingStatus(
+        selectedShipment._id,
+        reason,
+      );
+      console.log("Update response:", response);
+
       if (response && response._id) {
         toast.success("Cập nhật trạng thái thành công!");
         fetchShipments();
@@ -71,7 +83,6 @@ const ShipManagement = () => {
       toast.error("Không thể cập nhật trạng thái!");
     }
   };
-  
 
   // Mở dialog
   const handleOpenDialog = (shipment) => {
