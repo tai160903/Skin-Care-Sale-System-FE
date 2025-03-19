@@ -17,12 +17,7 @@ import {
   ButtonGroup,
   TextField,
 } from "@mui/material";
-import {
-  LocalShipping,
-  CreditCard,
-  MonetizationOn,
-  AccountBalanceWallet,
-} from "@mui/icons-material";
+import { LocalShipping, CreditCard, MonetizationOn } from "@mui/icons-material";
 import Header from "../../components/Header/Header";
 
 const OrderTr = () => {
@@ -82,12 +77,6 @@ const OrderTr = () => {
         return { label: "Stripe", color: "warning", icon: <CreditCard /> };
       case "cash":
         return { label: "Cash", color: "success", icon: <MonetizationOn /> };
-      case "paypal":
-        return {
-          label: "PayPal",
-          color: "primary",
-          icon: <AccountBalanceWallet />,
-        };
       default:
         return { label: method || "N/A", color: "default", icon: undefined };
     }

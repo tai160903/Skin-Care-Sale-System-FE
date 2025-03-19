@@ -40,7 +40,6 @@ const BlogDetail = () => {
 
     fetchBlogDetail();
 
-    // Load comments từ localStorage
     const savedComments =
       JSON.parse(localStorage.getItem(`comments_${id}`)) || [];
     setComments(savedComments);
@@ -51,7 +50,7 @@ const BlogDetail = () => {
 
     const newComment = {
       text: comment,
-      time: new Date().toLocaleString(), // Lưu thời gian bình luận
+      time: new Date().toLocaleString(),
     };
 
     const newComments = [newComment, ...comments]; // Đưa comment mới lên đầu

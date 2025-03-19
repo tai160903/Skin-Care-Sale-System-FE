@@ -24,6 +24,7 @@ function Detail() {
   const [quantity, setQuantity] = useState(1);
 
   const customerId = useSelector((state) => state.user.customer?._id);
+  const role = useSelector((state) => state.user.user?.role);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -167,7 +168,6 @@ function Detail() {
             )}
           </div>
 
-          {/* Số lượng */}
           <div className="flex items-center mt-4 space-x-4">
             <IconButton onClick={handleDecreaseQuantity} color="error">
               <FaMinus />
@@ -178,25 +178,28 @@ function Detail() {
             </IconButton>
           </div>
 
-          {/* Nút thao tác */}
           <div className="mt-6 flex gap-4">
-            <Button
-              variant="contained"
-              color="warning"
-              startIcon={<FiShoppingCart />}
-              onClick={handleAddToCart}
-              className="bg-orange-500"
-            >
-              Thêm vào giỏ
-            </Button>
-            <Button
-              variant="contained"
-              color="success"
-              onClick={handleBuyNow}
-              className="bg-green-500"
-            >
-              Mua ngay
-            </Button>
+            {role === "customer" && (
+              <>
+                <Button
+                  variant="contained"
+                  color="warning"
+                  startIcon={<FiShoppingCart />}
+                  onClick={handleAddToCart}
+                  className="bg-orange-500"
+                >
+                  Thêm vào giỏ
+                </Button>
+                <Button
+                  variant="contained"
+                  color="success"
+                  onClick={handleBuyNow}
+                  className="bg-green-500"
+                >
+                  Mua ngay
+                </Button>
+              </>
+            )}
             <Button
               variant="contained"
               color="info"

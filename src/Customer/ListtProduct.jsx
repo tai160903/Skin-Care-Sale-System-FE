@@ -24,7 +24,7 @@ function ListProduct() {
   const initialPage = parseInt(queryParams.get("page")) || 1;
 
   const [page, setPage] = useState(initialPage);
-  const [limit] = useState(10);
+  const [limit] = useState(12);
   const [totalPages, setTotalPages] = useState(1);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -79,8 +79,16 @@ function ListProduct() {
       >
         Gợi Ý Cho Bạn
       </Typography>
+      <Typography
+        variant="p"
+        fontWeight="bold"
+        color="textDisabled"
+        sx={{ mb: 10, textAlign: "right", textDecoration: "underline" }}
+      >
+        Xem Thêm
+      </Typography>
 
-      <Grid container spacing={3}>
+      <Grid container spacing={5}>
         {data.map((item) => (
           <Grid item xs={12} sm={6} md={4} lg={3} key={item._id}>
             <Card
@@ -99,14 +107,13 @@ function ListProduct() {
               }}
               onClick={() => handleProductClick(item._id)}
             >
-              {/* Ảnh sản phẩm */}
-              <Box sx={{ position: "relative" }}>
+              <Box sx={{ position: "relative", maxHeight: "200px" }}>
                 <CardMedia
                   component="img"
                   height="200"
                   image={item.image || "https://via.placeholder.com/200"}
                   alt={item.name}
-                  sx={{ objectFit: "cover" }}
+                  sx={{ objectFit: "cover", maxHeight: "200px" }}
                 />
                 {item.discountPercentage > 0 && (
                   <Box
@@ -128,7 +135,6 @@ function ListProduct() {
                 )}
               </Box>
 
-              {/* Nội dung sản phẩm */}
               <CardContent sx={{ textAlign: "center", py: 3 }}>
                 <Typography
                   variant="h6"
