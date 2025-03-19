@@ -22,11 +22,18 @@ const Header = () => {
   const cart = useSelector((state) => state.cart.items);
   const customerId = useSelector((state) => state?.user?.customer?._id);
   const role = useSelector((state) => state?.user?.user?.role);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const handleLogout = () => {
     dispatch(logout());
     dispatch(clearCart());
     navigate("/");
+  };
+
+  const handleSearch = () => {
+    if (searchQuery.trim()) {
+      navigate(`/all-products?q=${encodeURIComponent(searchQuery)}`);
+    }
   };
 
   return (
@@ -44,6 +51,10 @@ const Header = () => {
           placeholder="Bạn cần tìm gì?"
           size="small"
           className="w-full bg-white shadow-xl rounded-full"
+          onChange={(e) => setSearchQuery(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") handleSearch();
+          }}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">

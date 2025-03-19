@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import productService from "../services/productService";
 
 function Allproduct() {
-  const { q } = useParams();
+  const query = new URLSearchParams(useLocation().search);
+  const q = query.get("q");
+  console.log(q);
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [filters, setFilters] = useState({
@@ -16,7 +18,7 @@ function Allproduct() {
   useEffect(() => {
     fetchCategories();
     fetchProducts();
-  }, [filters]);
+  }, [filters, q]);
 
   const fetchCategories = async () => {
     try {
