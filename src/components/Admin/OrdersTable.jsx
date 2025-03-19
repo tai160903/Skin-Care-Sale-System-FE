@@ -16,6 +16,7 @@ import {
   AccordionDetails,
   Chip,
   Box,
+  Pagination,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
@@ -41,15 +42,22 @@ const OrdersTable = () => {
     fetchOrders();
   }, [status]);
 
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1); // Tổng số trang
+  const limit = 10;
   const fetchOrders = async () => {
     try {
       let data;
       if (status === "All") {
-        data = await orderService.getAllOrders();
+        data = await orderService.getAllOrders({ page, limit });
+        console.log(data);
       } else {
         data = await orderService.getOrdersByStatus(status);
       }
+      console.log("data:", data?.data?.data.docs);
+      setTotalPages(data.data.totalPages);
       setOrders(data);
+      
     } catch (error) {
       console.error("Error fetching orders:", error);
     }
@@ -92,7 +100,7 @@ const OrdersTable = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {orders.data?.data.map((order) => (
+            {orders.data?.data.docs.map((order) => (
               <TableRow key={order._id} sx={{ backgroundColor: "white" }}>
                 <TableCell sx={{ fontWeight: "bold", color: "#d32f2f" }}>
                   ${order.totalPay.toLocaleString()}
@@ -122,12 +130,12 @@ const OrdersTable = () => {
                           >
                             {item.product_id?.name || "Unknown Product"}
                           </Typography>
-                          <Typography>Quantity: {item.quantity}</Typography>
+                          <Typography>Số LượngLượng: {item.quantity}</Typography>
                           <Typography>
-                            Price: ${item.priceAtTime.toLocaleString()}
+                            Giá: ${item.priceAtTime.toLocaleString()}
                           </Typography>
                           <Typography>
-                            Category: {item.product_id?.category || "N/A"}
+                            Loại: {item.product_id?.category.name || "N/A"}
                           </Typography>
                           <Typography>
                             Rating: ⭐ {item.product_id?.rating || "N/A"}
@@ -172,6 +180,15 @@ const OrdersTable = () => {
           </TableBody>
         </Table>
       </TableContainer>
+      <Box sx={{ display: "flex", justifyContent: "center", marginTop: 2 }}>
+      <Pagination
+        count={totalPages}
+        page={page}
+        onChange={(event, value) => setPage(value)}
+        color="primary"
+        shape="rounded"
+      />
+    </Box>
     </Paper>
   );
 };

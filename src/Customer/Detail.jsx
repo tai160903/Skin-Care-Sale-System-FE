@@ -13,6 +13,7 @@ import { addToCart } from "../redux/slices/cartSlice";
 import { addToCompare } from "../redux/slices/compareSlice"; // Thêm action để so sánh
 import Content from "./Content";
 import { formatCurrency } from "../utils/formatCurrency";
+import reviewService from "../services/reviewService";
 
 function Detail() {
   const { id } = useParams();
@@ -22,6 +23,7 @@ function Detail() {
   const [isLoading, setIsLoading] = useState(true);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [quantity, setQuantity] = useState(1);
+  const [reviews, setReviews] = useState([]);
 
   const customerId = useSelector((state) => state.user.customer?._id);
 
@@ -37,12 +39,23 @@ function Detail() {
         setIsLoading(false);
       }
     };
+    const fetchReviews = async () => {
+      try {
+        const response = await reviewService.getReviewsByProductId(id);
+        console.log(response.data.data);
+        setReviews(response.data.data); 
+      } catch (error) {
+        console.error("Error fetching reviews:", error);
+      }
+    };
 
     if (id) {
+      fetchReviews();
       fetchProduct();
       setQuantity(1);
     }
   }, [id]);
+
 
   const handleIncreaseQuantity = () => setQuantity((prev) => prev + 1);
   const handleDecreaseQuantity = () =>
@@ -206,6 +219,35 @@ function Detail() {
             >
               So sánh
             </Button>
+          </div>
+          <div className="mt-8 w-full">
+            <h3 className="text-xl font-bold mb-4">Đánh giá sản phẩm</h3>
+
+            {/* Hộp chứa đánh giá có thể cuộn */}
+            <div className="border border-gray-300 rounded-lg p-4 max-h-64 overflow-y-auto">
+              {reviews.length > 0 ? (
+                reviews.map((review, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: index * 0.1 }}
+                    className="border-b border-gray-300 pb-4 mb-4 last:border-none"
+                  >
+                  <div className="flex flex-col">
+                  <span className="font-semibold">{review.customer_id.name}</span>
+                  <Rating value={review.rating} precision={0.5} readOnly size="small" />
+                </div>
+                    <p className="text-gray-600">{review.comment}</p>
+                    <small className="text-gray-400">
+                      {new Date(review.createdAt).toLocaleDateString("vi-VN")}
+                    </small>
+                  </motion.div>
+                ))
+              ) : (
+                <p className="text-gray-500">Chưa có đánh giá nào.</p>
+              )}
+            </div>
           </div>
         </motion.div>
       </div>
