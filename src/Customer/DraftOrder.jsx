@@ -151,6 +151,7 @@ const DraftOrder = () => {
             fullWidth
             label="Số điện thoại"
             variant="outlined"
+            sx={{ mt: 2, mb: 2 }}
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             className="mt-2"

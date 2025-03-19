@@ -4,51 +4,57 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-  Typography,
   Box,
   Divider,
   IconButton,
   Tooltip,
+  Avatar,
+  Typography,
 } from "@mui/material";
 import {
   ListAlt,
-  People,
-  ExitToApp,
-  Menu,
   Settings,
+  ExitToApp,
+  Home,
+  Person,
 } from "@mui/icons-material";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../../redux/slices/userSlice";
-import { useDispatch, useSelector } from "react-redux";
 
 const ProfileSidebar = () => {
   const location = useLocation();
-  const [open, setOpen] = useState(true);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  // const token = useSelector((state) => state.user.token);
   const customerId = useSelector((state) => state?.user?.customer?._id);
-  const toggleSidebar = () => {
-    setOpen(!open);
-  };
+  const customerName = useSelector((state) => state?.user?.customer?.name);
+  const customerAvatar = useSelector((state) => state?.user?.customer?.avatar);
 
   const handleLogout = () => {
-    dispatch(logout()); // Dispatch the logout action to clear user data
-    navigate("/"); // Navigate to the home page or login page
+    dispatch(logout());
+    navigate("/");
   };
 
   const menuItems = [
-    { text: "Ho so", icon: <People />, path: `/profile/${customerId}` },
     {
-      text: "Lich su don hang",
+      text: "Trang chủ",
+      icon: <Home />,
+      path: "/",
+    },
+    {
+      text: "Hồ sơ",
+      icon: <Person />,
+      path: `/profile/${customerId}`,
+    },
+    {
+      text: "Lịch sử đơn hàng",
       icon: <ListAlt />,
       path: `/profile/${customerId}/order-tracking`,
     },
     {
-      text: "Doi mat khau",
+      text: "Đổi mật khẩu",
       icon: <Settings />,
-      path: `/profile/:customerId/change-password`,
+      path: `/profile/${customerId}/change-password`,
     },
   ];
 
@@ -56,58 +62,50 @@ const ProfileSidebar = () => {
     <Drawer
       variant="permanent"
       sx={{
-        width: open ? 260 : 80,
+        width: 260,
         flexShrink: 0,
-        transition: "width 0.3s ease-in-out",
         "& .MuiDrawer-paper": {
-          width: open ? 260 : 80,
-          background: "#ECF5FF",
-          color: "#34495E",
+          width: 260,
+          background: "#F4F6F7",
+          color: "#2C3E50",
           paddingTop: 2,
           height: "100vh",
           boxShadow: "2px 0px 10px rgba(0,0,0,0.15)",
-          transition: "width 0.3s ease-in-out",
         },
       }}
     >
-      {/* Header */}
       <Box
         sx={{
           textAlign: "center",
           padding: "16px 0",
-          backgroundColor: "#3498DB",
+          backgroundColor: "#2980B9",
           display: "flex",
-          justifyContent: "space-between",
+          flexDirection: "column",
           alignItems: "center",
-          paddingLeft: open ? "20px" : "8px",
-          paddingRight: "8px",
         }}
       >
-        {open && (
-          <Typography variant="h6" sx={{ color: "#fff", fontWeight: "bold" }}>
-            Profile
-          </Typography>
-        )}
-        <IconButton onClick={toggleSidebar} sx={{ color: "#fff" }}>
-          <Menu />
-        </IconButton>
+        <Avatar
+          src={customerAvatar || "/default-avatar.png"}
+          sx={{ width: 64, height: 64, marginBottom: 1, cursor: "pointer" }}
+          onClick={() => navigate(`/profile/${customerId}`)}
+        />
+        <Typography variant="h6" sx={{ color: "#fff", fontWeight: "bold" }}>
+          {customerName || "Người dùng"}
+        </Typography>
       </Box>
 
-      {/* Menu Items */}
       <List sx={{ padding: "16px 8px" }}>
         {menuItems.map(({ text, icon, path }) => (
-          <Tooltip title={!open ? text : ""} placement="right" key={text}>
+          <Tooltip title={text} placement="right" key={text}>
             <ListItem
               component={Link}
               to={path}
               selected={location.pathname === path}
               sx={{
-                bgcolor: location.pathname === path ? "#85C1E9" : "transparent",
+                bgcolor: location.pathname === path ? "#AED6F1" : "transparent",
                 "&:hover": {
                   backgroundColor: "#D6EAF8",
-                  transform: "scale(1.05)",
                 },
-                transition: "all 0.3s",
                 borderRadius: "8px",
                 marginBottom: "10px",
                 padding: "12px",
@@ -118,15 +116,10 @@ const ProfileSidebar = () => {
               <ListItemIcon sx={{ color: "#2C3E50", minWidth: "40px" }}>
                 {icon}
               </ListItemIcon>
-              {open && (
-                <ListItemText
-                  primary={text}
-                  primaryTypographyProps={{
-                    fontSize: "16px",
-                    fontWeight: "500",
-                  }}
-                />
-              )}
+              <ListItemText
+                primary={text}
+                primaryTypographyProps={{ fontSize: "16px", fontWeight: "500" }}
+              />
             </ListItem>
           </Tooltip>
         ))}
@@ -136,14 +129,12 @@ const ProfileSidebar = () => {
       <Divider sx={{ backgroundColor: "#2C3E50", margin: "16px 20px" }} />
       <List>
         <ListItem
-          onClick={handleLogout} // Trigger logout function here
+          onClick={handleLogout}
           sx={{
             bgcolor: "transparent",
             "&:hover": {
               backgroundColor: "#F5B7B1",
-              transform: "scale(1.05)",
             },
-            transition: "all 0.3s",
             borderRadius: "8px",
             margin: "10px 8px",
             padding: "12px",
@@ -152,12 +143,10 @@ const ProfileSidebar = () => {
           <ListItemIcon sx={{ color: "#E74C3C" }}>
             <ExitToApp />
           </ListItemIcon>
-          {open && (
-            <ListItemText
-              primary="Đăng xuất"
-              primaryTypographyProps={{ fontSize: "16px", fontWeight: "500" }}
-            />
-          )}
+          <ListItemText
+            primary="Đăng xuất"
+            primaryTypographyProps={{ fontSize: "16px", fontWeight: "500" }}
+          />
         </ListItem>
       </List>
     </Drawer>
