@@ -27,6 +27,10 @@ function Detail() {
   const role = useSelector((state) => state.user.user?.role);
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  useEffect(() => {
     const fetchProduct = async () => {
       setIsLoading(true);
       try {

@@ -77,11 +77,11 @@ const Header = () => {
           <span>Tra cứu đơn</span>
         </Link>
         <Link
-          to="/store-location"
+          to="/comparison"
           className="flex items-center text-gray-700 hover:text-green-700 space-x-2"
         >
           <LocationIcon className="text-[#326f51] text-xl" />
-          <span>Vị trí</span>
+          <span>So sánh</span>
         </Link>
         <Link
           to="/blog"

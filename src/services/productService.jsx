@@ -1,15 +1,26 @@
 import axiosClient from "./api.config";
 
 const productService = {
-  getAllProduct: ({ q, page, limit, category }) => {
-    let params = new URLSearchParams();
+  getAllProducts: ({
+    searchTerm = "",
+    page = 1,
+    limit = 20,
+    categoryId,
+    minPrice = 0,
+    maxPrice = Infinity,
+    sortBy,
+  }) => {
+    const params = new URLSearchParams();
 
-    if (q) params.append("q", q);
-    if (category) params.append("category", category);
-    if (!q && page && limit) {
+    if (searchTerm) params.append("searchTerm", searchTerm);
+    if (categoryId) params.append("categoryId", categoryId);
+    if (page && limit) {
       params.append("page", page);
       params.append("limit", limit);
     }
+    params.append("minPrice", minPrice);
+    params.append("maxPrice", maxPrice);
+    if (sortBy) params.append("sortBy", sortBy);
 
     return axiosClient.get(`/api/products?${params.toString()}`);
   },

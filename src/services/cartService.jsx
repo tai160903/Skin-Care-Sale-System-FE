@@ -5,6 +5,10 @@ const cartService = {
     return axiosClient.get(`/api/cart/${customerId}`);
   },
 
+  updateItemQuantity: (data) => {
+    return axiosClient.put("/api/cart/update-quantity", data);
+  },
+
   addToCart: (data) => {
     return axiosClient.post("/api/cart/add", data);
   },

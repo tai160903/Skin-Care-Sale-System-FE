@@ -1,4 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
+import axiosClient from "../../services/api.config";
+import cartService from "../../services/cartService";
 
 const initialState = {
   items: [],
@@ -73,8 +75,6 @@ const cartSlice = createSlice({
         (total, item) => total + item.product_id.price * item.quantity,
         0,
       );
-
-      console.log("Cart after removal:", state.items);
     },
 
     clearCart: (state) => {
@@ -88,6 +88,25 @@ const cartSlice = createSlice({
     },
   },
 });
+
+export const updateCartQuantity =
+  (customerId, productId, quantity) => async (dispatch) => {
+    try {
+      await cartService.updateItemQuantity({
+        customerId,
+        productId,
+        quantity,
+      });
+
+      if (quantity > 0) {
+        dispatch(increaseQuantity(productId));
+      } else {
+        dispatch(decreaseQuantity(productId));
+      }
+    } catch (error) {
+      console.error("Lỗi cập nhật giỏ hàng:", error);
+    }
+  };
 
 export const {
   setCart,

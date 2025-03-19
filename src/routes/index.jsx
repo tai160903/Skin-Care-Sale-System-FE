@@ -43,6 +43,7 @@ import ProfileLayout from "../components/Header/ProfileLayout";
 import OrderTracking from "../pages/OrderTracking";
 import OrderDetail from "../Customer/OrderDetail";
 import ChangePassword from "../pages/ChangePassword";
+import Allproduct from "../pages/Allproduct";
 
 const Router = createBrowserRouter([
   {
@@ -52,6 +53,7 @@ const Router = createBrowserRouter([
       { path: "", element: <Home />, errorElement: <Error /> },
       { path: "signin", element: <Signin /> },
       { path: "signup", element: <Signup /> },
+      { path: "all-products", element: <Allproduct /> },
       { path: "order-history/:customeId", element: <OrderHistory /> },
       { path: "verify-email", element: <Verify /> },
       { path: "forgot-password", element: <ForgotPassword /> },

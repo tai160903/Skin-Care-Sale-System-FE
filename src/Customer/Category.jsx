@@ -17,9 +17,10 @@ const Category = () => {
     slidesToShow: Math.min(categories.length, 5),
     slidesToScroll: 1,
     autoplay: true,
-    autoplaySpeed: 3000,
+    autoplaySpeed: 1500,
     arrows: false,
     pauseOnHover: true,
+
     responsive: [
       { breakpoint: 1024, settings: { slidesToShow: 3 } },
       { breakpoint: 768, settings: { slidesToShow: 2 } },

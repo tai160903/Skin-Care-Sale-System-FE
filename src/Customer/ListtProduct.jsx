@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import productService from "../services/productService";
 import {
   Box,
@@ -33,7 +33,10 @@ function ListProduct() {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await productService.getAllProduct({ page, limit });
+        const response = await productService.getAllProducts({
+          page,
+          limit,
+        });
         setData(response.data.data);
         setTotalPages(response.data.totalPages);
       } catch (error) {
@@ -79,14 +82,16 @@ function ListProduct() {
       >
         Gợi Ý Cho Bạn
       </Typography>
-      <Typography
-        variant="p"
-        fontWeight="bold"
-        color="textDisabled"
-        sx={{ mb: 10, textAlign: "right", textDecoration: "underline" }}
-      >
-        Xem Thêm
-      </Typography>
+      <Link to="/all-products" style={{ textDecoration: "underline" }}>
+        <Typography
+          variant="h6"
+          fontWeight="bold"
+          color="gray"
+          sx={{ mb: 4, textAlign: "start" }}
+        >
+          Xem thêm
+        </Typography>
+      </Link>
 
       <Grid container spacing={5}>
         {data.map((item) => (
@@ -101,8 +106,7 @@ function ListProduct() {
                 transition: "all 0.3s ease",
                 cursor: "pointer",
                 "&:hover": {
-                  transform: "translateY(-8px)",
-                  boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
+                  border: "1.5px solid #1976d2",
                 },
               }}
               onClick={() => handleProductClick(item._id)}
