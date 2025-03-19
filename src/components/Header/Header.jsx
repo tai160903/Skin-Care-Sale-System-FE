@@ -21,6 +21,7 @@ const Header = () => {
   const token = useSelector((state) => state.user.token);
   const cart = useSelector((state) => state.cart.items);
   const customerId = useSelector((state) => state?.user?.customer?._id);
+  const role = useSelector((state) => state?.user?.user?.role);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -115,6 +116,7 @@ const Header = () => {
               ) : (
                 <>
                   <LinkItem to={`/profile/${customerId}`} label="Hồ sơ" />
+                  {role === "admin" && <LinkItem to="/admin" label="Quản lý" />}
                   <LinkItem
                     to={`profile/${customerId}/orderhistory`}
                     label="Lịch sử đặt hàng"
