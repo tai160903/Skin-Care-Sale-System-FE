@@ -9,7 +9,6 @@ import Category from "../Customer/Category";
 import BlogList from "../Customer/BlogList";
 import { Container, Box } from "@mui/material";
 import Adv from "../components/Header/Adv";
-import UploadImage from "../components/UploadImage";
 import { login } from "../redux/slices/userSlice";
 
 function Home() {
@@ -17,6 +16,7 @@ function Home() {
   const customer = useSelector((state) => state.user.customer);
   const [isFetched, setIsFetched] = useState(false);
 
+  // Xử lý login từ URL nếu có token
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get("access_token");
@@ -46,7 +46,6 @@ function Home() {
     }, 1000);
   }, [dispatch]);
 
-  console.log("customer", customer);
   useEffect(() => {
     const fetchCart = async () => {
       if (customer && !isFetched) {
@@ -70,28 +69,27 @@ function Home() {
   }, [customer, isFetched, dispatch]);
 
   return (
-    <Box>
-      <Adv />
-      <Container maxWidth="xl" sx={{ mt: 4 }}>
-        <Box sx={{ mb: 10 }}>
+    <>
+      <Box>
+        <Adv />
+      </Box>
+
+      <Category />
+
+      <Container>
+        <Box sx={{ mb: 7 }}>
           <TopProduct />
         </Box>
 
-        <Box sx={{ mb: 5 }}>
-          <Category />
-        </Box>
-        <Box sx={{ mb: 5 }}>
+        <Box sx={{ mb: 7 }}>
           <ListProduct />
         </Box>
-        <Box sx={{ mb: 6 }}>
+
+        <Box sx={{ mb: 7 }}>
           <BlogList />
         </Box>
-        <div>
-          <h2>Upload Ảnh với Supabase Storage</h2>
-          <UploadImage />
-        </div>
       </Container>
-    </Box>
+    </>
   );
 }
 

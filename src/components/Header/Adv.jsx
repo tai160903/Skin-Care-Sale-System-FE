@@ -42,7 +42,6 @@ const Adv = () => {
   return (
     <Box
       sx={{
-        width: "100vw",
         height: "auto",
         overflow: "hidden",
         background: "#326f51",

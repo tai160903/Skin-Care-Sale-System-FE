@@ -14,7 +14,7 @@ import {
   Avatar,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import allUserService from "../../services/adminService/allUserService";
+import allUserService from "../../services/adminService/alluserService";
 
 const StaffList = () => {
   const [staffList, setStaffList] = useState([]);

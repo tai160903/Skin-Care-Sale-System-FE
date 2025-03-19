@@ -21,6 +21,7 @@ const Header = () => {
   const token = useSelector((state) => state.user.token);
   const cart = useSelector((state) => state.cart.items);
   const customerId = useSelector((state) => state?.user?.customer?._id);
+  const role = useSelector((state) => state?.user?.user?.role);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -76,11 +77,11 @@ const Header = () => {
           <span>Tra cứu đơn</span>
         </Link>
         <Link
-          to="/store-location"
+          to="/comparison"
           className="flex items-center text-gray-700 hover:text-green-700 space-x-2"
         >
           <LocationIcon className="text-[#326f51] text-xl" />
-          <span>Vị trí</span>
+          <span>So sánh</span>
         </Link>
         <Link
           to="/blog"
@@ -115,8 +116,12 @@ const Header = () => {
               ) : (
                 <>
                   <LinkItem to={`/profile/${customerId}`} label="Hồ sơ" />
+                  {role === "admin" && <LinkItem to="/admin" label="Quản lý" />}
+                  {role === "staff" && (
+                    <LinkItem to="/staff" label="Nhân viên" />
+                  )}
                   <LinkItem
-                    to={`profile/${customerId}/orderhistory`}
+                    to={`profile/${customerId}/order-tracking`}
                     label="Lịch sử đặt hàng"
                   />
                   <button

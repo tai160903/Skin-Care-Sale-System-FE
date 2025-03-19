@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom";
 import { getBlogs } from "../../services/blogServive";
 import {
   Grid,
@@ -14,7 +14,7 @@ import {
 const Blog = () => {
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate(); // Hook để điều hướng
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -36,9 +36,9 @@ const Blog = () => {
         display="flex"
         justifyContent="center"
         alignItems="center"
-        minHeight="50vh"
+        minHeight="60vh"
       >
-        <CircularProgress />
+        <CircularProgress color="primary" />
       </Box>
     );
 
@@ -54,24 +54,24 @@ const Blog = () => {
       >
         Tin Tức & Cẩm Nang
       </Typography>
-      <Grid container spacing={4} justifyContent="center">
+      <Grid container spacing={3} justifyContent="flex-start">
         {blogs.slice(0, 16).map((blog) => (
           <Grid item xs={12} sm={6} md={4} lg={3} key={blog._id}>
             <Card
-              onClick={() => navigate(`/blog/${blog._id}`)} // Điều hướng đến trang chi tiết
+              onClick={() => navigate(`/blog/${blog._id}`)}
               sx={{
                 cursor: "pointer",
                 transition: "0.3s",
                 "&:hover": {
-                  transform: "translateY(-5px)",
+                  transform: "scale(1.03)",
                   boxShadow: 6,
                 },
                 boxShadow: 3,
-                borderRadius: 3,
-                height: 380,
+                borderRadius: 2,
+                overflow: "hidden",
                 display: "flex",
                 flexDirection: "column",
-                overflow: "hidden",
+                height: "100%",
               }}
             >
               {blog.image && (
@@ -87,19 +87,32 @@ const Blog = () => {
                 />
               )}
               <CardContent sx={{ flex: 1, p: 2 }}>
-                <Typography variant="h6" fontWeight="bold" sx={{ mb: 1 }}>
-                  {blog.title.length > 60
-                    ? blog.title.slice(0, 57) + "..."
-                    : blog.title}
+                <Typography
+                  variant="h6"
+                  fontWeight="bold"
+                  sx={{
+                    mb: 1,
+                    display: "-webkit-box",
+                    WebkitBoxOrient: "vertical",
+                    WebkitLineClamp: 2,
+                    overflow: "hidden",
+                  }}
+                >
+                  {blog.title}
                 </Typography>
                 <Typography
                   variant="body2"
                   color="textSecondary"
-                  sx={{ fontSize: "0.9rem", lineHeight: 1.5 }}
+                  sx={{
+                    fontSize: "0.9rem",
+                    lineHeight: 1.5,
+                    display: "-webkit-box",
+                    WebkitBoxOrient: "vertical",
+                    WebkitLineClamp: 3,
+                    overflow: "hidden",
+                  }}
                 >
-                  {blog.content.length > 120
-                    ? blog.content.slice(0, 120) + "..."
-                    : blog.content}
+                  {blog.content}
                 </Typography>
               </CardContent>
             </Card>
