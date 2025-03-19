@@ -4,7 +4,7 @@ const productService = {
   getAllProducts: ({
     page = 1,
     limit = 20,
-    categoryId,
+    category,
     minPrice = 0,
     maxPrice = Infinity,
     sortBy,
@@ -13,7 +13,7 @@ const productService = {
     const params = new URLSearchParams();
 
     if (q) params.append("q", q);
-    if (categoryId) params.append("categoryId", categoryId);
+    if (category) params.append("category", category);
     if (page && limit) {
       params.append("page", page);
       params.append("limit", limit);

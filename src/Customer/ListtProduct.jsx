@@ -57,6 +57,7 @@ function ListProduct() {
   }, [page, location.search, navigate]);
 
   const handlePageChange = (event, value) => {
+    window.scrollTo(0, 1200);
     setPage(value);
   };
 
