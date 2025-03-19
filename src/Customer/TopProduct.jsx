@@ -107,10 +107,13 @@ const TopProduct = () => {
                 <Box sx={{ position: "relative" }}>
                   <CardMedia
                     component="img"
-                    height="180"
                     image={product.image || "https://placehold.co/400"}
                     alt={product.name}
-                    sx={{ objectFit: "cover", transition: "transform 0.3s" }}
+                    sx={{
+                      objectFit: "cover",
+                      transition: "transform 0.3s",
+                      maxHeight: "150px",
+                    }}
                   />
                   {product.discountPercentage > 0 && (
                     <Box
