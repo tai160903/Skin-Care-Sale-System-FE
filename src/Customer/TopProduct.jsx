@@ -112,7 +112,7 @@ const TopProduct = () => {
                     sx={{
                       objectFit: "cover",
                       transition: "transform 0.3s",
-                      maxHeight: "150px",
+                      maxHeight: "140px",
                     }}
                   />
                   {product.discountPercentage > 0 && (
