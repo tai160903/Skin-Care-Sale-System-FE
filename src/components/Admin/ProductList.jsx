@@ -115,6 +115,7 @@ const ProductList = () => {
   const fetchCategories = async () => {
     try {
       const response = await productService.getCategories();
+      console.log("Categories:", response.data);
       setCategories(response.data);
     } catch (error) {
       toast.error("Failed to fetch categories");
@@ -280,7 +281,7 @@ const ProductList = () => {
         fullWidth
       >
         <DialogTitle sx={{ textAlign: "center", fontWeight: "bold" }}>
-          {editingProduct ? "Edit Product" : "Create New Product"}
+          {editingProduct ? "Chỉnh Sửa Sản Phẩm" : "Tạo Sản Phẩm"}
         </DialogTitle>
         <DialogContent>
           <Box display="flex" flexDirection="column" gap={2}>
@@ -311,7 +312,7 @@ const ProductList = () => {
                     {(key === "skinType" ? skinTypes : categories).map(
                       (item) => (
                         <MenuItem key={item._id} value={item._id}>
-                          {item.VNname}
+                        {item.VNname || item.name}
                         </MenuItem>
                       ),
                     )}

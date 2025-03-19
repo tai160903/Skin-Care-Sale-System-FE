@@ -148,8 +148,11 @@ const OrderTr = () => {
           <TableHead>
             <TableRow sx={{ bgcolor: "#f5f5f5" }}>
               <TableCell sx={{ fontWeight: "bold", color: "#333" }}>
-                Theo dõi đơn hàng
+                đơn hàng
               </TableCell>
+            <TableCell sx={{ fontWeight: "bold", color: "#333" }}>
+              Tổng thanh toán
+            </TableCell>
               <TableCell sx={{ fontWeight: "bold", color: "#333" }}>
                 Số điện thoại
               </TableCell>
@@ -183,17 +186,24 @@ const OrderTr = () => {
                     sx={{ "&:hover": { bgcolor: "#e3f2fd" } }}
                   >
                     <TableCell>{order._id || "N/A"}</TableCell>
+                    <TableCell>
+                      {order.order_id.totalPay 
+                        ? `${order.order_id.totalPay.toLocaleString("vi-VN")} VND` 
+                        : "N/A"}
+                    </TableCell>
                     <TableCell>{order.shipping_phone || "N/A"}</TableCell>
                     <TableCell>
                       <Chip
                         label={order.shipping_status || "Unknown"}
                         color={
-                          order.shipping_status === "Shipped"
+                          order.shipping_status === "Shipping"
                             ? "primary"
                             : order.shipping_status === "Pending"
                               ? "warning"
                               : order.shipping_status === "Cancelled"
                                 ? "error"
+                              : order.shipping_status === "Delivered"
+                                ? "success"
                                 : "default"
                         }
                         icon={<LocalShipping />}

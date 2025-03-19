@@ -21,8 +21,9 @@ const SuccessPayment = () => {
     navigate("/");
   };
 
+  const order_id = data?.data?.order?._id;
   const handleViewOrders = () => {
-    navigate(`/order-history/${customerId}`);
+    navigate(`/order-detail/${order_id}`);
   };
 
   if (!data) {

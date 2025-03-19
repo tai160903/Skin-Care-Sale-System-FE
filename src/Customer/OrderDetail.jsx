@@ -23,26 +23,32 @@ import {
 import orderService from "../services/orderService";
 import axios from "axios";
 import { toast } from "react-toastify";
+import shipService from "../services/adminService/shipService";
 
 const OrderDetail = () => {
   const { order_id } = useParams();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [shipping, setShipping] = useState(null);
 
   useEffect(() => {
-    const fetchOrderDetail = async () => {
+    const fetchDetails = async () => {
       try {
-        const res = await orderService.getOrderById(order_id);
-        setOrder(res.data);
+        const orderRes = await orderService.getOrderById(order_id);
+        setOrder(orderRes.data);
+
+        const shippingRes = await shipService.getShippingByOrderId(order_id);
+        setShipping(shippingRes.data?.data);
       } catch (error) {
-        console.error("Error fetching order details:", error);
+        console.error("Error fetching details:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchOrderDetail();
+    fetchDetails();
   }, [order_id]);
+
   const [openIndex, setOpenIndex] = useState(null); // Theo dõi sản phẩm đang mở modal
   const [reviews, setReviews] = useState({});
   const [ratings, setRatings] = useState({});
@@ -112,6 +118,8 @@ const OrderDetail = () => {
   };
   if (!order) return <Typography align="center">Order not found</Typography>;
 
+  console.log("ship:", shipping);
+
   return (
     <Box maxWidth="800px" mx="auto" my={4}>
       {/* Khung chứa Order ID và Status */}
@@ -120,7 +128,7 @@ const OrderDetail = () => {
           Order Summary
         </Typography>
 
-        {/* Chia đôi Order ID và Status */}
+       
         <Grid container spacing={2}>
           <Grid item xs={6}>
             <List>
@@ -141,35 +149,48 @@ const OrderDetail = () => {
         <Divider sx={{ my: 2 }} />
 
         {/* Danh sách sản phẩm */}
+        <Paper elevation={2} sx={{ p: 2, bgcolor: "white", mt: 2, borderRadius: 2 }}>
         <Typography variant="h6" fontWeight="bold" color="textPrimary" mb={1}>
           Ordered Products
         </Typography>
+      
         <List>
           {order.items.map((product, index) => (
             <ListItem
               key={index}
               sx={{
-                borderBottom:
-                  index !== order.items.length - 1 ? "1px solid #ddd" : "none",
+                borderBottom: index !== order.items.length - 1 ? "1px solid #ddd" : "none",
                 alignItems: "center",
                 p: 2,
               }}
             >
-              <ListItemAvatar>
-                <Avatar
-                  src={product.product_id.image}
-                  alt={product.product_id.name}
-                  variant="square"
-                  sx={{ width: 40, height: 40 }}
-                />
-              </ListItemAvatar>
-
-              <ListItemText
+              <ListItem sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                <ListItemAvatar>
+                  <Avatar
+                    src={product.product_id.image}
+                    alt={product.product_id.name}
+                    variant="square"
+                    sx={{ width: 40, height: 40 }}
+                  />
+                </ListItemAvatar>
+      
+                <ListItemText
                 primary={product.product_id.name}
-                secondary={`Price: $${product.product_id.price}`}
-                sx={{ ml: 2 }}
+                secondary={
+                  <>
+                    <Typography component="span">
+                    <strong>Giá:</strong>{" "}
+                    {new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(product.product_id?.price || 0)}
+                  </Typography>
+                    <Typography component="span" sx={{ display: "block" }}>
+                      <strong>Số lượng:</strong> {product.quantity}
+                    </Typography>
+                  </>
+                }
+                sx={{ display: "flex", flexDirection: "column" }}
               />
-
+            </ListItem>
+      
               <Button
                 variant="contained"
                 color="primary"
@@ -178,7 +199,7 @@ const OrderDetail = () => {
               >
                 Đánh giá
               </Button>
-
+      
               <Dialog
                 open={openIndex === index}
                 onClose={() => setOpenIndex(null)}
@@ -193,7 +214,7 @@ const OrderDetail = () => {
                       setRatings({ ...ratings, [index]: newValue })
                     }
                   />
-
+      
                   {/* TextField để nhập đánh giá */}
                   <TextField
                     label="Nhập đánh giá của bạn"
@@ -207,7 +228,7 @@ const OrderDetail = () => {
                     sx={{ mt: 2 }}
                   />
                 </DialogContent>
-
+      
                 <DialogActions>
                   <Button onClick={() => setOpenIndex(null)} color="secondary">
                     Hủy
@@ -226,6 +247,19 @@ const OrderDetail = () => {
           ))}
         </List>
       </Paper>
+        <Paper elevation={2} sx={{ p: 2, bgcolor: "success.lighter", mt: 2, borderRadius: 2 }}>
+        <Typography
+          variant="h6"
+          fontWeight="bold"
+          color="success.main"
+          textAlign="right"
+        >
+          Tổng giá trị đơn hàng:{" "}
+          {new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(order.totalPay || 0)}
+        </Typography>
+      </Paper>
+      </Paper>
+      
 
       {/* Khung chứa các thông tin còn lại */}
       <Paper elevation={3} sx={{ p: 3, borderRadius: 3 }}>
@@ -235,22 +269,22 @@ const OrderDetail = () => {
         <List>
           <ListItem>
             <ListItemText
-              primary="Phone Number"
-              secondary={order.shipping_phone}
+              primary="Số điện thoại"
+              secondary={shipping?.[0]?.shipping_phone || "N/A"}
             />
           </ListItem>
           <Divider />
           <ListItem>
             <ListItemText
               primary="Shipping Address"
-              secondary={order.shipping_address}
+              secondary={shipping?.[0]?.shipping_address || "N/A"}
             />
           </ListItem>
           <Divider />
           <ListItem>
             <ListItemText
               primary="Payment Method"
-              secondary={order.order_id?.payment_method || "N/A"}
+              secondary={order.payment_method || "N/A"}
             />
           </ListItem>
           <Divider />
