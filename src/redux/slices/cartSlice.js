@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import axiosClient from "../../services/api.config";
 import cartService from "../../services/cartService";
 
 const initialState = {
