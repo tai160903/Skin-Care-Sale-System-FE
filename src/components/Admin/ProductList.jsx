@@ -77,7 +77,7 @@ const ProductList = () => {
       );
       fetchProducts();
     } catch (error) {
-      toast.error("Failed to update product status");
+      toast.error("Failed to update product status", error);
     } finally {
       setConfirmDialogOpen(false);
       setSelectedProduct(null);
@@ -96,7 +96,7 @@ const ProductList = () => {
         setProducts([]);
       }
     } catch (error) {
-      toast.error("Failed to fetch products");
+      toast.error("Failed to fetch products", error);
       setProducts([]);
     } finally {
       setLoading(false);
@@ -108,7 +108,7 @@ const ProductList = () => {
       const response = await skintypeService.getSkinTypes();
       setSkinTypes(response.data);
     } catch (error) {
-      toast.error("Failed to fetch skin types");
+      toast.error("Failed to fetch skin types", error);
     }
   };
 
@@ -118,7 +118,7 @@ const ProductList = () => {
       console.log("Categories:", response.data);
       setCategories(response.data);
     } catch (error) {
-      toast.error("Failed to fetch categories");
+      toast.error("Failed to fetch categories", error);
     }
   };
 
@@ -129,7 +129,7 @@ const ProductList = () => {
       setOpen(false);
       fetchProducts();
     } catch (error) {
-      toast.error("Failed to create product");
+      toast.error("Failed to create product", error);
     }
   };
 
@@ -147,7 +147,7 @@ const ProductList = () => {
       setEditingProduct(null);
       fetchProducts();
     } catch (error) {
-      toast.error("Failed to update product");
+      toast.error("Failed to update product", error);
     }
   };
 

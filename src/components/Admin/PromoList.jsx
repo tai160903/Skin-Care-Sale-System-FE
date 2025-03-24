@@ -22,6 +22,7 @@ import {
   DialogActions,
   TextField,
 } from "@mui/material";
+import { toast } from "react-toastify";
 
 const PromoList = () => {
   const [promotions, setPromotions] = useState([]);
@@ -40,25 +41,31 @@ const PromoList = () => {
   });
   const [editingId, setEditingId] = useState(null);
 
-  // Fetch promotions khi component mount
   useEffect(() => {
     fetchPromotions();
   }, []);
 
-  // Gọi API lấy danh sách khuyến mãi
   const fetchPromotions = async () => {
-    const data = await getPromotion();
-    setPromotions(data);
-    setFilteredPromotions(data);
+    try {
+      const data = await getPromotion();
+      const promoData = Array.isArray(data) ? data : [];
+      setPromotions(promoData);
+      setFilteredPromotions(promoData);
+      toast.success("Tải danh sách khuyến mãi thành công!");
+    } catch (error) {
+      console.error("Lỗi khi tải khuyến mãi:", error);
+      setPromotions([]);
+      setFilteredPromotions([]);
+      toast.error("Không thể tải danh sách khuyến mãi!");
+    }
   };
 
-  // Xử lý tìm kiếm theo tên và lọc theo ngày
   useEffect(() => {
-    let filtered = promotions;
+    let filtered = promotions || [];
 
     if (searchTerm) {
       filtered = filtered.filter((promo) =>
-        promo.name.toLowerCase().includes(searchTerm.toLowerCase()),
+        (promo.name || "").toLowerCase().includes(searchTerm.toLowerCase()),
       );
     }
 
@@ -77,17 +84,16 @@ const PromoList = () => {
     setFilteredPromotions(filtered);
   }, [searchTerm, startDateFilter, endDateFilter, promotions]);
 
-  // Xử lý mở dialog (Thêm/Sửa)
   const handleOpenDialog = (promotion = null) => {
     if (promotion) {
       setEditingId(promotion._id);
       setFormData({
-        name: promotion.name,
-        code: promotion.code,
-        description: promotion.description,
-        discount_percentage: promotion.discount_percentage,
-        start_date: promotion.start_date.split("T")[0],
-        end_date: promotion.end_date.split("T")[0],
+        name: promotion.name || "",
+        code: promotion.code || "",
+        description: promotion.description || "",
+        discount_percentage: promotion.discount_percentage || "",
+        start_date: promotion.start_date?.split("T")[0] || "",
+        end_date: promotion.end_date?.split("T")[0] || "",
       });
     } else {
       setEditingId(null);
@@ -103,36 +109,85 @@ const PromoList = () => {
     setOpenDialog(true);
   };
 
-  // Xử lý đóng dialog
   const handleCloseDialog = () => {
     setOpenDialog(false);
   };
 
-  // Xử lý thay đổi input
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Xử lý submit form (Thêm/Sửa)
+  const validateForm = () => {
+    if (!(formData.name || "").trim()) {
+      toast.error("Tên khuyến mãi không được để trống!");
+      return false;
+    }
+    if (!(formData.code || "").trim()) {
+      toast.error("Mã khuyến mãi không được để trống!");
+      return false;
+    }
+    if (
+      formData.discount_percentage === "" ||
+      formData.discount_percentage < 0 ||
+      formData.discount_percentage > 100
+    ) {
+      toast.error("Phần trăm giảm giá phải từ 0 đến 100!");
+      return false;
+    }
+    if (!formData.start_date) {
+      toast.error("Ngày bắt đầu không được để trống!");
+      return false;
+    }
+    if (!formData.end_date) {
+      toast.error("Ngày kết thúc không được để trống!");
+      return false;
+    }
+    if (new Date(formData.start_date) > new Date(formData.end_date)) {
+      toast.error("Ngày bắt đầu phải trước ngày kết thúc!");
+      return false;
+    }
+    return true;
+  };
+
   const handleSubmit = async () => {
+    if (!validateForm()) return;
+
+    const promoData = {
+      ...formData,
+      discount_percentage: Number(formData.discount_percentage),
+      start_date: new Date(formData.start_date).toISOString(),
+      end_date: new Date(formData.end_date).toISOString(),
+    };
+
     try {
       if (editingId) {
-        await updatePromotion(editingId, formData);
+        await updatePromotion(editingId, promoData);
+        toast.success("Cập nhật khuyến mãi thành công!");
       } else {
-        await createPromotion(formData);
+        await createPromotion(promoData);
+        toast.success("Tạo khuyến mãi thành công!");
       }
       fetchPromotions();
       handleCloseDialog();
     } catch (error) {
       console.error("Lỗi khi lưu khuyến mãi:", error);
+      toast.error(error.response?.data?.message || "Không thể lưu khuyến mãi!");
     }
   };
 
-  // Xử lý xóa khuyến mãi
   const handleDelete = async (id) => {
     if (window.confirm("Bạn có chắc chắn muốn xóa?")) {
-      await deletePromotion(id);
-      fetchPromotions();
+      try {
+        const result = await deletePromotion(id);
+        if (result.success) {
+          toast.success(result.message);
+          fetchPromotions();
+        } else {
+          toast.error(result.message);
+        }
+      } catch (error) {
+        toast.error("Không thể xóa khuyến mãi!", error);
+      }
     }
   };
 
@@ -143,7 +198,6 @@ const PromoList = () => {
           🎉 Quản lí Khuyến mãi
         </Typography>
       </Box>
-      {/* Ô tìm kiếm và bộ lọc */}
       <div style={{ display: "flex", gap: "10px", marginBottom: "15px" }}>
         <TextField
           label="Tìm kiếm theo tên"
@@ -211,17 +265,21 @@ const PromoList = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredPromotions.map((promo) => (
+            {(filteredPromotions || []).map((promo) => (
               <TableRow key={promo._id}>
-                <TableCell>{promo.name}</TableCell>
-                <TableCell>{promo.code}</TableCell>
-                <TableCell>{promo.description}</TableCell>
-                <TableCell>{promo.discount_percentage}%</TableCell>
+                <TableCell>{promo.name || "Không có tên"}</TableCell>
+                <TableCell>{promo.code || "Không có mã"}</TableCell>
+                <TableCell>{promo.description || "Không có mô tả"}</TableCell>
+                <TableCell>{promo.discount_percentage || 0}%</TableCell>
                 <TableCell>
-                  {new Date(promo.start_date).toLocaleDateString()}
+                  {promo.start_date
+                    ? new Date(promo.start_date).toLocaleDateString()
+                    : "Không xác định"}
                 </TableCell>
                 <TableCell>
-                  {new Date(promo.end_date).toLocaleDateString()}
+                  {promo.end_date
+                    ? new Date(promo.end_date).toLocaleDateString()
+                    : "Không xác định"}
                 </TableCell>
                 <TableCell>
                   <Button
@@ -246,7 +304,6 @@ const PromoList = () => {
         </Table>
       </TableContainer>
 
-      {/* Dialog Form */}
       <Dialog open={openDialog} onClose={handleCloseDialog}>
         <DialogTitle>
           {editingId ? "Sửa Khuyến mãi" : "Thêm Khuyến mãi"}
@@ -257,24 +314,30 @@ const PromoList = () => {
             margin="dense"
             label="Tên"
             name="name"
-            value={formData.name}
+            value={formData.name || ""}
             onChange={handleChange}
+            inputProps={{ maxLength: 50 }}
+            helperText={`${(formData.name || "").length}/50 ký tự`}
           />
           <TextField
             fullWidth
             margin="dense"
             label="Mã"
             name="code"
-            value={formData.code}
+            value={formData.code || ""}
             onChange={handleChange}
+            inputProps={{ maxLength: 20 }}
+            helperText={`${(formData.code || "").length}/20 ký tự`}
           />
           <TextField
             fullWidth
             margin="dense"
             label="Mô tả"
             name="description"
-            value={formData.description}
+            value={formData.description || ""}
             onChange={handleChange}
+            inputProps={{ maxLength: 200 }}
+            helperText={`${(formData.description || "").length}/200 ký tự`}
           />
           <TextField
             fullWidth
@@ -282,8 +345,9 @@ const PromoList = () => {
             label="Giảm giá (%)"
             name="discount_percentage"
             type="number"
-            value={formData.discount_percentage}
+            value={formData.discount_percentage || ""}
             onChange={handleChange}
+            inputProps={{ min: 0, max: 100 }}
           />
           <TextField
             fullWidth
@@ -291,8 +355,9 @@ const PromoList = () => {
             label="Ngày bắt đầu"
             name="start_date"
             type="date"
-            value={formData.start_date}
+            value={formData.start_date || ""}
             onChange={handleChange}
+            InputLabelProps={{ shrink: true }}
           />
           <TextField
             fullWidth
@@ -300,8 +365,9 @@ const PromoList = () => {
             label="Ngày kết thúc"
             name="end_date"
             type="date"
-            value={formData.end_date}
+            value={formData.end_date || ""}
             onChange={handleChange}
+            InputLabelProps={{ shrink: true }}
           />
         </DialogContent>
         <DialogActions>
