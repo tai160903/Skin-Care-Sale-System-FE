@@ -12,7 +12,6 @@ import {
 } from "@mui/material";
 import {
   ListAlt,
-  People,
   ShoppingCart,
   LocalOffer,
   BarChart,

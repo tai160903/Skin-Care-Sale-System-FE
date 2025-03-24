@@ -16,6 +16,7 @@ import {
   RadioGroup,
   FormControlLabel,
   Radio,
+  Divider,
 } from "@mui/material";
 import { FaMoneyBill1Wave } from "react-icons/fa6";
 
@@ -51,18 +52,17 @@ const DraftOrder = () => {
       }
     };
     fetchShippingFee();
-  }, [address.ward, address.district]);
+  }, [address.ward, address.district, cart.length]);
 
-  const totalAmount = cart.reduce((sum, item) => {
+  const subtotal = cart.reduce((sum, item) => {
     const originalPrice = Number(item.product_id?.price) || 0;
     const discountedPrice =
       originalPrice * (1 - item.product_id?.discountPercentage / 100);
     return sum + discountedPrice * item.quantity;
   }, 0);
 
-  const discounted = (totalAmount * discountAmount) / 100;
-
-  const finalAmount = (totalAmount - discounted + shippingFee).toFixed(0);
+  const discount = (subtotal * discountAmount) / 100;
+  const totalAmount = (subtotal - discount + shippingFee).toFixed(0);
 
   const handleApplyCoupon = async () => {
     if (!coupon) return toast.error("Vui lòng nhập mã giảm giá!");
@@ -92,10 +92,10 @@ const DraftOrder = () => {
     try {
       const orderData = {
         customerId: customer._id,
-        totalPay: finalAmount,
+        totalPay: totalAmount,
         address: `${address.street}, ${address.ward.WardName}, ${address.district.DistrictName}, ${address.province.ProvinceName}`,
         phone,
-        discounted,
+        discounted: discount,
         shipping_price: shippingFee,
         payment_method: paymentType,
       };
@@ -119,61 +119,133 @@ const DraftOrder = () => {
   };
 
   return (
-    <div className="container mx-auto p-6 max-w-lg">
-      <Typography variant="h4" fontWeight="bold" align="center" gutterBottom>
-        Xác nhận đơn hàng
+    <Box sx={{ maxWidth: "600px", mx: "auto", py: 6, px: { xs: 2, sm: 4 } }}>
+      {/* Tiêu đề */}
+      <Typography
+        variant="h4"
+        sx={{
+          fontWeight: "bold",
+          textAlign: "center",
+          color: "grey.800",
+          mb: 4,
+        }}
+      >
+        Xác Nhận Đơn Hàng
       </Typography>
-      <Card className="shadow-md">
-        <CardContent>
-          <Typography variant="h6" fontWeight="bold">
-            Tổng tiền hàng: {formatCurrency(totalAmount)}
+
+      {/* Tổng quan đơn hàng */}
+      <Card
+        sx={{ mb: 4, borderRadius: 2, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}
+      >
+        <CardContent sx={{ p: 3 }}>
+          <Typography
+            variant="h6"
+            sx={{ fontWeight: "bold", color: "grey.700" }}
+          >
+            Tổng tiền hàng:{" "}
+            <Typography component="span" sx={{ color: "grey.900" }}>
+              {formatCurrency(subtotal)}
+            </Typography>
           </Typography>
-          <Typography variant="h6" fontWeight="bold">
-            Phí vận chuyển: {formatCurrency(shippingFee)}
+          <Typography
+            variant="h6"
+            sx={{ fontWeight: "bold", color: "grey.700", mt: 1 }}
+          >
+            Phí vận chuyển:{" "}
+            <Typography component="span" sx={{ color: "grey.900" }}>
+              {formatCurrency(shippingFee)}
+            </Typography>
           </Typography>
           {discountAmount > 0 && (
-            <Typography variant="h6" fontWeight="bold">
-              Giảm giá: {formatCurrency((totalAmount * discountAmount) / 100)}
+            <Typography
+              variant="h6"
+              sx={{ fontWeight: "bold", color: "success.main", mt: 1 }}
+            >
+              Giảm giá:{" "}
+              <Typography component="span">
+                {formatCurrency(discount)}
+              </Typography>
             </Typography>
           )}
-          <Typography variant="h6" fontWeight="bold">
-            Tổng thanh toán: {formatCurrency(finalAmount)}
+          <Divider sx={{ my: 2, bgcolor: "grey.300" }} />
+          <Typography
+            variant="h5"
+            sx={{ fontWeight: "bold", color: "primary.main" }}
+          >
+            Tổng thanh toán:{" "}
+            <Typography component="span">
+              {formatCurrency(totalAmount)}
+            </Typography>
           </Typography>
         </CardContent>
       </Card>
-      <Card className="mt-4 shadow-md">
-        <CardContent>
-          <Typography variant="h6" fontWeight="bold">
-            Thông tin khách hàng
+
+      {/* Thông tin giao hàng */}
+      <Card
+        sx={{ mb: 4, borderRadius: 2, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}
+      >
+        <CardContent sx={{ p: 3 }}>
+          <Typography
+            variant="h6"
+            sx={{ fontWeight: "bold", color: "grey.800", mb: 2 }}
+          >
+            Thông Tin Giao Hàng
           </Typography>
           <AddressForm onAddressChange={setAddress} />
           <TextField
             fullWidth
             label="Số điện thoại"
             variant="outlined"
-            sx={{ mt: 2, mb: 2 }}
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
-            className="mt-2"
+            sx={{
+              mt: 2,
+              "& .MuiOutlinedInput-root": {
+                borderRadius: 2,
+                "&:hover fieldset": { borderColor: "primary.main" },
+                "&.Mui-focused fieldset": { borderColor: "primary.main" },
+              },
+            }}
           />
         </CardContent>
       </Card>
-      <Box display="flex" gap={1} mt={2}>
+
+      {/* Mã giảm giá */}
+      <Box sx={{ display: "flex", gap: 2, mb: 4 }}>
         <TextField
           fullWidth
           label="Nhập mã giảm giá"
           variant="outlined"
           value={coupon}
           onChange={(e) => setCoupon(e.target.value)}
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              borderRadius: 2,
+              "&:hover fieldset": { borderColor: "primary.main" },
+              "&.Mui-focused fieldset": { borderColor: "primary.main" },
+            },
+          }}
         />
-        <Button variant="contained" onClick={handleApplyCoupon}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleApplyCoupon}
+          sx={{ px: 4, borderRadius: 2 }}
+        >
           Áp dụng
         </Button>
       </Box>
-      <Card className="mt-4 shadow-md">
-        <CardContent>
-          <Typography variant="h6" fontWeight="bold">
-            Phương thức thanh toán
+
+      {/* Phương thức thanh toán */}
+      <Card
+        sx={{ mb: 4, borderRadius: 2, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}
+      >
+        <CardContent sx={{ p: 3 }}>
+          <Typography
+            variant="h6"
+            sx={{ fontWeight: "bold", color: "grey.800", mb: 2 }}
+          >
+            Phương Thức Thanh Toán
           </Typography>
           <RadioGroup
             value={paymentMethod}
@@ -181,36 +253,50 @@ const DraftOrder = () => {
           >
             <FormControlLabel
               value="cash"
-              control={<Radio />}
+              control={<Radio color="success" />}
               label={
-                <>
-                  <FaMoneyBill1Wave className="text-green-500" /> Tiền mặt
-                </>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <FaMoneyBill1Wave size={20} color="#2e7d32" />
+                  <Typography>Tiền mặt</Typography>
+                </Box>
               }
             />
             <FormControlLabel
               value="stripe"
-              control={<Radio />}
+              control={<Radio color="primary" />}
               label={
-                <>
-                  <FaMoneyBill1Wave className="text-purple-500" /> Stripe
-                </>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <FaMoneyBill1Wave size={20} color="#673ab7" />
+                  <Typography>Stripe</Typography>
+                </Box>
               }
             />
           </RadioGroup>
         </CardContent>
       </Card>
 
+      {/* Nút xác nhận */}
       <Button
         variant="contained"
         color="success"
         fullWidth
-        className="mt-4 py-3"
         onClick={() => handleCreateOrder(paymentMethod)}
+        disabled={isProcessing}
+        sx={{
+          py: 1.5,
+          fontSize: "1rem",
+          fontWeight: "bold",
+          borderRadius: 2,
+          "&:hover": {
+            bgcolor: "success.dark",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
+          },
+          transition: "all 0.3s ease",
+        }}
       >
-        Xác nhận đặt hàng
+        {isProcessing ? "Đang xử lý..." : "Xác Nhận Đặt Hàng"}
       </Button>
-    </div>
+    </Box>
   );
 };
 

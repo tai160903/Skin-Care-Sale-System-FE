@@ -36,16 +36,8 @@ const ProfileSidebar = () => {
   };
 
   const menuItems = [
-    {
-      text: "Trang chủ",
-      icon: <Home />,
-      path: "/",
-    },
-    {
-      text: "Hồ sơ",
-      icon: <Person />,
-      path: `/profile/${customerId}`,
-    },
+    { text: "Trang chủ", icon: <Home />, path: "/" },
+    { text: "Hồ sơ", icon: <Person />, path: `/profile/${customerId}` },
     {
       text: "Lịch sử đơn hàng",
       icon: <ListAlt />,
@@ -66,34 +58,54 @@ const ProfileSidebar = () => {
         flexShrink: 0,
         "& .MuiDrawer-paper": {
           width: 260,
-          background: "#F4F6F7",
-          color: "#2C3E50",
+          bgcolor: "grey.50",
+          color: "grey.900",
           paddingTop: 2,
           height: "100vh",
-          boxShadow: "2px 0px 10px rgba(0,0,0,0.15)",
+          borderRight: "none",
+          boxShadow: "4px 0px 20px rgba(0, 0, 0, 0.05)",
         },
       }}
     >
+      {/* Header với Avatar */}
       <Box
         sx={{
           textAlign: "center",
-          padding: "16px 0",
-          backgroundColor: "#2980B9",
+          padding: "20px 0",
+          bgcolor: "primary.main",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
+          borderBottomLeftRadius: 16,
+          borderBottomRightRadius: 16,
         }}
       >
         <Avatar
           src={customerAvatar || "/default-avatar.png"}
-          sx={{ width: 64, height: 64, marginBottom: 1, cursor: "pointer" }}
+          sx={{
+            width: 70,
+            height: 70,
+            mb: 1.5,
+            cursor: "pointer",
+            border: "3px solid white",
+            transition: "transform 0.3s",
+            "&:hover": { transform: "scale(1.05)" },
+          }}
           onClick={() => navigate(`/profile/${customerId}`)}
         />
-        <Typography variant="h6" sx={{ color: "#fff", fontWeight: "bold" }}>
+        <Typography
+          variant="h6"
+          sx={{
+            color: "white",
+            fontWeight: "bold",
+            letterSpacing: "0.5px",
+          }}
+        >
           {customerName || "Người dùng"}
         </Typography>
       </Box>
 
+      {/* Danh sách menu */}
       <List sx={{ padding: "16px 8px" }}>
         {menuItems.map(({ text, icon, path }) => (
           <Tooltip title={text} placement="right" key={text}>
@@ -102,45 +114,62 @@ const ProfileSidebar = () => {
               to={path}
               selected={location.pathname === path}
               sx={{
-                bgcolor: location.pathname === path ? "#AED6F1" : "transparent",
+                bgcolor:
+                  location.pathname === path ? "primary.light" : "transparent",
+                color: location.pathname === path ? "primary.main" : "grey.700",
                 "&:hover": {
-                  backgroundColor: "#D6EAF8",
+                  bgcolor: "grey.100",
+                  color: "primary.main",
                 },
-                borderRadius: "8px",
-                marginBottom: "10px",
-                padding: "12px",
-                display: "flex",
-                alignItems: "center",
+                borderRadius: "12px",
+                mb: 1,
+                py: 1.5,
+                px: 2,
+                transition: "all 0.3s ease",
               }}
             >
-              <ListItemIcon sx={{ color: "#2C3E50", minWidth: "40px" }}>
+              <ListItemIcon
+                sx={{
+                  color:
+                    location.pathname === path ? "primary.main" : "grey.600",
+                  minWidth: "40px",
+                }}
+              >
                 {icon}
               </ListItemIcon>
               <ListItemText
                 primary={text}
-                primaryTypographyProps={{ fontSize: "16px", fontWeight: "500" }}
+                primaryTypographyProps={{
+                  fontSize: "16px",
+                  fontWeight: location.pathname === path ? "600" : "500",
+                }}
               />
             </ListItem>
           </Tooltip>
         ))}
       </List>
 
+      {/* Khoảng trống đẩy logout xuống dưới */}
       <Box sx={{ flexGrow: 1 }} />
-      <Divider sx={{ backgroundColor: "#2C3E50", margin: "16px 20px" }} />
+
+      {/* Divider và nút đăng xuất */}
+      <Divider sx={{ mx: 2, my: 2, bgcolor: "grey.300" }} />
       <List>
         <ListItem
           onClick={handleLogout}
           sx={{
-            bgcolor: "transparent",
             "&:hover": {
-              backgroundColor: "#F5B7B1",
+              bgcolor: "error.light",
+              color: "error.main",
             },
-            borderRadius: "8px",
-            margin: "10px 8px",
-            padding: "12px",
+            borderRadius: "12px",
+            mx: 1,
+            py: 1.5,
+            px: 2,
+            transition: "all 0.3s ease",
           }}
         >
-          <ListItemIcon sx={{ color: "#E74C3C" }}>
+          <ListItemIcon sx={{ color: "error.main", minWidth: "40px" }}>
             <ExitToApp />
           </ListItemIcon>
           <ListItemText
