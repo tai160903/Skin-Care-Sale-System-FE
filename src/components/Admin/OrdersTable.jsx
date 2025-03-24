@@ -54,10 +54,8 @@ const OrdersTable = () => {
       } else {
         data = await orderService.getOrdersByStatus(status);
       }
-      console.log("data:", data?.data?.data.docs);
       setTotalPages(data.data.totalPages);
-      setOrders(data);
-      
+      setOrders(data.data.data);
     } catch (error) {
       console.error("Error fetching orders:", error);
     }
@@ -100,7 +98,7 @@ const OrdersTable = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {orders.data?.data.docs.map((order) => (
+            {orders.map((order) => (
               <TableRow key={order._id} sx={{ backgroundColor: "white" }}>
                 <TableCell sx={{ fontWeight: "bold", color: "#d32f2f" }}>
                   ${order.totalPay.toLocaleString()}
@@ -130,7 +128,9 @@ const OrdersTable = () => {
                           >
                             {item.product_id?.name || "Unknown Product"}
                           </Typography>
-                          <Typography>Số LượngLượng: {item.quantity}</Typography>
+                          <Typography>
+                            Số LượngLượng: {item.quantity}
+                          </Typography>
                           <Typography>
                             Giá: ${item.priceAtTime.toLocaleString()}
                           </Typography>
@@ -181,14 +181,14 @@ const OrdersTable = () => {
         </Table>
       </TableContainer>
       <Box sx={{ display: "flex", justifyContent: "center", marginTop: 2 }}>
-      <Pagination
-        count={totalPages}
-        page={page}
-        onChange={(event, value) => setPage(value)}
-        color="primary"
-        shape="rounded"
-      />
-    </Box>
+        <Pagination
+          count={totalPages}
+          page={page}
+          onChange={(event, value) => setPage(value)}
+          color="primary"
+          shape="rounded"
+        />
+      </Box>
     </Paper>
   );
 };

@@ -48,7 +48,7 @@ function Detail() {
       try {
         const response = await reviewService.getReviewsByProductId(id);
         console.log(response.data.data);
-        setReviews(response.data.data); 
+        setReviews(response.data.data);
       } catch (error) {
         console.error("Error fetching reviews:", error);
       }
@@ -60,7 +60,6 @@ function Detail() {
       setQuantity(1);
     }
   }, [id]);
-
 
   const handleIncreaseQuantity = () => setQuantity((prev) => prev + 1);
   const handleDecreaseQuantity = () =>
@@ -241,10 +240,17 @@ function Detail() {
                     transition={{ duration: 0.3, delay: index * 0.1 }}
                     className="border-b border-gray-300 pb-4 mb-4 last:border-none"
                   >
-                  <div className="flex flex-col">
-                  <span className="font-semibold">{review.customer_id.name}</span>
-                  <Rating value={review.rating} precision={0.5} readOnly size="small" />
-                </div>
+                    <div className="flex flex-col">
+                      <span className="font-semibold">
+                        {review.customer_id.name}
+                      </span>
+                      <Rating
+                        value={review.rating}
+                        precision={0.5}
+                        readOnly
+                        size="small"
+                      />
+                    </div>
                     <p className="text-gray-600">{review.comment}</p>
                     <small className="text-gray-400">
                       {new Date(review.createdAt).toLocaleDateString("vi-VN")}

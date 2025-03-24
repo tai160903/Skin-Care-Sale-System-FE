@@ -87,7 +87,7 @@ const ProductList = () => {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const response = await productService.getAllProduct({ page, limit });
+      const response = await productService.getAllProducts({ page, limit });
       if (response?.data && Array.isArray(response.data.data)) {
         console.log(response.data.data);
         setProducts(response.data.data);
@@ -233,7 +233,7 @@ const ProductList = () => {
                       {product.category.name}
                     </TableCell>
                     <TableCell align="center">
-                      {product.skinType.VNname}
+                      {product?.skinType?.VNname}
                     </TableCell>
                     <TableCell align="center">
                       ${product.price.toFixed(2)}
@@ -312,7 +312,7 @@ const ProductList = () => {
                     {(key === "skinType" ? skinTypes : categories).map(
                       (item) => (
                         <MenuItem key={item._id} value={item._id}>
-                        {item.VNname || item.name}
+                          {item.VNname || item.name}
                         </MenuItem>
                       ),
                     )}
