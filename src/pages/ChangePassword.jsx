@@ -17,7 +17,11 @@ const ChangePassword = () => {
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState({
+    old: false,
+    new: false,
+    confirm: false,
+  });
 
   const storedUser = localStorage.getItem("persist:user");
   const user = storedUser ? JSON.parse(storedUser)?.user : null;
@@ -55,33 +59,44 @@ const ChangePassword = () => {
 
   return (
     <Box
-      display="flex"
-      justifyContent="center"
-      alignItems="center"
-      minHeight="100vh"
-      bgcolor="#f4f6f8"
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        minHeight: "100vh",
+        bgcolor: "grey.100",
+        p: { xs: 2, sm: 0 }, // Padding responsive cho mobile
+      }}
     >
       <Paper
-        elevation={6}
+        elevation={8}
         sx={{
-          maxWidth: 400,
+          width: "100%",
+          maxWidth: 450,
           p: 4,
           borderRadius: 3,
-          backgroundColor: "white",
+          bgcolor: "white",
+          boxShadow: "0 8px 24px rgba(0, 0, 0, 0.1)",
         }}
       >
+        {/* Tiêu đề */}
         <Typography
           variant="h5"
           fontWeight="bold"
           textAlign="center"
-          gutterBottom
+          sx={{
+            mb: 3,
+            color: "primary.main",
+            letterSpacing: "0.5px",
+          }}
         >
           Đổi Mật Khẩu
         </Typography>
 
+        {/* Trường nhập mật khẩu cũ */}
         <TextField
           label="Mật khẩu cũ"
-          type={showPassword ? "text" : "password"}
+          type={showPassword.old ? "text" : "password"}
           fullWidth
           margin="normal"
           value={oldPassword}
@@ -89,22 +104,43 @@ const ChangePassword = () => {
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <Lock />
+                <Lock sx={{ color: "grey.500" }} />
               </InputAdornment>
             ),
             endAdornment: (
               <InputAdornment position="end">
-                <IconButton onClick={() => setShowPassword(!showPassword)}>
-                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                <IconButton
+                  onClick={() =>
+                    setShowPassword((prev) => ({ ...prev, old: !prev.old }))
+                  }
+                  edge="end"
+                >
+                  {showPassword.old ? (
+                    <VisibilityOff sx={{ color: "grey.500" }} />
+                  ) : (
+                    <Visibility sx={{ color: "grey.500" }} />
+                  )}
                 </IconButton>
               </InputAdornment>
             ),
           }}
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              borderRadius: 2,
+              "&:hover fieldset": {
+                borderColor: "primary.main",
+              },
+              "&.Mui-focused fieldset": {
+                borderColor: "primary.main",
+              },
+            },
+          }}
         />
 
+        {/* Trường nhập mật khẩu mới */}
         <TextField
           label="Mật khẩu mới"
-          type={showPassword ? "text" : "password"}
+          type={showPassword.new ? "text" : "password"}
           fullWidth
           margin="normal"
           value={newPassword}
@@ -112,22 +148,43 @@ const ChangePassword = () => {
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <Lock />
+                <Lock sx={{ color: "grey.500" }} />
               </InputAdornment>
             ),
             endAdornment: (
               <InputAdornment position="end">
-                <IconButton onClick={() => setShowPassword(!showPassword)}>
-                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                <IconButton
+                  onClick={() =>
+                    setShowPassword((prev) => ({ ...prev, new: !prev.new }))
+                  }
+                  edge="end"
+                >
+                  {showPassword.new ? (
+                    <VisibilityOff sx={{ color: "grey.500" }} />
+                  ) : (
+                    <Visibility sx={{ color: "grey.500" }} />
+                  )}
                 </IconButton>
               </InputAdornment>
             ),
           }}
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              borderRadius: 2,
+              "&:hover fieldset": {
+                borderColor: "primary.main",
+              },
+              "&.Mui-focused fieldset": {
+                borderColor: "primary.main",
+              },
+            },
+          }}
         />
 
+        {/* Trường xác nhận mật khẩu mới */}
         <TextField
           label="Xác nhận mật khẩu mới"
-          type={showPassword ? "text" : "password"}
+          type={showPassword.confirm ? "text" : "password"}
           fullWidth
           margin="normal"
           value={confirmNewPassword}
@@ -135,34 +192,60 @@ const ChangePassword = () => {
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <Lock />
+                <Lock sx={{ color: "grey.500" }} />
               </InputAdornment>
             ),
             endAdornment: (
               <InputAdornment position="end">
-                <IconButton onClick={() => setShowPassword(!showPassword)}>
-                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                <IconButton
+                  onClick={() =>
+                    setShowPassword((prev) => ({
+                      ...prev,
+                      confirm: !prev.confirm,
+                    }))
+                  }
+                  edge="end"
+                >
+                  {showPassword.confirm ? (
+                    <VisibilityOff sx={{ color: "grey.500" }} />
+                  ) : (
+                    <Visibility sx={{ color: "grey.500" }} />
+                  )}
                 </IconButton>
               </InputAdornment>
             ),
           }}
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              borderRadius: 2,
+              "&:hover fieldset": {
+                borderColor: "primary.main",
+              },
+              "&.Mui-focused fieldset": {
+                borderColor: "primary.main",
+              },
+            },
+          }}
         />
 
+        {/* Nút đổi mật khẩu */}
         <Button
           variant="contained"
-          color="primary"
           fullWidth
           sx={{
-            mt: 2,
-            py: 1.2,
+            mt: 3,
+            py: 1.5,
             fontSize: "1rem",
             fontWeight: "bold",
             textTransform: "none",
             borderRadius: 2,
-            background: "linear-gradient(135deg, #42a5f5 30%, #1e88e5 90%)",
+            bgcolor: "primary.main",
+            color: "white",
             "&:hover": {
-              background: "linear-gradient(135deg, #1e88e5 30%, #1565c0 90%)",
+              bgcolor: "primary.dark",
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.2)",
             },
+            transition: "all 0.3s ease",
           }}
           onClick={handleChangePassword}
         >
@@ -175,13 +258,10 @@ const ChangePassword = () => {
         position="top-right"
         autoClose={3000}
         hideProgressBar={false}
-        newestOnTop={false}
+        newestOnTop
         closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
         pauseOnHover
-        theme="light"
+        theme="colored"
       />
     </Box>
   );

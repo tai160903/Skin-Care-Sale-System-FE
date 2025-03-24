@@ -8,6 +8,9 @@ const saleBanners = [
     id: 1,
     image:
       "https://hasaki.vn/_next/image?url=https%3A%2F%2Fmedia.hcdn.vn%2Fhsk%2F1740193290wapcn244-7days.jpg&w=3840&q=90",
+    title: "Ưu đãi 7 ngày",
+    description: "Giảm giá cực sốc cho sản phẩm chăm sóc tóc!",
+    offer: "GIẢM ĐẾN 50%",
     products: [
       {
         name: "Tsubaki",
@@ -25,6 +28,9 @@ const saleBanners = [
   {
     id: 2,
     image: "https://media.hcdn.vn/hsk/campaign/640x240-7ngay1657508437.jpg",
+    title: "Siêu Sale Tháng 10",
+    description: "Mua sắm thả ga, giá siêu hấp dẫn!",
+    offer: "GIẢM ĐẾN 40%",
   },
 ];
 
@@ -37,74 +43,164 @@ const Adv = () => {
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 4000,
+    arrows: false,
+    customPaging: () => (
+      <Box
+        sx={{
+          width: 10,
+          height: 10,
+          bgcolor: "white",
+          borderRadius: "50%",
+          mx: 1,
+          "&:hover": { bgcolor: "#4ade80" }, // green-400
+        }}
+      />
+    ),
   };
 
   return (
     <Box
-      sx={{
-        height: "auto",
-        overflow: "hidden",
-        background: "#326f51",
-      }}
+    // sx={{
+    //   bgcolor: "#15803d", // green-700
+    //   py: 4,
+    //   overflow: "hidden",
+    // }}
     >
       <Slider {...settings}>
         {saleBanners.map((banner) => (
           <Box
             key={banner.id}
-            sx={{ width: "100vw", height: "auto", background: "#326f51" }}
+            sx={{
+              height: "400px",
+              bgcolor: "#15803d", // green-700
+              position: "relative",
+            }}
           >
-            <Grid container spacing={0} sx={{ height: "100%" }}>
-              {/* Banner Chính */}
+            <Grid container sx={{ height: "100%" }}>
+              {/* Banner chính */}
               <Grid item xs={12} md={8} sx={{ position: "relative" }}>
-                <img
+                <Box
+                  component="img"
                   src={banner.image}
                   alt={banner.title}
-                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                  sx={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    transition: "transform 0.5s ease",
+                    "&:hover": { transform: "scale(1.02)" },
+                  }}
                 />
                 <Box
                   sx={{
                     position: "absolute",
-                    top: "20%",
+                    top: "50%",
                     left: "5%",
-                    color: "#fff",
+                    transform: "translateY(-50%)",
+                    color: "white",
+                    textAlign: "left",
+                    px: 3,
                   }}
                 >
-                  <Typography variant="h4" fontWeight="bold">
+                  <Typography
+                    variant="h3"
+                    sx={{
+                      fontWeight: "bold",
+                      mb: 1,
+                      color: "white",
+                      textShadow: "2px 2px 8px rgba(0,0,0,0.5)",
+                    }}
+                  >
                     {banner.title}
                   </Typography>
-                  <Typography variant="body1">{banner.description}</Typography>
-                  <Typography variant="h5" color="red" fontWeight="bold">
+                  <Typography
+                    variant="body1"
+                    sx={{
+                      mb: 2,
+                      fontSize: "1.2rem",
+                      color: "grey.200",
+                      textShadow: "1px 1px 6px rgba(0,0,0,0.4)",
+                    }}
+                  >
+                    {banner.description}
+                  </Typography>
+                  <Typography
+                    variant="h4"
+                    sx={{
+                      color: "yellow.main",
+                      fontWeight: "bold",
+                      textShadow: "2px 2px 8px rgba(0,0,0,0.5)",
+                    }}
+                  >
                     {banner.offer}
                   </Typography>
+                  <Button
+                    variant="contained"
+                    sx={{
+                      mt: 2,
+                      px: 4,
+                      py: 1.2,
+                      fontWeight: "bold",
+                      borderRadius: 2,
+                      bgcolor: "white",
+                      color: "#15803d", // green-700
+                      "&:hover": { bgcolor: "#d1fae5", color: "#15803d" }, // green-100
+                    }}
+                  >
+                    Mua Ngay
+                  </Button>
                 </Box>
               </Grid>
 
-              {/* Ưu Đãi Bên Phải */}
+              {/* Thông tin ưu đãi */}
               <Grid item xs={12} md={4}>
                 <Box
                   sx={{
+                    bgcolor: "#4ade80", // green-400, sáng hơn green-700
                     p: 4,
-                    textAlign: "center",
-                    background: "bg-[#326f51]",
-                    color: "#fff",
+                    color: "grey.900",
                     height: "100%",
                     display: "flex",
                     flexDirection: "column",
                     justifyContent: "center",
+                    alignItems: "center",
+                    textAlign: "center",
                   }}
                 >
-                  <Typography variant="h4" fontWeight="bold">
+                  <Typography
+                    variant="h4"
+                    sx={{ fontWeight: "bold", color: "grey.900", mb: 2 }}
+                  >
                     FREESHIP
                   </Typography>
-                  <Typography variant="body1">
+                  <Typography
+                    variant="body1"
+                    sx={{ mb: 2, fontSize: "1.1rem", color: "grey.800" }}
+                  >
                     Freeship toàn quốc đơn từ 89K
                   </Typography>
-                  <Typography variant="h5" sx={{ mt: 2 }}>
-                    🎉 TẶNG 10% ĐƠN ĐẦU TIÊN 🎉
+                  <Typography
+                    variant="h5"
+                    sx={{ mb: 3, color: "orange.main", fontWeight: "bold" }}
+                  >
+                    🎉 TẶNG 10% ĐƠN ĐẦU 🎉
                   </Typography>
                   <Button
-                    variant="contained"
-                    sx={{ mt: 2, background: "#fff", color: "#ff9800" }}
+                    variant="outlined"
+                    sx={{
+                      borderColor: "black",
+                      color: "#15803d",
+                      px: 4,
+                      py: 1.2,
+                      fontWeight: "bold",
+                      borderRadius: 2,
+                      bgcolor: "white",
+                      "&:hover": {
+                        bgcolor: "transparent",
+                        color: "white",
+                        borderColor: "white",
+                      },
+                    }}
                   >
                     Nhận Ngay
                   </Button>
