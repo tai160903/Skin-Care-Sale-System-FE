@@ -71,7 +71,6 @@ const Sidebar = () => {
           path: "/admin/skincare-plans",
         },
         { text: "Đánh giá", icon: <Star />, path: "/admin/reviews" },
-        { text: "Shipping", icon: <Star />, path: "/admin/shipping" },
       ],
     },
     {
