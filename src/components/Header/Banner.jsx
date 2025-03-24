@@ -17,10 +17,10 @@ const Banner = () => {
       </div>
 
       {/* Phần 3: Nút bấm */}
-      <div>
+      <div className="flex-shrink-0">
         <Link to="/question">
-          <button className="bg-white text-green-900 px-3 py-1 rounded font-medium shadow hover:bg-gray-200 transition">
-            Click Here
+          <button className="bg-white text-[#326f51] px-4 py-2 rounded-lg font-semibold shadow-md hover:bg-opacity-90 hover:scale-105 transform transition-all duration-200">
+            Khám Phá Ngay
           </button>
         </Link>
       </div>

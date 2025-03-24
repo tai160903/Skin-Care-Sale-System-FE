@@ -47,12 +47,11 @@ const OrderManagement = () => {
       let response;
       if (statusFilter === "All") {
         response = await orderService.getAllOrders({ page, limit });
-        console.log("check:", response?.data?.data?.docs);
       } else {
         response = await orderService.getOrdersByStatus(statusFilter, page, 10);
       }
 
-      setOrders(response?.data?.data?.docs || []);
+      setOrders(response?.data?.data || []);
       setTotalPages(response?.data?.data?.totalPages || 1);
     } catch (error) {
       toast.error("Failed to fetch orders");

@@ -38,7 +38,7 @@ const ProductManagement = () => {
     const fetchProducts = async () => {
       setLoading(true);
       try {
-        const response = await productService.getAllProduct({
+        const response = await productService.getAllProducts({
           page,
           limit,
           category: selectedCategory,
