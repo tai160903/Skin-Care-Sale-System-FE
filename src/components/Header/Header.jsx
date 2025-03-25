@@ -132,7 +132,7 @@ const Header = () => {
                     <LinkItem to="/staff" label="Nhân viên" />
                   )}
                   <LinkItem
-                    to={`profile/${customerId}/order-tracking`}
+                    to={`/profile/${customerId}/order-tracking`}
                     label="Lịch sử đặt hàng"
                   />
                   <button

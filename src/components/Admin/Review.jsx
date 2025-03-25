@@ -24,7 +24,8 @@ const Review = () => {
   const fetchAllReviews = async () => {
     try {
       const response = await reviewService.getAllReviews();
-      setReviews(response?.data || []);
+
+      setReviews(response?.data.data || []);
       toast.success("Tải danh sách đánh giá thành công!");
     } catch (error) {
       console.error("Lỗi khi lấy tất cả đánh giá:", error);
