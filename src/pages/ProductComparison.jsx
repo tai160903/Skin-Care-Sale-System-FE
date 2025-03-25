@@ -52,10 +52,9 @@ function Compare() {
 
   return (
     <div className="max-w-7xl mx-auto p-6">
-      {/* Header */}
       <div className="flex justify-between items-center mb-8">
         <h2 className="text-3xl font-bold text-gray-900 flex items-center">
-          <span className="mr-2">📊</span> So sánh sản phẩm
+          So sánh sản phẩm
         </h2>
         <div>
           <Button
@@ -93,11 +92,10 @@ function Compare() {
       {compareList.length === 0 ? (
         <div className="text-center py-16 bg-gray-50 rounded-xl">
           <p className="text-gray-600 text-xl mb-4">
-            ⚠️ Chưa có sản phẩm nào để so sánh
+            Chưa có sản phẩm nào để so sánh
           </p>
         </div>
       ) : (
-        /* Comparison Table */
         <div className="bg-white shadow-md rounded-xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">
@@ -111,8 +109,6 @@ function Compare() {
                     "Lượt mua",
                     "Loại da",
                     "Thành phần",
-                    "Giảm giá",
-                    "Tồn kho",
                     "Hành động",
                   ].map((header) => (
                     <th
@@ -163,18 +159,6 @@ function Compare() {
                     </td>
                     <td className="p-4 text-gray-600">
                       {product.ingredient || "N/A"}
-                    </td>
-                    <td className="p-4 text-green-600 font-semibold">
-                      {product.discountPercentage}%
-                    </td>
-                    <td className="p-4">
-                      {product.stock > 0 ? (
-                        <span className="text-gray-600">{product.stock}</span>
-                      ) : (
-                        <span className="text-red-500 font-medium">
-                          Hết hàng
-                        </span>
-                      )}
                     </td>
                     <td className="p-4">
                       <Tooltip title={`Xóa ${product.name}`}>
