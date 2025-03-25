@@ -312,7 +312,7 @@ const ProductList = () => {
                     {(key === "skinType" ? skinTypes : categories).map(
                       (item) => (
                         <MenuItem key={item._id} value={item._id}>
-                        {item.VNname || item.name}
+                          {item.VNname || item.name}
                         </MenuItem>
                       ),
                     )}

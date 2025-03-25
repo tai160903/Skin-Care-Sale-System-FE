@@ -17,13 +17,13 @@ const shipService = {
       throw error;
     }
   },
-  updateStatus : async (id, status) => {
+  updateStatus: async (id, status) => {
     try {
-      console.log("check:",id, status);
+      console.log("check:", id, status);
       const response = await axiosClient.put(
         `${API_BASE_URL}/update-status/${id}`,
         {
-          shipping_status : status,
+          shipping_status: status,
         },
       );
       return response.data;

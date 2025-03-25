@@ -36,7 +36,7 @@ const ShipManagement = () => {
   const handleStatusChange = (status) => {
     setSelectedStatus(status);
     setAnchorEl(null);
-  
+
     if (status === "Cancelled") {
       setOpenDialog(true);
     } else {
@@ -49,10 +49,10 @@ const ShipManagement = () => {
     try {
       const response = await shipService.updateStatus(
         selectedShipment._id,
-        status
+        status,
       );
       console.log("Update response:", response);
-  
+
       if (response?.data) {
         toast.success("Cập nhật trạng thái thành công!");
         fetchShipments();
@@ -65,7 +65,6 @@ const ShipManagement = () => {
       toast.error("Không thể cập nhật trạng thái!");
     }
   };
-
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -104,8 +103,6 @@ const ShipManagement = () => {
       setLoading(false);
     }
   };
-
-  
 
   const updateShipmentStatus = async () => {
     if (!selectedShipment) return;
@@ -188,25 +185,41 @@ const ShipManagement = () => {
                     <td className="p-3">{shipment.shipping_address}</td>
                     <td className="p-3">{shipment.shipping_phone}</td>
                     <td className="p-3 flex items-center gap-2">
-                      <span className={`px-3 py-1 rounded text-white ${getStatusColor(shipment.shipping_status)}`}>
+                      <span
+                        className={`px-3 py-1 rounded text-white ${getStatusColor(shipment.shipping_status)}`}
+                      >
                         {shipment.shipping_status}
                       </span>
                       <button
-                        onClick={(event) => handleOpenStatusMenu(event, shipment)}
+                        onClick={(event) =>
+                          handleOpenStatusMenu(event, shipment)
+                        }
                         className="ml-2 p-1 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 transition"
                       >
                         🔼
                       </button>
-                      
+
                       {/* Menu chọn trạng thái */}
                       <Menu
                         anchorEl={anchorEl}
                         open={Boolean(anchorEl)}
                         onClose={() => setAnchorEl(null)}
                       >
-                        <MenuItem onClick={() => handleStatusChange("Shipping")}>🚚 Shipping</MenuItem>
-                        <MenuItem onClick={() => handleStatusChange("Delivered")}>✅ Delivered</MenuItem>
-                        <MenuItem onClick={() => handleStatusChange("Cancelled")}>❌ Cancelled</MenuItem>
+                        <MenuItem
+                          onClick={() => handleStatusChange("Shipping")}
+                        >
+                          🚚 Shipping
+                        </MenuItem>
+                        <MenuItem
+                          onClick={() => handleStatusChange("Delivered")}
+                        >
+                          ✅ Delivered
+                        </MenuItem>
+                        <MenuItem
+                          onClick={() => handleStatusChange("Cancelled")}
+                        >
+                          ❌ Cancelled
+                        </MenuItem>
                       </Menu>
                     </td>
                     <td className="p-3">

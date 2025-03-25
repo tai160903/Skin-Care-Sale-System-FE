@@ -150,9 +150,9 @@ const OrderTr = () => {
               <TableCell sx={{ fontWeight: "bold", color: "#333" }}>
                 đơn hàng
               </TableCell>
-            <TableCell sx={{ fontWeight: "bold", color: "#333" }}>
-              Tổng thanh toán
-            </TableCell>
+              <TableCell sx={{ fontWeight: "bold", color: "#333" }}>
+                Tổng thanh toán
+              </TableCell>
               <TableCell sx={{ fontWeight: "bold", color: "#333" }}>
                 Số điện thoại
               </TableCell>
@@ -187,8 +187,8 @@ const OrderTr = () => {
                   >
                     <TableCell>{order._id || "N/A"}</TableCell>
                     <TableCell>
-                      {order.order_id.totalPay 
-                        ? `${order.order_id.totalPay.toLocaleString("vi-VN")} VND` 
+                      {order.order_id.totalPay
+                        ? `${order.order_id.totalPay.toLocaleString("vi-VN")} VND`
                         : "N/A"}
                     </TableCell>
                     <TableCell>{order.shipping_phone || "N/A"}</TableCell>
@@ -202,9 +202,9 @@ const OrderTr = () => {
                               ? "warning"
                               : order.shipping_status === "Cancelled"
                                 ? "error"
-                              : order.shipping_status === "Delivered"
-                                ? "success"
-                                : "default"
+                                : order.shipping_status === "Delivered"
+                                  ? "success"
+                                  : "default"
                         }
                         icon={<LocalShipping />}
                         sx={{ fontWeight: "bold" }}
