@@ -187,7 +187,7 @@ const SkinTypeQuiz = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                sx={{ mb: 5 }} // Khoảng cách giữa các khung câu hỏi
+                sx={{ mb: 5 }}
               >
                 <QuestionCard>
                   <CardContent>
@@ -196,7 +196,7 @@ const SkinTypeQuiz = () => {
                       sx={{
                         mb: 2,
                         fontWeight: 600,
-                        color: "#166534", // Green-800
+                        color: "#166534",
                         display: "flex",
                         alignItems: "center",
                         gap: 1.5,
@@ -204,7 +204,7 @@ const SkinTypeQuiz = () => {
                     >
                       <span
                         style={{
-                          background: "#d9f99d", // Xanh lá nhạt (lime-200)
+                          background: "#d9f99d",
                           borderRadius: "50%",
                           width: "32px",
                           height: "32px",
@@ -231,16 +231,16 @@ const SkinTypeQuiz = () => {
                             control={
                               <Radio
                                 sx={{
-                                  color: "#86efac", // Green-300
-                                  "&.Mui-checked": { color: "#15803d" }, // Green-700
+                                  color: "#86efac",
+                                  "&.Mui-checked": { color: "#15803d" },
                                 }}
                               />
                             }
                             label={
                               <Typography
                                 sx={{
-                                  color: "#000000", // Màu đen cho text câu trả lời
-                                  "&:hover": { color: "#15803d" }, // Hover vẫn là green-700
+                                  color: "#000000",
+                                  "&:hover": { color: "#15803d" },
                                 }}
                               >
                                 {option.label}
@@ -249,7 +249,7 @@ const SkinTypeQuiz = () => {
                             sx={{
                               backgroundColor:
                                 selectedAnswers[q.id] === option.value
-                                  ? "#f0fdf4" // Green-50
+                                  ? "#f0fdf4"
                                   : "transparent",
                               borderRadius: "10px",
                               p: 1,
