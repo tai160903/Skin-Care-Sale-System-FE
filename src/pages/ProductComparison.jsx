@@ -76,8 +76,8 @@ function Compare() {
             startIcon={<FiPlus />}
             onClick={() => dispatch(clearCompare())}
             sx={{
-              bgcolor: "#ef4444", // New color
-              "&:hover": { bgcolor: "#dc2626" }, // New hover color
+              bgcolor: "#ef4444",
+              "&:hover": { bgcolor: "#dc2626" },
               borderRadius: "8px",
               textTransform: "none",
               fontWeight: "bold",
