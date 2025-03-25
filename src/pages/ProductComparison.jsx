@@ -1,163 +1,281 @@
+import { useState, useEffect, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { removeFromCompare, addToCompare } from "../redux/slices/compareSlice";
 import {
-  Button,
-  TextField,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-} from "@mui/material";
-import { FiTrash2, FiPlus } from "react-icons/fi";
-import { useState, useEffect, useMemo } from "react";
+  addToCompare,
+  clearCompare,
+  removeFromCompare,
+} from "../redux/slices/compareSlice";
+import { FiTrash2, FiPlus, FiSearch } from "react-icons/fi";
+import { Rating, Button, IconButton, Tooltip } from "@mui/material";
+import { formatCurrency } from "../utils/formatCurrency";
 import productService from "../services/productService";
-import { toast } from "react-toastify";
+import debounce from "lodash/debounce";
 
 function Compare() {
   const dispatch = useDispatch();
-  const compareList = useSelector((state) => state.compare?.compareList || []);
-  const [allProducts, setAllProducts] = useState([]);
-  const [search, setSearch] = useState("");
-  const [openDialog, setOpenDialog] = useState(false);
+  const compareList = useSelector((state) => state.compare?.products || []);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [products, setProducts] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [error, setError] = useState(null);
+
+  const fetchProducts = useCallback(
+    debounce(async (term) => {
+      try {
+        const response = await productService.getAllProducts({
+          q: term,
+          limit: 50,
+        });
+        const filteredProducts = response.data?.data.filter(
+          (product) => !compareList.some((p) => p._id === product._id),
+        );
+        setProducts(filteredProducts);
+        setError(null);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+        setError("Không thể tải sản phẩm. Vui lòng thử lại.");
+      }
+    }, 300),
+    [compareList],
+  );
 
   useEffect(() => {
-    if (openDialog) {
-      const fetchAllProducts = async () => {
-        try {
-          console.log("🔄 Đang tải danh sách sản phẩm...");
-          const response = await productService.getAllProducts();
-          setAllProducts(response.data);
-        } catch (error) {
-          console.error("❌ Lỗi khi tải sản phẩm:", error);
-          toast.error(`Không thể tải sản phẩm: ${error.message}`);
-        }
-      };
-      fetchAllProducts();
+    if (isModalOpen) {
+      fetchProducts(searchTerm);
     }
-  }, [openDialog]);
+  }, [isModalOpen, searchTerm, fetchProducts]);
 
-  const handleAddProductToCompare = (product) => {
-    if (compareList.some((item) => item._id === product._id)) {
-      toast.info("✅ Sản phẩm này đã có trong danh sách so sánh!");
-      return;
-    }
+  const handleAddToCompare = (product) => {
     dispatch(addToCompare(product));
-    toast.success("➕ Đã thêm vào danh sách so sánh!");
-    setOpenDialog(false);
+    setIsModalOpen(false);
   };
 
-  const filteredProducts = useMemo(() => {
-    return allProducts.filter((product) =>
-      product.name.toLowerCase().includes(search.toLowerCase()),
-    );
-  }, [search, allProducts]);
-
   return (
-    <div className="container mx-auto p-6">
-      <h2 className="text-2xl font-bold mb-4">📊 So sánh sản phẩm</h2>
-
-      {console.log("🛍️ Danh sách so sánh:", compareList)}
+    <div className="max-w-7xl mx-auto p-6">
+      {/* Header */}
+      <div className="flex justify-between items-center mb-8">
+        <h2 className="text-3xl font-bold text-gray-900 flex items-center">
+          <span className="mr-2">📊</span> So sánh sản phẩm
+        </h2>
+        <div>
+          <Button
+            variant="contained"
+            startIcon={<FiPlus />}
+            onClick={() => setIsModalOpen(true)}
+            sx={{
+              bgcolor: "#3b82f6",
+              "&:hover": { bgcolor: "#2563eb" },
+              borderRadius: "8px",
+              textTransform: "none",
+              fontWeight: "bold",
+            }}
+          >
+            Thêm sản phẩm
+          </Button>
+          <Button
+            variant="contained"
+            startIcon={<FiPlus />}
+            onClick={() => dispatch(clearCompare())}
+            sx={{
+              bgcolor: "#ef4444", // New color
+              "&:hover": { bgcolor: "#dc2626" }, // New hover color
+              borderRadius: "8px",
+              textTransform: "none",
+              fontWeight: "bold",
+              ml: 2,
+            }}
+          >
+            Xóa tất cả
+          </Button>
+        </div>
+      </div>
 
       {compareList.length === 0 ? (
-        <p className="text-gray-500">⚠️ Chưa có sản phẩm nào để so sánh.</p>
+        <div className="text-center py-16 bg-gray-50 rounded-xl">
+          <p className="text-gray-600 text-xl mb-4">
+            ⚠️ Chưa có sản phẩm nào để so sánh
+          </p>
+        </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {compareList.map((product) => (
-            <div key={product._id} className="border p-4 rounded-lg shadow">
-              <img
-                src={product.image}
-                alt={product.name}
-                className="w-full aspect-square object-cover rounded"
-              />
-              <h3 className="text-lg font-bold mt-2">{product.name}</h3>
-              <p className="text-red-500 font-bold">{product.price}đ</p>
-              <Button
-                variant="contained"
-                color="error"
-                startIcon={<FiTrash2 />}
-                onClick={() => dispatch(removeFromCompare(product._id))}
-              >
-                Xóa
-              </Button>
-            </div>
-          ))}
+        /* Comparison Table */
+        <div className="bg-white shadow-md rounded-xl overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
+              <thead className="bg-gray-100 text-gray-700">
+                <tr>
+                  {[
+                    "Ảnh",
+                    "Tên",
+                    "Giá",
+                    "Đánh giá",
+                    "Lượt mua",
+                    "Loại da",
+                    "Thành phần",
+                    "Giảm giá",
+                    "Tồn kho",
+                    "Hành động",
+                  ].map((header) => (
+                    <th
+                      key={header}
+                      className="p-4 text-left font-semibold text-sm uppercase tracking-wide"
+                    >
+                      {header}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {compareList.map((product, index) => (
+                  <tr
+                    key={product._id}
+                    className={`border-t ${index % 2 === 0 ? "bg-white" : "bg-gray-50"} hover:bg-gray-100 transition`}
+                  >
+                    <td className="p-4">
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        className="w-20 h-20 object-cover rounded-lg"
+                      />
+                    </td>
+                    <td className="p-4 font-semibold text-gray-800">
+                      {product.name}
+                    </td>
+                    <td className="p-4 text-red-600 font-bold">
+                      {formatCurrency(product.price)}
+                    </td>
+                    <td className="p-4">
+                      <Rating
+                        value={product.rating || 0}
+                        readOnly
+                        precision={0.5}
+                        size="small"
+                      />
+                    </td>
+                    <td className="p-4 text-gray-600">
+                      {product.purchaseCount} lượt
+                    </td>
+                    <td className="p-4 text-gray-600">
+                      {product.skinType?.length > 0
+                        ? product.skinType
+                            .map((type) => type.VNname || type.name)
+                            .join(", ")
+                        : "N/A"}
+                    </td>
+                    <td className="p-4 text-gray-600">
+                      {product.ingredient || "N/A"}
+                    </td>
+                    <td className="p-4 text-green-600 font-semibold">
+                      {product.discountPercentage}%
+                    </td>
+                    <td className="p-4">
+                      {product.stock > 0 ? (
+                        <span className="text-gray-600">{product.stock}</span>
+                      ) : (
+                        <span className="text-red-500 font-medium">
+                          Hết hàng
+                        </span>
+                      )}
+                    </td>
+                    <td className="p-4">
+                      <Tooltip title={`Xóa ${product.name}`}>
+                        <IconButton
+                          color="error"
+                          onClick={() =>
+                            dispatch(removeFromCompare(product._id))
+                          }
+                          aria-label={`Xóa ${product.name} khỏi danh sách so sánh`}
+                        >
+                          <FiTrash2 size={20} />
+                        </IconButton>
+                      </Tooltip>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 
-      <div className="mt-6">
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<FiPlus />}
-          onClick={() => {
-            console.log("🆕 Mở modal thêm sản phẩm");
-            setOpenDialog(true);
-          }}
-        >
-          Thêm sản phẩm vào so sánh
-        </Button>
-      </div>
+      {/* Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center p-4">
+          <div className="bg-white p-6 rounded-2xl w-full max-w-lg shadow-xl">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-2xl font-bold text-gray-900 flex items-center">
+                <span className="mr-2">🛍</span> Thêm sản phẩm
+              </h3>
+              <IconButton
+                onClick={() => setIsModalOpen(false)}
+                sx={{ color: "#6b7280" }}
+              >
+                ✕
+              </IconButton>
+            </div>
 
-      {/* MODAL */}
-      <Dialog
-        open={openDialog}
-        onClose={() => {
-          console.log("❌ Đóng modal");
-          setOpenDialog(false);
-        }}
-        maxWidth="md"
-        fullWidth
-      >
-        <DialogTitle>🔎 Chọn sản phẩm để so sánh</DialogTitle>
-        <DialogContent>
-          <TextField
-            fullWidth
-            label="Tìm kiếm sản phẩm..."
-            variant="outlined"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="mb-4"
-          />
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {filteredProducts.length === 0 ? (
-              <p className="text-gray-500">
-                ❌ Không tìm thấy sản phẩm phù hợp.
+            <div className="relative mb-6">
+              <FiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Tìm kiếm sản phẩm..."
+                className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent transition"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+
+            {error && (
+              <p className="text-red-500 text-sm mb-4 bg-red-50 p-2 rounded">
+                {error}
               </p>
-            ) : (
-              filteredProducts.map((product) => (
-                <div key={product._id} className="border p-4 rounded-lg shadow">
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="w-full aspect-square object-cover rounded"
-                  />
-                  <h3 className="text-lg font-bold mt-2">{product.name}</h3>
-                  <p className="text-red-500 font-bold">{product.price}đ</p>
-                  <Button
-                    variant="contained"
-                    color="success"
-                    startIcon={<FiPlus />}
-                    onClick={() => handleAddProductToCompare(product)}
-                  >
-                    Thêm vào so sánh
-                  </Button>
-                </div>
-              ))
             )}
+
+            <div className="max-h-80 overflow-y-auto space-y-4">
+              {products.length === 0 ? (
+                <p className="text-gray-500 text-center py-6">
+                  Không tìm thấy sản phẩm nào.
+                </p>
+              ) : (
+                products.map((product) => (
+                  <div
+                    key={product._id}
+                    className="flex justify-between items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition"
+                  >
+                    <div className="flex items-center space-x-4">
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        className="w-16 h-16 object-cover rounded-lg"
+                      />
+                      <div>
+                        <p className="font-semibold text-gray-800 text-base">
+                          {product.name}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          {formatCurrency(product.price)}
+                        </p>
+                      </div>
+                    </div>
+                    <Button
+                      variant="contained"
+                      size="small"
+                      onClick={() => handleAddToCompare(product)}
+                      sx={{
+                        bgcolor: "#3b82f6",
+                        "&:hover": { bgcolor: "#2563eb" },
+                        borderRadius: "6px",
+                        textTransform: "none",
+                      }}
+                    >
+                      Thêm
+                    </Button>
+                  </div>
+                ))
+              )}
+            </div>
           </div>
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={() => {
-              console.log("❌ Đóng modal");
-              setOpenDialog(false);
-            }}
-            color="error"
-          >
-            Đóng
-          </Button>
-        </DialogActions>
-      </Dialog>
+        </div>
+      )}
     </div>
   );
 }

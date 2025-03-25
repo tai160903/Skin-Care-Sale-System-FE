@@ -95,7 +95,7 @@ const Category = () => {
                 },
               }}
             >
-              <a href={``}>
+              <a href={`/all-products?category=${category._id}`}>
                 <img
                   src={category.image || "https://via.placeholder.com/120"}
                   alt={category.name}

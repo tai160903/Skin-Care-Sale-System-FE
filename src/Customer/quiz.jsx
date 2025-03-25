@@ -4,7 +4,6 @@ import {
   RadioGroup,
   FormControlLabel,
   FormControl,
-  FormLabel,
   Button,
   Paper,
   LinearProgress,
@@ -14,14 +13,47 @@ import {
   Card,
   CardContent,
   Avatar,
+  Box,
 } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import quizService from "../services/quizService";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion";
 import { formatCurrency } from "../utils/formatCurrency";
-
 import { useNavigate } from "react-router-dom";
+
+// Styled Components
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(5),
+  borderRadius: "24px",
+  background: "linear-gradient(135deg, #f7faf5, #ecfdf5)", // Gradient xanh lá nhạt
+  boxShadow: "0 10px 30px rgba(0, 0, 0, 0.05)",
+}));
+
+const QuestionCard = styled(Card)(({ theme }) => ({
+  borderRadius: "16px",
+  padding: theme.spacing(3),
+  backgroundColor: "#fff",
+  border: "1px solid #d9f99d", // Viền xanh lá nhạt
+  transition: "transform 0.3s, box-shadow 0.3s",
+  "&:hover": {
+    transform: "translateY(-6px)",
+    boxShadow: "0 14px 28px rgba(0, 0, 0, 0.08)",
+  },
+}));
+
+const SubmitButton = styled(Button)(({ theme }) => ({
+  borderRadius: "30px",
+  padding: theme.spacing(1.5, 5),
+  fontSize: "1.1rem",
+  fontWeight: 600,
+  background: "linear-gradient(45deg, #16a34a, #4ade80)", // Gradient từ green-700 đến green-400
+  "&:hover": {
+    background: "linear-gradient(45deg, #15803d, #22c55e)",
+  },
+}));
+
 const SkinTypeQuiz = () => {
   const [questions, setQuestions] = useState([]);
   const [selectedAnswers, setSelectedAnswers] = useState({});
@@ -30,8 +62,8 @@ const SkinTypeQuiz = () => {
   const [routine, setRoutine] = useState(null);
   const customer = useSelector((state) => state?.user?.customer);
   const customerId = customer?._id;
-
   const navigate = useNavigate();
+
   useEffect(() => {
     const fetchQuizData = async () => {
       try {
@@ -42,7 +74,6 @@ const SkinTypeQuiz = () => {
           questions.map(async (q) => {
             const answerResponse = await quizService.getAnswer(q._id);
             const answers = answerResponse.data;
-
             return {
               id: q._id,
               text: q.question,
@@ -74,7 +105,6 @@ const SkinTypeQuiz = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
     if (Object.keys(selectedAnswers).length !== questions.length) {
       toast.error("Vui lòng trả lời tất cả câu hỏi!");
       return;
@@ -108,61 +138,88 @@ const SkinTypeQuiz = () => {
 
   if (!customerId) {
     return (
-      <div className="flex flex-col items-center justify-center mx-auto h-screen w-1/3">
-        <Typography variant="h5" className="text-center text-gray-700">
+      <Container maxWidth="sm" sx={{ mt: 8, textAlign: "center" }}>
+        <Typography variant="h5" color="text.secondary" gutterBottom>
           Vui lòng đăng nhập để làm bài kiểm tra
         </Typography>
         <Button
           variant="contained"
-          color="primary"
+          sx={{
+            mt: 2,
+            borderRadius: "20px",
+            px: 4,
+            backgroundColor: "#16a34a",
+            "&:hover": { backgroundColor: "#15803d" },
+          }}
           onClick={() => navigate("/signin")}
-          className="w-full mt-4"
         >
           Đăng nhập ngay
         </Button>
-      </div>
+      </Container>
     );
   }
 
   return (
-    <Container maxWidth="md" className="mt-8">
-      <Paper className="p-6 rounded-3xl shadow-lg bg-gradient-to-br from-blue-50 to-indigo-100">
+    <Container maxWidth="md" sx={{ mt: 8, mb: 6 }}>
+      <StyledPaper>
         <Typography
           variant="h4"
           align="center"
-          className="mb-6 text-indigo-700"
+          sx={{ mb: 5, fontWeight: 700, color: "#15803d" }} // Green-700
         >
-          Chọn loại da của bạn
+          ✨ Tìm hiểu loại da của bạn
         </Typography>
 
         {result ? (
-          <div className="text-center">
-            <Typography variant="h5" className="text-gray-700">
-              Kết quả
+          <Box textAlign="center">
+            <Typography variant="h5" color="text.secondary">
+              Kết quả của bạn
             </Typography>
-            <Typography variant="h6" className="text-indigo-600 mt-3">
+            <Typography variant="h6" sx={{ mt: 2, color: "#15803d" }}>
               {result.name}
             </Typography>
-          </div>
+          </Box>
         ) : (
           <form onSubmit={handleSubmit}>
             {questions.map((q, index) => (
               <motion.div
                 key={q.id}
-                className="mb-6"
-                initial={{ opacity: 0, y: -20 }}
+                initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                sx={{ mb: 5 }}
               >
-                <Card className="rounded-xl shadow-sm">
+                <QuestionCard>
                   <CardContent>
-                    <FormControl component="fieldset" className="w-full">
-                      <FormLabel
-                        component="legend"
-                        className="text-lg font-medium text-indigo-700"
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        mb: 2,
+                        fontWeight: 600,
+                        color: "#166534",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1.5,
+                      }}
+                    >
+                      <span
+                        style={{
+                          background: "#d9f99d",
+                          borderRadius: "50%",
+                          width: "32px",
+                          height: "32px",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontSize: "1rem",
+                          color: "#15803d",
+                        }}
                       >
-                        Câu {index + 1}/{questions.length}: {q.text}
-                      </FormLabel>
+                        {index + 1}
+                      </span>
+                      {q.text}
+                    </Typography>
+                    <FormControl component="fieldset" fullWidth>
                       <RadioGroup
                         value={selectedAnswers[q.id] || ""}
                         onChange={(e) => handleChange(q.id, e.target.value)}
@@ -171,92 +228,128 @@ const SkinTypeQuiz = () => {
                           <FormControlLabel
                             key={option.value}
                             value={option.value}
-                            control={<Radio color="primary" />}
-                            label={option.label}
-                            className="text-md text-gray-600"
+                            control={
+                              <Radio
+                                sx={{
+                                  color: "#86efac",
+                                  "&.Mui-checked": { color: "#15803d" },
+                                }}
+                              />
+                            }
+                            label={
+                              <Typography
+                                sx={{
+                                  color: "#000000",
+                                  "&:hover": { color: "#15803d" },
+                                }}
+                              >
+                                {option.label}
+                              </Typography>
+                            }
+                            sx={{
+                              backgroundColor:
+                                selectedAnswers[q.id] === option.value
+                                  ? "#f0fdf4"
+                                  : "transparent",
+                              borderRadius: "10px",
+                              p: 1,
+                              mb: 0.5,
+                              transition: "background-color 0.3s",
+                            }}
                           />
                         ))}
                       </RadioGroup>
                     </FormControl>
                   </CardContent>
-                </Card>
+                </QuestionCard>
               </motion.div>
             ))}
-
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              className="rounded-full px-6 w-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-md transition-transform transform hover:scale-105"
-            >
-              Hoàn thành
-            </Button>
+            <Box sx={{ display: "flex", justifyContent: "center", mt: 5 }}>
+              <SubmitButton type="submit" variant="contained">
+                Xem kết quả
+              </SubmitButton>
+            </Box>
           </form>
         )}
-      </Paper>
+      </StyledPaper>
 
       {routine && (
         <motion.div
-          className="mt-8"
+          sx={{ mt: 6 }}
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <Card className="rounded-3xl shadow-2xl">
+          <Card sx={{ borderRadius: "20px", boxShadow: 3 }}>
             <CardContent>
               <Typography
                 variant="h4"
                 align="center"
-                className="mb-6 text-gray-900"
+                sx={{ mb: 6, fontWeight: 700, color: "#4b5563" }}
               >
-                🌿 Routine Chăm Sóc Da Đề Xuất
+                🌿 Routine chăm sóc da đề xuất
               </Typography>
               <Grid container spacing={4}>
                 {routine.steps.map((step, index) => (
                   <Grid item xs={12} key={step.stepNumber}>
                     <motion.div
-                      className="bg-gradient-to-r from-blue-50 to-white p-6 rounded-2xl shadow-md border-l-8 border-blue-500 hover:shadow-xl transition-all duration-300"
+                      sx={{
+                        p: 3,
+                        borderRadius: "12px",
+                        background:
+                          "linear-gradient(to right, #f7faf5, #ffffff)",
+                        borderLeft: "6px solid #16a34a", // Green-600
+                      }}
                       initial={{ opacity: 0, x: -50 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: index * 0.1 }}
                     >
-                      <Typography variant="h6" className="text-blue-900">
+                      <Typography variant="h6" sx={{ color: "#15803d" }}>
                         Bước {step.stepNumber}: {step.title}
                       </Typography>
-                      <Typography
-                        variant="body1"
-                        className="text-gray-700 mt-2"
-                      >
+                      <Typography sx={{ mt: 1, color: "#64748b" }}>
                         {step.description}
                       </Typography>
 
                       {step.recommendProducts?.length > 0 && (
-                        <div className="mt-4">
+                        <Box sx={{ mt: 3 }}>
                           <Typography
                             variant="h6"
-                            className="text-gray-600 mb-3"
+                            sx={{ mb: 2, color: "#4b5563" }}
                           >
                             🛍 Sản phẩm đề xuất:
                           </Typography>
                           <Grid container spacing={2}>
                             {step.recommendProducts.map((product) => (
                               <Grid item xs={12} sm={6} key={product._id}>
-                                <Card className="rounded-xl shadow-md p-4 transition-transform transform hover:scale-105 hover:shadow-lg border border-gray-200">
-                                  <CardContent className="flex flex-col items-center">
+                                <Card
+                                  sx={{
+                                    p: 2,
+                                    borderRadius: "12px",
+                                    transition: "transform 0.2s",
+                                    "&:hover": { transform: "scale(1.03)" },
+                                    border: "1px solid #d9f99d",
+                                  }}
+                                >
+                                  <CardContent sx={{ textAlign: "center" }}>
                                     <Avatar
                                       src={product.image}
-                                      alt={product.name}
-                                      className="w-28 h-28 object-cover rounded-lg"
+                                      sx={{
+                                        width: 100,
+                                        height: 100,
+                                        mx: "auto",
+                                        mb: 2,
+                                      }}
                                     />
                                     <Typography
                                       variant="h6"
-                                      className="text-gray-800 mt-3 text-center"
+                                      sx={{ color: "#4b5563" }}
                                     >
                                       {product.name}
                                     </Typography>
                                     <Typography
                                       variant="h5"
-                                      className="text-blue-600 font-bold text-center mt-1"
+                                      sx={{ color: "#15803d", mt: 1 }}
                                     >
                                       {formatCurrency(product.price)}
                                     </Typography>
@@ -265,7 +358,7 @@ const SkinTypeQuiz = () => {
                               </Grid>
                             ))}
                           </Grid>
-                        </div>
+                        </Box>
                       )}
                     </motion.div>
                   </Grid>

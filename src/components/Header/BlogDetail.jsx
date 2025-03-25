@@ -13,12 +13,15 @@ import {
   Button,
   List,
   Avatar,
+  Divider,
 } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import SendIcon from "@mui/icons-material/Send";
 
+// Component chính cho trang chi tiết blog
 const BlogDetail = () => {
+  // Khai báo state và hook
   const { id } = useParams();
   const [blog, setBlog] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -26,6 +29,7 @@ const BlogDetail = () => {
   const [comments, setComments] = useState([]);
   const navigate = useNavigate();
 
+  // Fetch dữ liệu blog và comments khi id thay đổi
   useEffect(() => {
     const fetchBlogDetail = async () => {
       try {
@@ -39,12 +43,12 @@ const BlogDetail = () => {
     };
 
     fetchBlogDetail();
-
     const savedComments =
       JSON.parse(localStorage.getItem(`comments_${id}`)) || [];
     setComments(savedComments);
   }, [id]);
 
+  // Xử lý submit bình luận
   const handleCommentSubmit = () => {
     if (comment.trim() === "") return;
 
@@ -52,99 +56,159 @@ const BlogDetail = () => {
       text: comment,
       time: new Date().toLocaleString(),
     };
-
-    const newComments = [newComment, ...comments]; // Đưa comment mới lên đầu
-    setComments(newComments);
-    localStorage.setItem(`comments_${id}`, JSON.stringify(newComments));
+    const updatedComments = [newComment, ...comments];
+    setComments(updatedComments);
+    localStorage.setItem(`comments_${id}`, JSON.stringify(updatedComments));
     setComment("");
   };
 
-  if (loading)
+  // Render loading state
+  if (loading) {
     return (
       <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        minHeight="50vh"
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "50vh",
+        }}
       >
         <CircularProgress />
       </Box>
     );
+  }
 
-  if (!blog)
+  // Render khi không tìm thấy blog
+  if (!blog) {
     return (
-      <Typography variant="h6" align="center" color="error" mt={5}>
+      <Typography variant="h6" align="center" color="error" sx={{ mt: 5 }}>
         Không tìm thấy bài viết!
       </Typography>
     );
+  }
 
+  // Render giao diện chính
   return (
-    <Container maxWidth="md">
-      {/* Breadcrumbs */}
-      <Box mt={4} mb={2}>
-        <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />}>
-          <Link
-            underline="hover"
-            color="inherit"
-            onClick={() => navigate("/blog")}
-            sx={{ cursor: "pointer", display: "flex", alignItems: "center" }}
-          >
-            <HomeIcon fontSize="small" sx={{ mr: 0.5 }} />
-            Blog
-          </Link>
-          <Typography color="text.primary">{blog.title}</Typography>
-        </Breadcrumbs>
-      </Box>
-
-      {/* Nội dung Blog */}
-      <Paper
-        elevation={3}
-        sx={{ p: 4, borderRadius: 3, backgroundColor: "#f9f9f9" }}
+    <Container maxWidth="md" sx={{ py: 4 }}>
+      {/* Breadcrumbs điều hướng */}
+      <Breadcrumbs
+        separator={<NavigateNextIcon fontSize="small" />}
+        sx={{ mt: 2, mb: 3 }}
       >
-        <Typography variant="h3" fontWeight="bold" gutterBottom align="center">
-          {blog.title}
-        </Typography>
+        <Link
+          underline="hover"
+          color="inherit"
+          onClick={() => navigate("/blog")}
+          sx={{ display: "flex", alignItems: "center", cursor: "pointer" }}
+        >
+          <HomeIcon fontSize="small" sx={{ mr: 0.5 }} />
+          Blog
+        </Link>
+        <Typography color="text.primary">{blog.title}</Typography>
+      </Breadcrumbs>
 
-        {blog.image && (
+      {/* Tiêu đề blog */}
+      <Typography
+        variant="h1"
+        component="h1"
+        fontWeight="bold"
+        gutterBottom
+        sx={{
+          fontSize: { xs: "2.5rem", md: "3.75rem" },
+          color: "text.primary",
+        }}
+      >
+        {blog.title}
+      </Typography>
+
+      {/* Hình ảnh chính */}
+      {blog.image && (
+        <Box sx={{ my: 4, display: "flex", justifyContent: "center" }}>
           <Box
             component="img"
             src={blog.image}
             alt={blog.title}
-            width="100%"
-            borderRadius={3}
             sx={{
-              boxShadow: 3,
-              mt: 2,
-              mb: 3,
-              transition: "0.3s",
+              maxWidth: "300px",
+              width: "100%",
+              borderRadius: 2,
+              boxShadow: 2,
+              transition: "transform 0.3s",
               "&:hover": { transform: "scale(1.02)" },
             }}
           />
-        )}
+        </Box>
+      )}
 
+      {/* Nội dung blog */}
+      <Paper sx={{ p: { xs: 2, md: 4 }, borderRadius: 2, mb: 6 }}>
         <Typography
           variant="body1"
           sx={{ lineHeight: 1.8, fontSize: "1.1rem", color: "text.secondary" }}
         >
           {blog.content}
         </Typography>
+
+        {/* Chi tiết bổ sung */}
+        {blog.detail?.length > 0 && (
+          <Box sx={{ mt: 4 }}>
+            <Divider sx={{ mb: 2 }} />
+            <Typography variant="h4" fontWeight="bold" gutterBottom>
+              Chi tiết bổ sung
+            </Typography>
+            {blog.detail.map((item) => (
+              <Box key={item._id} sx={{ mb: 3 }}>
+                {item.image && (
+                  <Box
+                    sx={{ display: "flex", justifyContent: "center", mb: 2 }}
+                  >
+                    <Box
+                      component="img"
+                      src={item.image}
+                      alt="Detail image"
+                      sx={{
+                        maxWidth: "200px",
+                        width: "100%",
+                        borderRadius: 2,
+                        boxShadow: 2,
+                        transition: "transform 0.3s",
+                        "&:hover": { transform: "scale(1.02)" },
+                      }}
+                    />
+                  </Box>
+                )}
+                <Typography
+                  variant="body1"
+                  sx={{
+                    lineHeight: 1.8,
+                    fontSize: "1.1rem",
+                    color: "text.secondary",
+                  }}
+                >
+                  {item.text}
+                </Typography>
+              </Box>
+            ))}
+          </Box>
+        )}
       </Paper>
 
-      {/* Khu vực bình luận */}
-      <Box mt={4}>
-        <Typography variant="h5" fontWeight="bold" gutterBottom>
+      {/* Phần bình luận */}
+      <Box sx={{ mb: 4 }}>
+        <Divider sx={{ mb: 3 }} />
+        <Typography variant="h4" fontWeight="bold" gutterBottom>
           Bình luận
         </Typography>
 
         {/* Form nhập bình luận */}
         <Paper
-          elevation={2}
           sx={{
             display: "flex",
             alignItems: "center",
             p: 2,
-            borderRadius: 3,
-            backgroundColor: "#f0f0f0",
+            borderRadius: 2,
+            backgroundColor: "#f5f5f5",
+            mb: 3,
           }}
         >
           <Avatar sx={{ bgcolor: "primary.main", mr: 2 }}>U</Avatar>
@@ -160,7 +224,7 @@ const BlogDetail = () => {
             variant="contained"
             color="primary"
             onClick={handleCommentSubmit}
-            sx={{ ml: 2, minWidth: "120px" }}
+            sx={{ ml: 2, minWidth: "100px" }}
             endIcon={<SendIcon />}
           >
             Gửi
@@ -168,22 +232,19 @@ const BlogDetail = () => {
         </Paper>
 
         {/* Danh sách bình luận */}
-        <List
-          sx={{ mt: 2, bgcolor: "background.paper", borderRadius: 2, p: 2 }}
-        >
+        <List>
           {comments.length > 0 ? (
             comments.map((cmt, index) => (
               <Paper
                 key={index}
-                elevation={2}
                 sx={{
                   display: "flex",
                   alignItems: "center",
                   p: 2,
-                  borderRadius: 3,
-                  backgroundColor: "#f9f9f9",
                   mb: 2,
-                  "&:hover": { backgroundColor: "#f0f0f0" },
+                  borderRadius: 2,
+                  transition: "background-color 0.3s",
+                  "&:hover": { backgroundColor: "#f9f9f9" },
                 }}
               >
                 <Avatar sx={{ bgcolor: "secondary.main", mr: 2 }}>U</Avatar>
@@ -199,7 +260,7 @@ const BlogDetail = () => {
             <Typography
               variant="body2"
               color="textSecondary"
-              sx={{ mt: 2, textAlign: "center" }}
+              sx={{ textAlign: "center" }}
             >
               Chưa có bình luận nào.
             </Typography>

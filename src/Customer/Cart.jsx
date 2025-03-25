@@ -18,6 +18,7 @@ import {
   Box,
   Card,
   CardContent,
+  Divider,
 } from "@mui/material";
 import { Add, Remove, Delete } from "@mui/icons-material";
 import cartService from "../services/cartService";
@@ -55,7 +56,6 @@ const Cart = () => {
       return;
     }
     const userConfirmed = window.confirm("Bạn có muốn xóa sản phẩm này?");
-
     if (userConfirmed) {
       try {
         const response = await cartService.removeItem(customerId, productId);
@@ -64,7 +64,7 @@ const Cart = () => {
           toast.success(response.data.message);
         }
       } catch (error) {
-        toast.error("Không thể xóa sản phẩm. Vui lòng thử lại!");
+        toast.error("Không thể xóa sản phẩm. Vui lòng thử lại!", error);
       }
     }
   };
@@ -83,25 +83,48 @@ const Cart = () => {
   };
 
   return (
-    <div className="container mx-auto p-6 max-w-4xl">
+    <Box sx={{ maxWidth: "900px", mx: "auto", py: 6, px: { xs: 2, sm: 4 } }}>
+      {/* Tiêu đề */}
       <Typography
         variant="h4"
-        className="text-center font-bold mb-6 text-gray-800"
+        sx={{
+          textAlign: "center",
+          fontWeight: "bold",
+          mb: 6,
+          color: "grey.800",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 1,
+        }}
       >
-        🛒 Giỏ Hàng Của Bạn
+        <span role="img" aria-label="cart">
+          🛒
+        </span>
+        Giỏ Hàng Của Bạn
       </Typography>
+
+      {/* Bảng giỏ hàng */}
       <TableContainer
         component={Paper}
-        className="shadow-md rounded-lg overflow-hidden"
+        sx={{
+          borderRadius: 2,
+          boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+          overflow: "hidden",
+        }}
       >
         <Table>
           <TableHead>
-            <TableRow className="bg-gray-200">
-              <TableCell>Sản phẩm</TableCell>
-              <TableCell align="center">Giá</TableCell>
-              <TableCell align="center">Số lượng</TableCell>
-              <TableCell align="center">Tổng</TableCell>
-              <TableCell align="center">Xóa</TableCell>
+            <TableRow sx={{ bgcolor: "grey.100" }}>
+              {["Sản phẩm", "Giá", "Số lượng", "Tổng", "Xóa"].map((header) => (
+                <TableCell
+                  key={header}
+                  align={header === "Sản phẩm" ? "left" : "center"}
+                  sx={{ fontWeight: "bold", color: "grey.800", py: 2 }}
+                >
+                  {header}
+                </TableCell>
+              ))}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -109,18 +132,28 @@ const Cart = () => {
               cartItems.map((item) => (
                 <TableRow
                   key={item.product_id._id}
-                  className="hover:bg-gray-50"
+                  sx={{
+                    "&:hover": { bgcolor: "grey.50" },
+                    transition: "background-color 0.3s",
+                  }}
                 >
                   <TableCell>
-                    <Box display="flex" alignItems="center" gap={2}>
-                      <img
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                      <Box
+                        component="img"
                         src={item.product_id.image}
                         alt={item.product_id.name}
-                        className="w-16 h-16 rounded-md object-cover shadow-md"
+                        sx={{
+                          width: 60,
+                          height: 60,
+                          borderRadius: 1,
+                          objectFit: "cover",
+                          boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                        }}
                       />
                       <Typography
                         variant="body1"
-                        className="font-medium text-gray-900"
+                        sx={{ fontWeight: "medium", color: "grey.900" }}
                       >
                         {item.product_id.name}
                       </Typography>
@@ -133,23 +166,36 @@ const Cart = () => {
                     )}
                   </TableCell>
                   <TableCell align="center">
-                    <IconButton
-                      onClick={() =>
-                        handleDecreaseQuantity(item.product_id._id)
-                      }
-                      color="error"
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: 1,
+                      }}
                     >
-                      <Remove />
-                    </IconButton>
-                    <strong>{item.quantity}</strong>
-                    <IconButton
-                      onClick={() =>
-                        handleIncreaseQuantity(item.product_id._id)
-                      }
-                      color="primary"
-                    >
-                      <Add />
-                    </IconButton>
+                      <IconButton
+                        onClick={() =>
+                          handleDecreaseQuantity(item.product_id._id)
+                        }
+                        color="error"
+                        size="small"
+                      >
+                        <Remove />
+                      </IconButton>
+                      <Typography sx={{ fontWeight: "bold" }}>
+                        {item.quantity}
+                      </Typography>
+                      <IconButton
+                        onClick={() =>
+                          handleIncreaseQuantity(item.product_id._id)
+                        }
+                        color="primary"
+                        size="small"
+                      >
+                        <Add />
+                      </IconButton>
+                    </Box>
                   </TableCell>
                   <TableCell align="center">
                     {formatCurrency(
@@ -162,6 +208,7 @@ const Cart = () => {
                     <IconButton
                       onClick={() => handleRemoveItem(item.product_id._id)}
                       color="error"
+                      size="small"
                     >
                       <Delete />
                     </IconButton>
@@ -171,7 +218,7 @@ const Cart = () => {
             ) : (
               <TableRow>
                 <TableCell colSpan={5} align="center">
-                  <Typography variant="h6" color="textSecondary">
+                  <Typography variant="h6" sx={{ color: "grey.500", py: 4 }}>
                     🛍️ Giỏ hàng của bạn đang trống!
                   </Typography>
                 </TableCell>
@@ -180,30 +227,55 @@ const Cart = () => {
           </TableBody>
         </Table>
       </TableContainer>
-      <Card className="shadow-md rounded-lg p-6 mt-6 bg-gray-50">
-        <CardContent>
-          <Typography variant="h6" className="text-gray-700">
+
+      {/* Tổng tiền và nút thanh toán */}
+      <Card
+        sx={{
+          mt: 6,
+          borderRadius: 2,
+          boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+          bgcolor: "grey.50",
+        }}
+      >
+        <CardContent sx={{ p: 4 }}>
+          <Typography variant="h6" sx={{ color: "grey.700", mb: 2 }}>
             Tạm tính:{" "}
-            <strong>
+            <Typography
+              component="span"
+              sx={{ fontWeight: "bold", color: "grey.900" }}
+            >
               {formatCurrency(cartItems.length > 0 ? totalPrice : 0)}
-            </strong>
+            </Typography>
           </Typography>
-          <hr className="my-3 border-gray-300" />
-          <Typography variant="h5" className="font-bold text-green-600">
+          <Divider sx={{ my: 2, bgcolor: "grey.300" }} />
+          <Typography
+            variant="h5"
+            sx={{ fontWeight: "bold", color: "success.main", mb: 3 }}
+          >
             Thành tiền: {formatCurrency(cartItems.length > 0 ? totalPrice : 0)}
           </Typography>
           <Button
             variant="contained"
             color="success"
             fullWidth
-            className="mt-4 py-3"
             onClick={handleCheckout}
+            sx={{
+              py: 1.5,
+              fontSize: "1rem",
+              fontWeight: "bold",
+              borderRadius: 2,
+              "&:hover": {
+                bgcolor: "success.dark",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
+              },
+              transition: "all 0.3s ease",
+            }}
           >
-            🏦 Thanh toán ngay
+            🏦 Thanh Toán Ngay
           </Button>
         </CardContent>
       </Card>
-    </div>
+    </Box>
   );
 };
 

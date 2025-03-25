@@ -12,7 +12,6 @@ import {
 } from "@mui/material";
 import {
   ListAlt,
-  People,
   ShoppingCart,
   LocalOffer,
   BarChart,
@@ -42,15 +41,15 @@ const StaffSidebar = () => {
 
   const menuItems = [
     { text: "Đơn hàng", icon: <ListAlt />, path: "/staff/orders" },
-    {
-      text: "Hỗ trợ khách hàng",
-      icon: <People />,
-      path: "/staff/supportcustomers",
-    },
+    // {
+    //   text: "Hỗ trợ khách hàng",
+    //   icon: <People />,
+    //   path: "/staff/supportcustomers",
+    // },
     { text: "Sản phẩm", icon: <ShoppingCart />, path: "/staff/products" },
     { text: "Khuyến mãi", icon: <LocalOffer />, path: "/staff/promotions" },
-    { text: "Báo cáo", icon: <BarChart />, path: "/staff/reports" },
     { text: "Giao hàng", icon: <LocalShipping />, path: "/staff/shipmanager" },
+    { text: "Báo cáo", icon: <BarChart />, path: "/staff/reports" },
   ];
 
   return (
