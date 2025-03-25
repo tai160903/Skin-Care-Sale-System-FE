@@ -12,21 +12,77 @@ import {
   Button,
   Menu,
   MenuItem,
+  Paper,
+  Typography,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Chip,
+  IconButton,
 } from "@mui/material";
+import RefreshIcon from "@mui/icons-material/Refresh";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import SearchIcon from "@mui/icons-material/Search";
 
 const ShipManagement = () => {
   const [shipments, setShipments] = useState([]);
+  const [filteredShipments, setFilteredShipments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-
-  // State quản lý Dialog cập nhật trạng thái
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedShipment, setSelectedShipment] = useState(null);
   const [reason, setReason] = useState("");
-
   const [anchorEl, setAnchorEl] = useState(null);
-  const [selectedStatus, setSelectedStatus] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const fetchShipments = async () => {
+    setLoading(true);
+    try {
+      const response = await shipService.getAllShippings({ page, limit: 10 });
+      if (response.data?.data && Array.isArray(response.data.data)) {
+        setShipments(response.data.data);
+        setFilteredShipments(response.data.data); // Initialize with full data
+        setTotalPages(response.data.totalPages);
+      } else {
+        setShipments([]);
+        setFilteredShipments([]);
+      }
+    } catch (error) {
+      console.error("Error fetching shipments:", error);
+      toast.error("Failed to fetch shipments");
+      setShipments([]);
+      setFilteredShipments([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchShipments();
+  }, [page]);
+
+  // Handle search when clicking the SearchIcon
+  const handleSearch = () => {
+    if (!searchQuery.trim()) {
+      setFilteredShipments(shipments); // Reset to full list if query is empty
+      return;
+    }
+
+    const filtered = shipments.filter((shipment) => {
+      const orderIdMatch = shipment.order_id._id
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+      const phoneMatch = shipment.shipping_phone
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+      return orderIdMatch || phoneMatch;
+    });
+    setFilteredShipments(filtered);
+  };
 
   const handleOpenStatusMenu = (event, shipment) => {
     setAnchorEl(event.currentTarget);
@@ -34,9 +90,7 @@ const ShipManagement = () => {
   };
 
   const handleStatusChange = (status) => {
-    setSelectedStatus(status);
     setAnchorEl(null);
-
     if (status === "Cancelled") {
       setOpenDialog(true);
     } else {
@@ -51,14 +105,11 @@ const ShipManagement = () => {
         selectedShipment._id,
         status,
       );
-      console.log("Update response:", response);
-
       if (response?.data) {
         toast.success("Cập nhật trạng thái thành công!");
         fetchShipments();
-        handleCloseDialog();
       } else {
-        toast.error("Không thể cập nhật trạng thái! Kiểm tra lại API.");
+        toast.error("Không thể cập nhật trạng thái!");
       }
     } catch (error) {
       console.error("Error updating status:", error);
@@ -66,60 +117,19 @@ const ShipManagement = () => {
     }
   };
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case "Pending":
-        return "bg-yellow-500";
-      case "Shipping":
-        return "bg-blue-500";
-      case "Delivered":
-        return "bg-green-500";
-      case "Cancelled":
-        return "bg-red-500";
-      default:
-        return "bg-gray-200";
-    }
-  };
-
-  useEffect(() => {
-    fetchShipments();
-  }, [page]);
-
-  const fetchShipments = async () => {
-    setLoading(true);
-    try {
-      const response = await shipService.getAllShippings({ page, limit: 10 });
-      if (response.data?.data && Array.isArray(response.data.data)) {
-        setShipments(response.data.data);
-        setTotalPages(response.data.totalPages);
-      } else {
-        setShipments([]);
-      }
-    } catch (error) {
-      console.error("Error fetching shipments:", error);
-      toast.error("Failed to fetch shipments");
-      setShipments([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const updateShipmentStatus = async () => {
-    if (!selectedShipment) return;
-
+    if (!selectedShipment || !reason.trim()) return;
     try {
       const response = await shipService.updateShippingStatus(
         selectedShipment._id,
         reason,
       );
-      console.log("Update response:", response);
-
       if (response && response._id) {
         toast.success("Cập nhật trạng thái thành công!");
         fetchShipments();
         handleCloseDialog();
       } else {
-        toast.error("Không thể cập nhật trạng thái! Kiểm tra lại API.");
+        toast.error("Không thể cập nhật trạng thái!");
       }
     } catch (error) {
       console.error("Error updating status:", error);
@@ -127,164 +137,254 @@ const ShipManagement = () => {
     }
   };
 
-  // Mở dialog
-  const handleOpenDialog = (shipment) => {
-    setSelectedShipment(shipment);
-    setReason("");
-    setOpenDialog(true);
-  };
-
-  // Đóng dialog
   const handleCloseDialog = () => {
     setOpenDialog(false);
     setSelectedShipment(null);
     setReason("");
   };
 
+  const getStatusStyles = (status) => {
+    switch (status) {
+      case "Pending":
+        return { bgcolor: "#ffb300", color: "#fff" };
+      case "Shipping":
+        return { bgcolor: "#1976d2", color: "#fff" };
+      case "Delivered":
+        return { bgcolor: "#2e7d32", color: "#fff" };
+      case "Cancelled":
+        return { bgcolor: "#d32f2f", color: "#fff" };
+      default:
+        return { bgcolor: "#e0e0e0", color: "#000" };
+    }
+  };
+
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">
-          Shipment Management
-        </h1>
-        <button
-          onClick={fetchShipments}
-          className="px-4 py-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 transition"
-        >
-          Refresh Shipments
-        </button>
-      </div>
-
-      {loading ? (
-        <p className="text-center text-gray-500">Loading shipments...</p>
-      ) : (
-        <div className="bg-white shadow-lg rounded-lg overflow-hidden">
-          <table className="w-full border-collapse">
-            <thead className="bg-gray-200 text-gray-700">
-              <tr>
-                <th className="p-3 text-left">Order ID</th>
-                <th className="p-3 text-left">Total Price</th>
-                <th className="p-3 text-left">Shipping Address</th>
-                <th className="p-3 text-left">Phone</th>
-                <th className="p-3 text-left">Shipping Status</th>
-                <th className="p-3 text-left">Created At</th>
-                <th className="p-3 text-left">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {shipments.length > 0 ? (
-                shipments.map((shipment) => (
-                  <tr
-                    key={shipment._id}
-                    className="border-b hover:bg-gray-100 transition"
-                  >
-                    <td className="p-3">{shipment.order_id._id}</td>
-                    <td className="p-3">
-                      ${shipment.order_id.totalPay.toFixed(2)}
-                    </td>
-                    <td className="p-3">{shipment.shipping_address}</td>
-                    <td className="p-3">{shipment.shipping_phone}</td>
-                    <td className="p-3 flex items-center gap-2">
-                      <span
-                        className={`px-3 py-1 rounded text-white ${getStatusColor(shipment.shipping_status)}`}
-                      >
-                        {shipment.shipping_status}
-                      </span>
-                      <button
-                        onClick={(event) =>
-                          handleOpenStatusMenu(event, shipment)
-                        }
-                        className="ml-2 p-1 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 transition"
-                      >
-                        🔼
-                      </button>
-
-                      {/* Menu chọn trạng thái */}
-                      <Menu
-                        anchorEl={anchorEl}
-                        open={Boolean(anchorEl)}
-                        onClose={() => setAnchorEl(null)}
-                      >
-                        <MenuItem
-                          onClick={() => handleStatusChange("Shipping")}
-                        >
-                          🚚 Shipping
-                        </MenuItem>
-                        <MenuItem
-                          onClick={() => handleStatusChange("Delivered")}
-                        >
-                          ✅ Delivered
-                        </MenuItem>
-                        <MenuItem
-                          onClick={() => handleStatusChange("Cancelled")}
-                        >
-                          ❌ Cancelled
-                        </MenuItem>
-                      </Menu>
-                    </td>
-                    <td className="p-3">
-                      {new Date(shipment.createdAt).toLocaleDateString()}
-                    </td>
-                    <td className="p-3">
-                      <button
-                        onClick={() => handleOpenDialog(shipment)}
-                        className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition"
-                      >
-                        CẬP NHẬT
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="9" className="text-center p-3 text-gray-500">
-                    No shipments available.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
-        <Pagination
-          count={totalPages}
-          page={page}
-          onChange={(event, value) => setPage(value)}
-          color="primary"
-        />
-      </Box>
-
-      {/* Dialog nhập lý do */}
-      <Dialog open={openDialog} onClose={handleCloseDialog}>
-        <DialogTitle>Xác nhận cập nhật trạng thái</DialogTitle>
-        <DialogContent>
-          <TextField
-            label="Lý do Hủy"
-            fullWidth
-            multiline
-            rows={3}
-            value={reason}
-            onChange={(e) => setReason(e.target.value)}
-            variant="outlined"
-            margin="dense"
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog} color="secondary">
-            Hủy
-          </Button>
+    <Box sx={{ maxWidth: 1200, mx: "auto", py: 4 }}>
+      <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
+        {/* Header */}
+        <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
+          <Typography variant="h5" sx={{ fontWeight: 600, color: "#1a237e" }}>
+            📦 Shipment Management
+          </Typography>
           <Button
-            onClick={updateShipmentStatus}
+            variant="outlined"
             color="primary"
-            disabled={!reason.trim()}
+            startIcon={<RefreshIcon />}
+            onClick={fetchShipments}
+            sx={{ borderRadius: 20, textTransform: "none" }}
           >
-            Xác nhận
+            Refresh
           </Button>
-        </DialogActions>
-      </Dialog>
-    </div>
+        </Box>
+
+        {/* Search Bar */}
+        <Box sx={{ display: "flex", gap: 2, mb: 3 }}>
+          <TextField
+            label="Search by Order ID or Phone"
+            variant="outlined"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            fullWidth
+            InputProps={{
+              endAdornment: (
+                <IconButton onClick={handleSearch}>
+                  <SearchIcon color="primary" />
+                </IconButton>
+              ),
+            }}
+            onKeyPress={(e) => {
+              if (e.key === "Enter") handleSearch();
+            }}
+          />
+        </Box>
+
+        {/* Table */}
+        {loading ? (
+          <Box sx={{ textAlign: "center", py: 5 }}>
+            <Typography color="text.secondary">Loading shipments...</Typography>
+          </Box>
+        ) : (
+          <TableContainer sx={{ borderRadius: 2, overflow: "hidden" }}>
+            <Table>
+              <TableHead>
+                <TableRow sx={{ bgcolor: "#1976d2" }}>
+                  {[
+                    "Order ID",
+                    "Total Price",
+                    "Shipping Address",
+                    "Phone",
+                    "Status",
+                    "Created At",
+                    "Actions",
+                  ].map((header) => (
+                    <TableCell
+                      key={header}
+                      sx={{
+                        color: "#fff",
+                        fontWeight: 600,
+                        textAlign: "center",
+                      }}
+                    >
+                      {header}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {filteredShipments.length > 0 ? (
+                  filteredShipments.map((shipment) => (
+                    <TableRow
+                      key={shipment._id}
+                      hover
+                      sx={{ "&:hover": { bgcolor: "#f5f5f5" } }}
+                    >
+                      <TableCell align="center">
+                        {shipment.order_id._id}
+                      </TableCell>
+                      <TableCell align="center">
+                        ${shipment.order_id.totalPay.toFixed(2)}
+                      </TableCell>
+                      <TableCell align="center">
+                        {shipment.shipping_address}
+                      </TableCell>
+                      <TableCell align="center">
+                        {shipment.shipping_phone}
+                      </TableCell>
+                      <TableCell align="center">
+                        <Box
+                          sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                        >
+                          <Chip
+                            label={shipment.shipping_status}
+                            sx={{
+                              ...getStatusStyles(shipment.shipping_status),
+                              fontWeight: 500,
+                              minWidth: 90,
+                            }}
+                          />
+                          <IconButton
+                            size="small"
+                            onClick={(e) => handleOpenStatusMenu(e, shipment)}
+                          >
+                            <ArrowDropDownIcon />
+                          </IconButton>
+                          <Menu
+                            anchorEl={anchorEl}
+                            open={
+                              Boolean(anchorEl) &&
+                              selectedShipment?._id === shipment._id
+                            }
+                            onClose={() => setAnchorEl(null)}
+                          >
+                            <MenuItem
+                              onClick={() => handleStatusChange("Shipping")}
+                            >
+                              🚚 Shipping
+                            </MenuItem>
+                            <MenuItem
+                              onClick={() => handleStatusChange("Delivered")}
+                            >
+                              ✅ Delivered
+                            </MenuItem>
+                            <MenuItem
+                              onClick={() => handleStatusChange("Cancelled")}
+                            >
+                              ❌ Cancelled
+                            </MenuItem>
+                          </Menu>
+                        </Box>
+                      </TableCell>
+                      <TableCell align="center">
+                        {new Date(shipment.createdAt).toLocaleDateString()}
+                      </TableCell>
+                      <TableCell align="center">
+                        <Button
+                          variant="contained"
+                          color="success"
+                          size="small"
+                          onClick={() => {
+                            setSelectedShipment(shipment);
+                            setOpenDialog(true);
+                          }}
+                          sx={{ borderRadius: 1, textTransform: "none" }}
+                        >
+                          Update
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={7}
+                      align="center"
+                      sx={{ py: 4, color: "#757575" }}
+                    >
+                      No shipments found.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
+            <Pagination
+              count={totalPages}
+              page={page}
+              onChange={(event, value) => setPage(value)}
+              color="primary"
+            />
+          </Box>
+        )}
+
+        {/* Dialog */}
+        <Dialog
+          open={openDialog}
+          onClose={handleCloseDialog}
+          maxWidth="sm"
+          fullWidth
+        >
+          <DialogTitle
+            sx={{ bgcolor: "#1976d2", color: "#fff", fontWeight: 600 }}
+          >
+            Update Shipment Status
+          </DialogTitle>
+          <DialogContent sx={{ pt: 2 }}>
+            <TextField
+              label="Reason for Cancellation"
+              fullWidth
+              multiline
+              rows={3}
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              variant="outlined"
+              placeholder="Enter reason if cancelling..."
+              sx={{ mt: 1 }}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseDialog} color="secondary">
+              Cancel
+            </Button>
+            <Button
+              onClick={updateShipmentStatus}
+              color="primary"
+              variant="contained"
+              disabled={
+                !reason.trim() &&
+                selectedShipment?.shipping_status === "Cancelled"
+              }
+            >
+              Confirm
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </Paper>
+    </Box>
   );
 };
 

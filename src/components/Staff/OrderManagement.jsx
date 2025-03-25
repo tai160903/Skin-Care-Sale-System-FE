@@ -30,8 +30,6 @@ const OrderManagement = () => {
   const [statusFilter, setStatusFilter] = useState("All");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-
-  // State để mở modal xác nhận
   const [openConfirmModal, setOpenConfirmModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [newStatus, setNewStatus] = useState("");
@@ -48,13 +46,16 @@ const OrderManagement = () => {
       if (statusFilter === "All") {
         response = await orderService.getAllOrders({ page, limit });
       } else {
-        response = await orderService.getOrdersByStatus(statusFilter, page, 10);
+        response = await orderService.getOrdersByStatus(
+          statusFilter,
+          page,
+          limit,
+        );
       }
-
       setOrders(response?.data?.data || []);
-      setTotalPages(response?.data?.data?.totalPages || 1);
+      setTotalPages(response?.data?.totalPages || 1);
     } catch (error) {
-      toast.error("Failed to fetch orders");
+      toast.error("Failed to fetch orders", error);
     } finally {
       setLoading(false);
     }
@@ -69,7 +70,7 @@ const OrderManagement = () => {
       case "completed":
         return "Đã hoàn thành";
       case "cancelled":
-        return "Đơn Hàng đã bị Hủy";
+        return "Đã hủy";
       default:
         return status;
     }
@@ -89,14 +90,13 @@ const OrderManagement = () => {
         return "default";
     }
   };
-  // Mở modal xác nhận khi chọn trạng thái mới
+
   const handleOpenConfirmModal = (order, status) => {
     setSelectedOrder(order);
     setNewStatus(status);
     setOpenConfirmModal(true);
   };
 
-  // Xác nhận thay đổi trạng thái đơn hàng
   const handleConfirmStatusChange = async () => {
     if (!selectedOrder) return;
     try {
@@ -109,156 +109,226 @@ const OrderManagement = () => {
         ),
       );
       toast.success("Cập nhật trạng thái đơn hàng thành công");
+      setOpenConfirmModal(false);
     } catch (error) {
       console.error("Error updating order status:", error.error);
-      toast.error(error.error);
+      toast.error(error.error || "Không thể cập nhật trạng thái!");
       setOpenConfirmModal(false);
     }
   };
 
   return (
-    <Paper sx={{ padding: 3, borderRadius: 3, backgroundColor: "#f8f9fa" }}>
-      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
-        <Typography variant="h5" sx={{ fontWeight: "bold" }}>
-          📦 Order Management
-        </Typography>
-        <Button
-          onClick={fetchOrders}
-          variant="contained"
-          color="primary"
-          startIcon={<RefreshIcon />}
+    <Box sx={{ maxWidth: 1200, mx: "auto", py: 4 }}>
+      <Paper elevation={3} sx={{ p: 3, borderRadius: 2 }}>
+        {/* Header */}
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 3,
+          }}
         >
-          Refresh Orders
-        </Button>
-      </Box>
-
-      <Select
-        value={statusFilter}
-        onChange={(e) => {
-          setStatusFilter(e.target.value);
-          setPage(1);
-        }}
-        sx={{ marginBottom: 2, backgroundColor: "white", borderRadius: 2 }}
-      >
-        <MenuItem value="All">All Orders</MenuItem>
-        <MenuItem value="Pending Confirmation">Pending Confirmation</MenuItem>
-        <MenuItem value="Complete Confirmation">Complete Confirmation</MenuItem>
-        <MenuItem value="Cancelled">Cancelled</MenuItem>
-      </Select>
-
-      {loading ? (
-        <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
-          <CircularProgress />
-        </Box>
-      ) : (
-        <>
-          <TableContainer
-            component={Paper}
-            sx={{ borderRadius: 3, boxShadow: 3 }}
-          >
-            <Table>
-              <TableHead sx={{ backgroundColor: "#1976d2" }}>
-                <TableRow>
-                  <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                    Order ID
-                  </TableCell>
-                  <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                    Customer ID
-                  </TableCell>
-                  <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                    Order Status
-                  </TableCell>
-                  <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                    Time
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {orders.map((order) => (
-                  <TableRow key={order._id} sx={{ backgroundColor: "white" }}>
-                    <TableCell>{order._id}</TableCell>
-                    <TableCell>{order.customer_id}</TableCell>
-                    <TableCell>
-                      <Select
-                        value={order.order_status}
-                        onChange={(e) =>
-                          handleOpenConfirmModal(order, e.target.value)
-                        }
-                        sx={{
-                          backgroundColor: "white",
-                          borderRadius: 2,
-                          minWidth: "140px",
-                          padding: "5px 10px",
-                          "& .MuiSelect-select": {
-                            display: "flex",
-                            alignItems: "center",
-                            fontWeight: "bold",
-                            textAlign: "center",
-                          },
-                          "& .MuiOutlinedInput-notchedOutline": {
-                            borderColor: "#ddd", // Viền mờ hơn cho đẹp
-                          },
-                          "&:hover .MuiOutlinedInput-notchedOutline": {
-                            borderColor: "#1976d2", // Hiệu ứng viền khi hover
-                          },
-                          "& .MuiSvgIcon-root": {
-                            color: "#1976d2", // Màu mũi tên dropdown
-                          },
-                          boxShadow: 1, // Hiệu ứng bóng nhẹ
-                        }}
-                        displayEmpty
-                        renderValue={(selected) => getStatusLabel(selected)}
-                      >
-                        <MenuItem value="confirmed">XÁC NHẬN ĐƠN HÀNG</MenuItem>
-                        <MenuItem value="Cancelled">HỦY ĐƠN HÀNG</MenuItem>
-                      </Select>
-                      <Chip
-                        label={getStatusLabel(order.order_status)}
-                        color={getStatusColor(order.order_status)}
-                        sx={{ ml: 2, fontWeight: "bold" }}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      {new Date(order.createdAt).toLocaleString("vi-VN")}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-
-          <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
-            <Pagination
-              count={totalPages}
-              page={page}
-              onChange={(event, value) => setPage(value)}
-              color="primary"
-            />
-          </Box>
-        </>
-      )}
-
-      {/* Modal xác nhận */}
-      <Dialog
-        open={openConfirmModal}
-        onClose={() => setOpenConfirmModal(false)}
-      >
-        <DialogTitle>Xác nhận thay đổi</DialogTitle>
-        <DialogContent>
-          <Typography>
-            Bạn có chắc chắn muốn thay đổi trạng thái đơn hàng?
+          <Typography variant="h5" sx={{ fontWeight: 600, color: "#1a237e" }}>
+            📦 Order Management
           </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenConfirmModal(false)} color="error">
-            Hủy
+          <Button
+            variant="outlined"
+            color="primary"
+            startIcon={<RefreshIcon />}
+            onClick={fetchOrders}
+            sx={{ borderRadius: 20, textTransform: "none" }}
+          >
+            Refresh
           </Button>
-          <Button onClick={handleConfirmStatusChange} color="primary">
-            Xác nhận
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Paper>
+        </Box>
+
+        {/* Filter */}
+        <Box sx={{ mb: 3 }}>
+          <Select
+            value={statusFilter}
+            onChange={(e) => {
+              setStatusFilter(e.target.value);
+              setPage(1);
+            }}
+            sx={{
+              minWidth: 200,
+              bgcolor: "#fff",
+              borderRadius: 1,
+              "& .MuiOutlinedInput-notchedOutline": { borderColor: "#1976d2" },
+              "&:hover .MuiOutlinedInput-notchedOutline": {
+                borderColor: "#115293",
+              },
+              boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+            }}
+          >
+            <MenuItem value="All">Tất cả đơn hàng</MenuItem>
+            <MenuItem value="Pending Confirmation">Đang chờ xác nhận</MenuItem>
+            <MenuItem value="Complete Confirmation">Đã xác nhận</MenuItem>
+            <MenuItem value="Cancelled">Đã hủy</MenuItem>
+          </Select>
+        </Box>
+
+        {/* Table */}
+        {loading ? (
+          <Box sx={{ display: "flex", justifyContent: "center", py: 5 }}>
+            <CircularProgress />
+          </Box>
+        ) : (
+          <>
+            <TableContainer sx={{ borderRadius: 2, overflow: "hidden" }}>
+              <Table>
+                <TableHead>
+                  <TableRow sx={{ bgcolor: "#1976d2" }}>
+                    {["Order ID", "Customer ID", "Order Status", "Time"].map(
+                      (header) => (
+                        <TableCell
+                          key={header}
+                          sx={{
+                            color: "#fff",
+                            fontWeight: 600,
+                            textAlign: "center",
+                          }}
+                        >
+                          {header}
+                        </TableCell>
+                      ),
+                    )}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {orders.length > 0 ? (
+                    orders.map((order) => (
+                      <TableRow
+                        key={order._id}
+                        hover
+                        sx={{
+                          "&:hover": { bgcolor: "#f5f5f5" },
+                          transition: "background-color 0.2s",
+                        }}
+                      >
+                        <TableCell align="center">{order._id}</TableCell>
+                        <TableCell align="center">
+                          {order.customer_id}
+                        </TableCell>
+                        <TableCell align="center">
+                          <Box
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 2,
+                            }}
+                          >
+                            <Select
+                              value={order.order_status}
+                              onChange={(e) =>
+                                handleOpenConfirmModal(order, e.target.value)
+                              }
+                              sx={{
+                                minWidth: 140,
+                                bgcolor: "#fff",
+                                borderRadius: 1,
+                                boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+                                "& .MuiOutlinedInput-notchedOutline": {
+                                  borderColor: "#ddd",
+                                },
+                                "&:hover .MuiOutlinedInput-notchedOutline": {
+                                  borderColor: "#1976d2",
+                                },
+                                "& .MuiSvgIcon-root": { color: "#1976d2" },
+                              }}
+                              renderValue={(selected) => (
+                                <Typography sx={{ fontWeight: 500 }}>
+                                  {getStatusLabel(selected)}
+                                </Typography>
+                              )}
+                            >
+                              <MenuItem value="confirmed">
+                                Xác nhận đơn hàng
+                              </MenuItem>
+                              <MenuItem value="cancelled">
+                                Hủy đơn hàng
+                              </MenuItem>
+                            </Select>
+                            <Chip
+                              label={getStatusLabel(order.order_status)}
+                              color={getStatusColor(order.order_status)}
+                              size="small"
+                              sx={{ fontWeight: 500 }}
+                            />
+                          </Box>
+                        </TableCell>
+                        <TableCell align="center">
+                          {new Date(order.createdAt).toLocaleString("vi-VN")}
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell
+                        colSpan={4}
+                        align="center"
+                        sx={{ py: 4, color: "#757575" }}
+                      >
+                        Không tìm thấy đơn hàng.
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
+                <Pagination
+                  count={totalPages}
+                  page={page}
+                  onChange={(event, value) => setPage(value)}
+                  color="primary"
+                />
+              </Box>
+            )}
+          </>
+        )}
+
+        {/* Confirmation Dialog */}
+        <Dialog
+          open={openConfirmModal}
+          onClose={() => setOpenConfirmModal(false)}
+          maxWidth="xs"
+          fullWidth
+        >
+          <DialogTitle
+            sx={{ bgcolor: "#1976d2", color: "#fff", fontWeight: 600 }}
+          >
+            Xác nhận thay đổi trạng thái
+          </DialogTitle>
+          <DialogContent sx={{ pt: 2 }}>
+            <Typography>
+              Bạn có chắc chắn muốn thay đổi trạng thái đơn hàng thành{" "}
+              <strong>{getStatusLabel(newStatus)}</strong> không?
+            </Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={() => setOpenConfirmModal(false)}
+              color="error"
+              variant="outlined"
+            >
+              Hủy
+            </Button>
+            <Button
+              onClick={handleConfirmStatusChange}
+              color="primary"
+              variant="contained"
+            >
+              Xác nhận
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </Paper>
+    </Box>
   );
 };
 

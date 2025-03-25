@@ -89,10 +89,10 @@ const BlogList = () => {
     if (!validateBlogData()) return;
     try {
       const createdBlog = await blogadService.createBlog(newBlog);
-      setBlogs([...blogs, createdBlog]);
+
       setOpen(false);
       resetForm();
-      toast.success("Tạo bài viết thành công!");
+      toast.success(createdBlog.message);
     } catch (error) {
       console.error("Lỗi khi tạo bài viết:", error);
       toast.error("Không thể tạo bài viết!");
@@ -106,14 +106,9 @@ const BlogList = () => {
         currentBlogId,
         newBlog,
       );
-      setBlogs(
-        blogs.map((blog) =>
-          blog._id === currentBlogId ? { ...blog, ...newBlog } : blog,
-        ),
-      );
       setOpen(false);
       resetForm();
-      toast.success("Cập nhật bài viết thành công!");
+      toast.success(updatedBlog.message);
     } catch (error) {
       console.error("Lỗi khi cập nhật bài viết:", error);
       toast.error("Không thể cập nhật bài viết!");
