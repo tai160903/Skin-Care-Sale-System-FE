@@ -10,7 +10,7 @@ import { toast } from "react-toastify";
 import productService from "../services/productService";
 import cartService from "../services/cartService";
 import { addToCart } from "../redux/slices/cartSlice";
-import { addToCompare } from "../redux/slices/compareSlice"; // Thêm action để so sánh
+import { addToCompare } from "../redux/slices/compareSlice";
 import Content from "./Content";
 import { formatCurrency } from "../utils/formatCurrency";
 import reviewService from "../services/reviewService";
