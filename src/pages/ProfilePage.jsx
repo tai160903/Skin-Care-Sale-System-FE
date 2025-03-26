@@ -87,7 +87,6 @@ const ProfilePage = () => {
       <div className="min-h-screen flex flex-col items-center">
         <div className="w-full max-w-2xl">
           <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-            {/* Profile Header */}
             <div className="bg-gradient-to-r from-green-600 to-green-400 px-6 py-8 text-white">
               <div className="flex items-center">
                 <div className="bg-white/20 rounded-full p-3 mr-4">
@@ -114,7 +113,6 @@ const ProfilePage = () => {
                 </div>
               </div>
 
-              {/* Tab Navigation */}
               <div className="flex mt-8 border-b border-white/20">
                 <button
                   className={`pb-2 px-4 text-sm font-medium ${activeTab === "view" ? "border-b-2 border-white" : "opacity-70"}`}
@@ -131,7 +129,6 @@ const ProfilePage = () => {
               </div>
             </div>
 
-            {/* Content Area */}
             <div className="p-6">
               {isLoading ? (
                 <div className="py-12 text-center">
@@ -181,43 +178,68 @@ const ProfilePage = () => {
                 <form onSubmit={handleSubmit(onSubmit)}>
                   <div className="space-y-6">
                     <FormField
-                      label="Full Name"
+                      label="Họ và Tên"
                       name="name"
                       register={register}
-                      validation={{ required: "Full name is required" }}
+                      validation={{
+                        required: "Họ và tên là bắt buộc",
+                        minLength: {
+                          value: 6,
+                          message: "Họ và tên phải dài ít nhất 6 ký tự",
+                        },
+                        pattern: {
+                          value:
+                            /^[a-zA-Z\sÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂẾưăạảấầẩẫậắằẳẵặẹẻẽềềểếỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ]+$/u,
+                          message:
+                            "Họ và tên chỉ được chứa chữ cái và dấu cách",
+                        },
+                      }}
                       errors={errors}
                     />
 
                     <div className="space-y-2">
                       <label className="text-sm font-medium text-gray-700 block">
-                        Gender
+                        Giới tính
                       </label>
                       <select
                         className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
                         {...register("gender")}
                       >
-                        <option value={true}>Male</option>
-                        <option value={false}>Female</option>
+                        <option value={true}>Nam</option>
+                        <option value={false}>Nữ</option>
                       </select>
                     </div>
 
                     <FormField
-                      label="Address"
+                      label="Địa chỉ"
                       name="address"
                       register={register}
-                      validation={{ required: "Address is required" }}
+                      validation={{
+                        required: "Địa chỉ là bắt buộc",
+                        minLength: {
+                          value: 10,
+                          message: "Địa chỉ phải dài ít nhất 10 ký tự",
+                        },
+                        pattern: {
+                          value:
+                            /^[a-zA-Z0-9\s,.-ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂẾưăạảấầẩẫậắằẳẵặẹẻẽềềểếỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ]+$/u,
+                          message:
+                            "Địa chỉ chỉ được chứa chữ cái, số, dấu cách, dấu phẩy, dấu chấm, dấu gạch ngang và ký tự tiếng Việt",
+                        },
+                      }}
                       errors={errors}
                     />
 
                     <FormField
-                      label="Phone Number"
+                      label="Số điện thoại"
                       name="phone"
                       register={register}
                       validation={{
-                        required: "Phone number is required",
+                        required: "Số điện thoại là bắt buộc",
                         pattern: {
-                          value: /^[0-9]{10,12}$/,
-                          message: "Please enter a valid phone number",
+                          value: /^(03|05|07|08|09)[0-9]{8}$/,
+                          message:
+                            "Số điện thoại phải là số Việt Nam hợp lệ (10 chữ số, bắt đầu bằng 03, 05, 07, 08, hoặc 09)",
                         },
                       }}
                       errors={errors}
@@ -229,7 +251,7 @@ const ProfilePage = () => {
                         onClick={() => setActiveTab("view")}
                         className="flex-1 py-3 px-4 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
                       >
-                        Cancel
+                        Hủy
                       </button>
 
                       <button
@@ -240,10 +262,10 @@ const ProfilePage = () => {
                         {isSubmitting ? (
                           <>
                             <span className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></span>
-                            Updating...
+                            Đang cập nhật...
                           </>
                         ) : (
-                          "Save Changes"
+                          "Lưu thay đổi"
                         )}
                       </button>
                     </div>
@@ -258,14 +280,13 @@ const ProfilePage = () => {
   );
 };
 
-// Helper Components
 const ProfileItem = ({ label, value, badge }) => (
   <div className="bg-gray-50 p-4 rounded-lg">
     <p className="text-sm text-gray-500 mb-1">{label}</p>
     {badge ? (
       <div className="flex items-center">
         <span className="bg-green-100 text-green-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded">
-          {value} points
+          {value} điểm
         </span>
       </div>
     ) : (

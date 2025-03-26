@@ -59,7 +59,7 @@ const Router = createBrowserRouter([
       { path: "forgot-password", element: <ForgotPassword /> },
       { path: "verify-reset-password", element: <ResetPass /> },
       { path: "question", element: <SkinTypeQuiz /> },
-      { path: "order-tracking/:customer_id", element: <OrTrack /> },
+      { path: "/profile/customerId/order-tr/", element: <OrTrack /> },
       { path: "store-location", element: <Map /> },
       { path: "blog", element: <Blog /> },
       { path: "blog/:id", element: <BlogDetail /> },
@@ -81,6 +81,7 @@ const Router = createBrowserRouter([
           { path: "", element: <ProfilePage /> },
           { path: "order-tracking", element: <OrderTracking /> },
           { path: "change-password", element: <ChangePassword /> },
+          { path: "order-tr", element: <OrTrack /> },
         ],
       },
       {

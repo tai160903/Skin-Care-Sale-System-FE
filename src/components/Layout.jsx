@@ -17,6 +17,7 @@ function Layout() {
     "/order-history/:customerId",
     "/order-tracking/:userId",
     "/profile/:customerId/orderhistory",
+    "/profile/:customerId/order-tr",
     "/profile/:customerId/order-tracking",
     "/profile/:customerId/change-password",
   ];

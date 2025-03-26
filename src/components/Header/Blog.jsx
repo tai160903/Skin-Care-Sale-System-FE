@@ -44,6 +44,12 @@ const Blog = () => {
 
   return (
     <Box p={3}>
+      <button
+        onClick={() => navigate("/")}
+        className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300 ease-in-out"
+      >
+        Quay về Trang Chủ
+      </button>
       <Typography
         variant="h4"
         gutterBottom

@@ -2,12 +2,12 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { TextField, InputAdornment } from "@mui/material";
 import { LibraryBooksRounded as BlogIcon } from "@mui/icons-material";
-import { RoomRounded as LocationIcon } from "@mui/icons-material";
 import { LocalShippingRounded as ShippingIcon } from "@mui/icons-material";
 import {
   Search as SearchIcon,
   AccountCircleRounded as AccountIcon,
 } from "@mui/icons-material";
+import CompareIcon from "@mui/icons-material/Compare";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../redux/slices/userSlice";
 import CartA from "./CartA";
@@ -81,18 +81,11 @@ const Header = () => {
 
       <nav className="flex items-center space-x-6">
         <Link
-          to={`/order-tracking/${customerId}`}
+          to={`/profile/${customerId}/order-tr`}
           className="flex items-center text-gray-700 hover:text-green-700 space-x-2"
         >
           <ShippingIcon className="text-[#326f51] text-xl" />
           <span>Tra cứu đơn</span>
-        </Link>
-        <Link
-          to="/comparison"
-          className="flex items-center text-gray-700 hover:text-green-700 space-x-2"
-        >
-          <LocationIcon className="text-[#326f51] text-xl" />
-          <span>So sánh</span>
         </Link>
         <Link
           to="/blog"
@@ -101,6 +94,14 @@ const Header = () => {
           <BlogIcon className="text-[#326f51] text-xl" />
           <span>Tin Tức</span>
         </Link>
+        <Link
+          to="/comparison"
+          className="flex items-center text-gray-700 hover:text-green-700 space-x-2"
+        >
+          <CompareIcon className="text-[#326f51] text-xl" />
+          <span>So sánh</span>
+        </Link>
+
         <Question />
       </nav>
 

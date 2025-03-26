@@ -120,6 +120,16 @@ const DraftOrder = () => {
 
   return (
     <Box sx={{ maxWidth: "600px", mx: "auto", py: 6, px: { xs: 2, sm: 4 } }}>
+      {/* Button quay về */}
+      <Box sx={{ display: "flex", justifyContent: "flex-start", mb: 4 }}>
+        <button
+          onClick={() => navigate("/cart")}
+          className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300 ease-in-out"
+        >
+          Quay về Giỏ Hàng
+        </button>
+      </Box>
+
       {/* Tiêu đề */}
       <Typography
         variant="h4"
@@ -132,7 +142,6 @@ const DraftOrder = () => {
       >
         Xác Nhận Đơn Hàng
       </Typography>
-
       {/* Tổng quan đơn hàng */}
       <Card
         sx={{ mb: 4, borderRadius: 2, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}
@@ -179,7 +188,6 @@ const DraftOrder = () => {
           </Typography>
         </CardContent>
       </Card>
-
       {/* Thông tin giao hàng */}
       <Card
         sx={{ mb: 4, borderRadius: 2, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}
@@ -209,7 +217,6 @@ const DraftOrder = () => {
           />
         </CardContent>
       </Card>
-
       {/* Mã giảm giá */}
       <Box sx={{ display: "flex", gap: 2, mb: 4 }}>
         <TextField
@@ -235,7 +242,6 @@ const DraftOrder = () => {
           Áp dụng
         </Button>
       </Box>
-
       {/* Phương thức thanh toán */}
       <Card
         sx={{ mb: 4, borderRadius: 2, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}
@@ -274,7 +280,6 @@ const DraftOrder = () => {
           </RadioGroup>
         </CardContent>
       </Card>
-
       {/* Nút xác nhận */}
       <Button
         variant="contained"

@@ -80,7 +80,7 @@ const TopProduct = () => {
         textAlign="center"
         sx={{ mb: 4, textTransform: "uppercase", letterSpacing: 1 }}
       >
-        Sản Phẩm Đỉnh Cao
+        Sản Phẩm Bán Chạy
       </Typography>
 
       <Slider {...sliderSettings}>
