@@ -10,11 +10,10 @@ import { toast } from "react-toastify";
 import productService from "../services/productService";
 import cartService from "../services/cartService";
 import { addToCart } from "../redux/slices/cartSlice";
-import { addToCompare } from "../redux/slices/compareSlice"; // Thêm action để so sánh
+import { addToCompare } from "../redux/slices/compareSlice";
 import Content from "./Content";
 import { formatCurrency } from "../utils/formatCurrency";
 import reviewService from "../services/reviewService";
-
 function Detail() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -114,8 +113,14 @@ function Detail() {
   }
 
   return (
-    <div className="container mx-auto p-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="container mx-auto p-8">
+      <button
+        onClick={() => navigate("/")}
+        className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300 ease-in-out mb-6"
+      >
+        Quay về Trang Chủ
+      </button>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <motion.div
           className="relative"
           initial={{ opacity: 0, x: -50 }}
@@ -144,12 +149,22 @@ function Detail() {
           transition={{ duration: 0.5 }}
         >
           <h2 className="text-2xl font-bold">{product.name}</h2>
-          <Rating
-            name="half-rating-read"
-            defaultValue={product.rating || 0}
-            precision={0.5}
-            readOnly
-          />
+          <div className="flex items-center gap-3">
+            <Rating
+              name="half-rating-read"
+              value={product.rating || 0}
+              precision={0.5}
+              readOnly
+              size="medium"
+              sx={{ color: "#facc15" }}
+            />
+            <div className="flex items-baseline gap-1">
+              <span className="text-2xl font-bold text-orange-500">
+                {product.rating ? product.rating.toFixed(1) : "0.0"}
+              </span>
+              <span className="text-2xl font-bold text-gray-800">/5</span>
+            </div>
+          </div>
           <p className="text-gray-500 text-sm">{product.description}</p>
           <p className="text-gray-600 mt-2">
             Số lượng còn lại: <strong>{product.stock}</strong>
@@ -226,42 +241,6 @@ function Detail() {
               So sánh
             </Button>
           </div>
-          <div className="mt-8 w-full">
-            <h3 className="text-xl font-bold mb-4">Đánh giá sản phẩm</h3>
-
-            {/* Hộp chứa đánh giá có thể cuộn */}
-            <div className="border border-gray-300 rounded-lg p-4 max-h-64 overflow-y-auto">
-              {reviews.length > 0 ? (
-                reviews.map((review, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3, delay: index * 0.1 }}
-                    className="border-b border-gray-300 pb-4 mb-4 last:border-none"
-                  >
-                    <div className="flex flex-col">
-                      <span className="font-semibold">
-                        {review.customer_id.name}
-                      </span>
-                      <Rating
-                        value={review.rating}
-                        precision={0.5}
-                        readOnly
-                        size="small"
-                      />
-                    </div>
-                    <p className="text-gray-600">{review.comment}</p>
-                    <small className="text-gray-400">
-                      {new Date(review.createdAt).toLocaleDateString("vi-VN")}
-                    </small>
-                  </motion.div>
-                ))
-              ) : (
-                <p className="text-gray-500">Chưa có đánh giá nào.</p>
-              )}
-            </div>
-          </div>
         </motion.div>
       </div>
       <motion.div
@@ -272,6 +251,52 @@ function Detail() {
       >
         <Content />
       </motion.div>
+      <div className="mt-8 w-full">
+        <h3 className="text-xl font-bold mb-4">Đánh giá sản phẩm</h3>
+
+        {/* Hộp chứa đánh giá có thể cuộn */}
+        <div className="border border-gray-300 rounded-lg p-4 max-h-64 overflow-y-auto">
+          {reviews.length > 0 ? (
+            reviews.map((review, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: index * 0.1 }}
+                className="border-b border-gray-300 pb-4 mb-4 last:border-none"
+              >
+                <div className="flex flex-col">
+                  <span className="font-semibold">
+                    {review.customer_id.name}
+                  </span>
+                  <div className="flex items-center gap-3">
+                    <Rating
+                      value={review.rating}
+                      precision={0.5}
+                      readOnly
+                      size="small"
+                    />
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-2xl font-bold text-orange-500">
+                        {review.rating ? review.rating.toFixed(1) : "0.0"}
+                      </span>
+                      <span className="text-2xl font-bold text-gray-800">
+                        /5
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <p className="text-gray-600">{review.comment}</p>
+                <small className="text-gray-400">
+                  {new Date(review.createdAt).toLocaleDateString("vi-VN")}
+                </small>
+              </motion.div>
+            ))
+          ) : (
+            <p className="text-gray-500">Chưa có đánh giá nào.</p>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

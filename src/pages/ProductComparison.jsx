@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import {
   addToCompare,
   clearCompare,
@@ -10,7 +11,7 @@ import { Rating, Button, IconButton, Tooltip } from "@mui/material";
 import { formatCurrency } from "../utils/formatCurrency";
 import productService from "../services/productService";
 import debounce from "lodash/debounce";
-
+import ClearIcon from "@mui/icons-material/Clear";
 function Compare() {
   const dispatch = useDispatch();
   const compareList = useSelector((state) => state.compare?.products || []);
@@ -18,6 +19,7 @@ function Compare() {
   const [products, setProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   const fetchProducts = useCallback(
     debounce(async (term) => {
@@ -52,10 +54,15 @@ function Compare() {
 
   return (
     <div className="max-w-7xl mx-auto p-6">
-      {/* Header */}
+      <button
+        onClick={() => navigate("/")}
+        className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300 ease-in-out"
+      >
+        Quay về Trang Chủ
+      </button>
       <div className="flex justify-between items-center mb-8">
         <h2 className="text-3xl font-bold text-gray-900 flex items-center">
-          <span className="mr-2">📊</span> So sánh sản phẩm
+          So sánh sản phẩm
         </h2>
         <div>
           <Button
@@ -74,11 +81,11 @@ function Compare() {
           </Button>
           <Button
             variant="contained"
-            startIcon={<FiPlus />}
+            startIcon={<ClearIcon />}
             onClick={() => dispatch(clearCompare())}
             sx={{
-              bgcolor: "#ef4444", // New color
-              "&:hover": { bgcolor: "#dc2626" }, // New hover color
+              bgcolor: "#ef4444",
+              "&:hover": { bgcolor: "#dc2626" },
               borderRadius: "8px",
               textTransform: "none",
               fontWeight: "bold",
@@ -93,11 +100,10 @@ function Compare() {
       {compareList.length === 0 ? (
         <div className="text-center py-16 bg-gray-50 rounded-xl">
           <p className="text-gray-600 text-xl mb-4">
-            ⚠️ Chưa có sản phẩm nào để so sánh
+            Chưa có sản phẩm nào để so sánh
           </p>
         </div>
       ) : (
-        /* Comparison Table */
         <div className="bg-white shadow-md rounded-xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">
@@ -111,8 +117,6 @@ function Compare() {
                     "Lượt mua",
                     "Loại da",
                     "Thành phần",
-                    "Giảm giá",
-                    "Tồn kho",
                     "Hành động",
                   ].map((header) => (
                     <th
@@ -164,18 +168,6 @@ function Compare() {
                     <td className="p-4 text-gray-600">
                       {product.ingredient || "N/A"}
                     </td>
-                    <td className="p-4 text-green-600 font-semibold">
-                      {product.discountPercentage}%
-                    </td>
-                    <td className="p-4">
-                      {product.stock > 0 ? (
-                        <span className="text-gray-600">{product.stock}</span>
-                      ) : (
-                        <span className="text-red-500 font-medium">
-                          Hết hàng
-                        </span>
-                      )}
-                    </td>
                     <td className="p-4">
                       <Tooltip title={`Xóa ${product.name}`}>
                         <IconButton
@@ -203,7 +195,7 @@ function Compare() {
           <div className="bg-white p-6 rounded-2xl w-full max-w-lg shadow-xl">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-2xl font-bold text-gray-900 flex items-center">
-                <span className="mr-2">🛍</span> Thêm sản phẩm
+                <span className="mr-2"></span> Thêm sản phẩm
               </h3>
               <IconButton
                 onClick={() => setIsModalOpen(false)}

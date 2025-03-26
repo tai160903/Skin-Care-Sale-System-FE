@@ -68,6 +68,10 @@ const Cart = () => {
       }
     }
   };
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth", // Cuộn mượt mà
+  });
 
   const handleCheckout = () => {
     if (!customerId) {
@@ -85,6 +89,12 @@ const Cart = () => {
   return (
     <Box sx={{ maxWidth: "900px", mx: "auto", py: 6, px: { xs: 2, sm: 4 } }}>
       {/* Tiêu đề */}
+      <button
+        onClick={() => navigate("/")}
+        className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300 ease-in-out"
+      >
+        Quay về Trang Chủ
+      </button>
       <Typography
         variant="h4"
         sx={{

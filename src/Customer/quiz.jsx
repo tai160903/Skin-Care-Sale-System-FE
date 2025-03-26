@@ -122,6 +122,10 @@ const SkinTypeQuiz = () => {
 
       toast.success(response.data.message);
       setResult(response.data.result);
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth", // Cuộn mượt mà
+      });
 
       const routineResponse = await quizService.getRoutine(
         response.data.result._id,
@@ -161,13 +165,19 @@ const SkinTypeQuiz = () => {
 
   return (
     <Container maxWidth="md" sx={{ mt: 8, mb: 6 }}>
+      <button
+        onClick={() => navigate("/")}
+        className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300 ease-in-out"
+      >
+        Quay về Trang Chủ
+      </button>
       <StyledPaper>
         <Typography
           variant="h4"
           align="center"
           sx={{ mb: 5, fontWeight: 700, color: "#15803d" }} // Green-700
         >
-          ✨ Tìm hiểu loại da của bạn
+          Tìm hiểu loại da của bạn
         </Typography>
 
         {result ? (
@@ -176,7 +186,7 @@ const SkinTypeQuiz = () => {
               Kết quả của bạn
             </Typography>
             <Typography variant="h6" sx={{ mt: 2, color: "#15803d" }}>
-              {result.name}
+              {result.VNname}
             </Typography>
           </Box>
         ) : (
@@ -287,7 +297,7 @@ const SkinTypeQuiz = () => {
                 align="center"
                 sx={{ mb: 6, fontWeight: 700, color: "#4b5563" }}
               >
-                🌿 Routine chăm sóc da đề xuất
+                Lộ trình chăm sóc da đề xuất
               </Typography>
               <Grid container spacing={4}>
                 {routine.steps.map((step, index) => (

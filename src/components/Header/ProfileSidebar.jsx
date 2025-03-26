@@ -6,7 +6,6 @@ import {
   ListItemText,
   Box,
   Divider,
-  IconButton,
   Tooltip,
   Avatar,
   Typography,
@@ -39,7 +38,12 @@ const ProfileSidebar = () => {
     { text: "Trang chủ", icon: <Home />, path: "/" },
     { text: "Hồ sơ", icon: <Person />, path: `/profile/${customerId}` },
     {
-      text: "Lịch sử đơn hàng",
+      text: "Tra cứu đơn hàng",
+      icon: <ListAlt />,
+      path: `/profile/${customerId}/order-tr`,
+    },
+    {
+      text: "Đơn hàng đã mua",
       icon: <ListAlt />,
       path: `/profile/${customerId}/order-tracking`,
     },

@@ -16,24 +16,49 @@ import {
   FaBox,
   FaCalendarDay,
   FaCrown,
+  FaSearch,
 } from "react-icons/fa";
 
 const AdminDashboard = () => {
   const [dashboardData, setDashboardData] = useState(null);
   const [timeFilter, setTimeFilter] = useState("daily");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
+  // Initial data fetch
   useEffect(() => {
-    const fetchData = async () => {
-      const data = await getDashboardData(timeFilter);
+    const fetchDefaultData = async () => {
+      setIsLoading(true);
+      const data = await getDashboardData({ timeFilter: "daily" }); // Default fetch without date filters
       setDashboardData(data);
+      setIsLoading(false);
     };
-    fetchData();
-  }, [timeFilter]);
+    fetchDefaultData();
+  }, []);
+
+  const handleSearch = async () => {
+    setIsLoading(true);
+    const data = await getDashboardData({
+      timeFilter,
+      startDate,
+      endDate,
+    });
+    setDashboardData(data);
+    setIsLoading(false);
+  };
+
+  if (isLoading)
+    return (
+      <p className="text-center text-lg font-semibold text-gray-600">
+        Loading data...
+      </p>
+    );
 
   if (!dashboardData)
     return (
       <p className="text-center text-lg font-semibold text-gray-600">
-        Loading data...
+        No data available
       </p>
     );
 
@@ -42,13 +67,12 @@ const AdminDashboard = () => {
     return `$${value.toLocaleString()}`;
   };
 
-  // Tooltip tuỳ chỉnh cho biểu đồ
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
       return (
         <div className="bg-white p-3 rounded-lg shadow-md border border-gray-200">
           <p className="text-green-700 font-semibold">
-            {payload[0].payload.name}
+            {payload[0].payload.productInfo.name}
           </p>
           <p className="text-gray-600">
             <span className="font-bold">Total Sold:</span> {payload[0].value}
@@ -65,6 +89,49 @@ const AdminDashboard = () => {
         Admin Dashboard
       </h1>
 
+      {/* Date Filter Controls */}
+      <div className="flex flex-col sm:flex-row gap-4 mb-6 justify-center items-center">
+        <div className="flex items-center gap-2">
+          <label htmlFor="startDate" className="text-gray-700 font-medium">
+            Start Date:
+          </label>
+          <input
+            type="date"
+            id="startDate"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+            className="border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+          />
+        </div>
+        <div className="flex items-center gap-2">
+          <label htmlFor="endDate" className="text-gray-700 font-medium">
+            End Date:
+          </label>
+          <input
+            type="date"
+            id="endDate"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+            className="border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+          />
+        </div>
+        <select
+          value={timeFilter}
+          onChange={(e) => setTimeFilter(e.target.value)}
+          className="border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+        >
+          <option value="daily">Daily</option>
+          <option value="monthly">Monthly</option>
+          <option value="yearly">Yearly</option>
+        </select>
+        <button
+          onClick={handleSearch}
+          className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 flex items-center gap-2"
+        >
+          <FaSearch /> Search
+        </button>
+      </div>
+
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-6">
         <div className="border rounded-lg p-6 shadow-lg bg-gradient-to-r from-green-400 to-green-600 text-white flex items-center gap-4">
@@ -74,7 +141,7 @@ const AdminDashboard = () => {
               {timeFilter.charAt(0).toUpperCase() + timeFilter.slice(1)} Revenue
             </p>
             <p className="text-3xl font-bold">
-              {formatCurrency(dashboardData.dailyRevenue)}
+              {formatCurrency(dashboardData.revenue)}
             </p>
           </div>
         </div>
@@ -83,7 +150,7 @@ const AdminDashboard = () => {
           <div>
             <p className="text-gray-500">Monthly Revenue</p>
             <p className="text-2xl font-bold">
-              {formatCurrency(dashboardData.monthlyRevenue)}
+              {formatCurrency(dashboardData.revenue)}
             </p>
           </div>
         </div>
@@ -92,7 +159,7 @@ const AdminDashboard = () => {
           <div>
             <p className="text-gray-500">Yearly Revenue</p>
             <p className="text-2xl font-bold">
-              {formatCurrency(dashboardData.yearlyRevenue)}
+              {formatCurrency(dashboardData.revenue)}
             </p>
           </div>
         </div>
@@ -154,8 +221,11 @@ const AdminDashboard = () => {
                 className="font-medium text-gray-700 flex items-center gap-2"
               >
                 <FaDollarSign className="text-green-500" />
-                <span className="text-green-600">
-                  Spent: {formatCurrency(customer.totalSpent)}
+                <span>
+                  {customer.customerInfo.name || "Anonymous"} -{" "}
+                  <span className="text-green-600">
+                    Spent: {formatCurrency(customer.totalSpent)}
+                  </span>
                 </span>
               </li>
             ))}

@@ -18,7 +18,6 @@ import {
   TextField,
 } from "@mui/material";
 import { LocalShipping, CreditCard, MonetizationOn } from "@mui/icons-material";
-import Header from "../../components/Header/Header";
 
 const OrderTr = () => {
   const [orders, setOrders] = useState([]);
@@ -26,7 +25,7 @@ const OrderTr = () => {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("All");
   const [searchDate, setSearchDate] = useState("");
-  const { customer_id } = useParams();
+  const { customerId } = useParams();
   const navigate = useNavigate();
 
   // Fetch dữ liệu đơn hàng từ API
@@ -34,7 +33,7 @@ const OrderTr = () => {
     const fetchOrders = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:8080/api/shippings?customer_id=${customer_id}`,
+          `http://localhost:8080/api/shippings?customerId=${customerId}`,
         );
         const orderData = res.data?.data?.data || [];
         setOrders(orderData);
@@ -48,7 +47,7 @@ const OrderTr = () => {
       }
     };
     fetchOrders();
-  }, [customer_id]);
+  }, [customerId]);
 
   // Lọc đơn hàng theo trạng thái và ngày
   useEffect(() => {
@@ -105,9 +104,7 @@ const OrderTr = () => {
 
   return (
     <>
-      <Header />
       <Box sx={{ maxWidth: "1200px", mx: "auto", py: 4 }}>
-        {/* Bộ lọc và tìm kiếm */}
         <Box
           sx={{
             display: "flex",
