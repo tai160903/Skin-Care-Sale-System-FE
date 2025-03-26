@@ -27,14 +27,21 @@ const ChangePassword = () => {
   const user = storedUser ? JSON.parse(storedUser)?.user : null;
   const userId = user ? JSON.parse(user)._id : null;
 
-  const handleChangePassword = async () => {
+  const validateInputs = () => {
     if (!oldPassword || !newPassword || !confirmNewPassword) {
-      toast.error("Vui lòng nhập đầy đủ thông tin!");
-      return;
+      return "Vui lòng nhập đầy đủ thông tin!";
     }
-
     if (newPassword !== confirmNewPassword) {
-      toast.error("Mật khẩu mới không khớp!");
+      return "Mật khẩu mới và xác nhận mật khẩu không khớp!";
+    }
+    return null;
+  };
+
+  const handleChangePassword = async () => {
+    // Kiểm tra validation trước khi gửi request
+    const validationError = validateInputs();
+    if (validationError) {
+      toast.error(validationError);
       return;
     }
 
@@ -44,16 +51,22 @@ const ChangePassword = () => {
         { userId, oldPassword, newPassword, confirmNewPassword },
       );
 
+      // Kiểm tra response từ server
       if (response.data.success) {
         toast.success("Đổi mật khẩu thành công!");
+        // Reset form sau khi thành công
         setOldPassword("");
         setNewPassword("");
         setConfirmNewPassword("");
       } else {
-        toast.error(response?.data?.message || "Lỗi khi kết nối đến server!");
+        toast.error(response.data.message || "Có lỗi xảy ra khi đổi mật khẩu!");
       }
     } catch (err) {
-      toast.error(err.response?.data?.message || "Đổi mật khẩu thất bại!");
+      // Xử lý các lỗi cụ thể từ server
+      const errorMessage =
+        err.response?.data?.message ||
+        "Đổi mật khẩu thất bại! Vui lòng thử lại.";
+      toast.error(errorMessage);
     }
   };
 
@@ -65,7 +78,7 @@ const ChangePassword = () => {
         alignItems: "center",
         minHeight: "100vh",
         bgcolor: "grey.100",
-        p: { xs: 2, sm: 0 }, // Padding responsive cho mobile
+        p: { xs: 2, sm: 0 },
       }}
     >
       <Paper
@@ -79,7 +92,6 @@ const ChangePassword = () => {
           boxShadow: "0 8px 24px rgba(0, 0, 0, 0.1)",
         }}
       >
-        {/* Tiêu đề */}
         <Typography
           variant="h5"
           fontWeight="bold"
@@ -93,7 +105,6 @@ const ChangePassword = () => {
           Đổi Mật Khẩu
         </Typography>
 
-        {/* Trường nhập mật khẩu cũ */}
         <TextField
           label="Mật khẩu cũ"
           type={showPassword.old ? "text" : "password"}
@@ -137,7 +148,6 @@ const ChangePassword = () => {
           }}
         />
 
-        {/* Trường nhập mật khẩu mới */}
         <TextField
           label="Mật khẩu mới"
           type={showPassword.new ? "text" : "password"}
@@ -181,7 +191,6 @@ const ChangePassword = () => {
           }}
         />
 
-        {/* Trường xác nhận mật khẩu mới */}
         <TextField
           label="Xác nhận mật khẩu mới"
           type={showPassword.confirm ? "text" : "password"}
@@ -228,7 +237,6 @@ const ChangePassword = () => {
           }}
         />
 
-        {/* Nút đổi mật khẩu */}
         <Button
           variant="contained"
           fullWidth
@@ -243,7 +251,7 @@ const ChangePassword = () => {
             color: "white",
             "&:hover": {
               bgcolor: "primary.dark",
-              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.2)",
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0. YO2)",
             },
             transition: "all 0.3s ease",
           }}
@@ -253,7 +261,6 @@ const ChangePassword = () => {
         </Button>
       </Paper>
 
-      {/* Toast Container */}
       <ToastContainer
         position="top-right"
         autoClose={3000}

@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import {
   addToCompare,
   clearCompare,
@@ -10,7 +11,7 @@ import { Rating, Button, IconButton, Tooltip } from "@mui/material";
 import { formatCurrency } from "../utils/formatCurrency";
 import productService from "../services/productService";
 import debounce from "lodash/debounce";
-
+import ClearIcon from "@mui/icons-material/Clear";
 function Compare() {
   const dispatch = useDispatch();
   const compareList = useSelector((state) => state.compare?.products || []);
@@ -18,6 +19,7 @@ function Compare() {
   const [products, setProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   const fetchProducts = useCallback(
     debounce(async (term) => {
@@ -52,6 +54,12 @@ function Compare() {
 
   return (
     <div className="max-w-7xl mx-auto p-6">
+      <button
+        onClick={() => navigate("/")}
+        className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300 ease-in-out"
+      >
+        Quay về Trang Chủ
+      </button>
       <div className="flex justify-between items-center mb-8">
         <h2 className="text-3xl font-bold text-gray-900 flex items-center">
           So sánh sản phẩm
@@ -73,7 +81,7 @@ function Compare() {
           </Button>
           <Button
             variant="contained"
-            startIcon={<FiPlus />}
+            startIcon={<ClearIcon />}
             onClick={() => dispatch(clearCompare())}
             sx={{
               bgcolor: "#ef4444",
@@ -187,7 +195,7 @@ function Compare() {
           <div className="bg-white p-6 rounded-2xl w-full max-w-lg shadow-xl">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-2xl font-bold text-gray-900 flex items-center">
-                <span className="mr-2">🛍</span> Thêm sản phẩm
+                <span className="mr-2"></span> Thêm sản phẩm
               </h3>
               <IconButton
                 onClick={() => setIsModalOpen(false)}

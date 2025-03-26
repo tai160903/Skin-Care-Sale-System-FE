@@ -6,28 +6,25 @@ import "slick-carousel/slick/slick-theme.css";
 const saleBanners = [
   {
     id: 1,
-    image:
-      "https://hasaki.vn/_next/image?url=https%3A%2F%2Fmedia.hcdn.vn%2Fhsk%2F1740193290wapcn244-7days.jpg&w=3840&q=90",
+    image: "https://media.hcdn.vn/hsk/1732069393web.jpg",
     title: "Ưu đãi 7 ngày",
     description: "Giảm giá cực sốc cho sản phẩm chăm sóc tóc!",
     offer: "GIẢM ĐẾN 50%",
     products: [
       {
         name: "Tsubaki",
-        image:
-          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSRqe_m1NQ5dBRjlsTxkq_O_SL_aXp4zgxMFPaXj7Hy6zbj7WyN2pTliv7WE1GCsCAY9kE&usqp=CAU",
+        image: "https://media.hcdn.vn/hsk/1742812994homedhc2403.jpg",
       },
       {
         name: "Diane",
-        image:
-          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSRqe_m1NQ5dBRjlsTxkq_O_SL_aXp4zgxMFPaXj7Hy6zbj7WyN2pTliv7WE1GCsCAY9kE&usqp=CAU",
+        image: "https://media.hcdn.vn/hsk/1742813288homecarsalan2403.jpg",
       },
       { name: "TRESemmé", image: "https://example.com/tresemme.jpg" },
     ],
   },
   {
     id: 2,
-    image: "https://media.hcdn.vn/hsk/campaign/640x240-7ngay1657508437.jpg",
+    image: "https://media.hcdn.vn/hsk/1742813288homecarsalan2403.jpg",
     title: "Siêu Sale Tháng 10",
     description: "Mua sắm thả ga, giá siêu hấp dẫn!",
     offer: "GIẢM ĐẾN 40%",
