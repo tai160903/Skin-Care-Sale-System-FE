@@ -25,27 +25,80 @@ const AdminDashboard = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedRange, setSelectedRange] = useState(""); // Thêm state để lưu giá trị dropdown
 
-  // Initial data fetch
-  useEffect(() => {
-    const fetchDefaultData = async () => {
-      setIsLoading(true);
-      const data = await getDashboardData({ timeFilter: "daily" }); // Default fetch without date filters
-      setDashboardData(data);
-      setIsLoading(false);
-    };
-    fetchDefaultData();
-  }, []);
-
-  const handleSearch = async () => {
+  // Hàm fetch data chung
+  const fetchDashboardData = async (start, end) => {
     setIsLoading(true);
     const data = await getDashboardData({
-      timeFilter,
-      startDate,
-      endDate,
+      startDate: start,
+      endDate: end,
     });
     setDashboardData(data);
     setIsLoading(false);
+  };
+
+  // Initial data fetch
+  useEffect(() => {
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    setStartDate(today.toISOString().split("T")[0]);
+    setEndDate(tomorrow.toISOString().split("T")[0]);
+    setSelectedRange(today.toISOString().split("T")[0]); // Đặt giá trị mặc định cho dropdown
+
+    fetchDashboardData(
+      today.toISOString().split("T")[0],
+      tomorrow.toISOString().split("T")[0],
+    );
+  }, []);
+
+  const handleSearch = () => {
+    if (startDate && endDate) {
+      fetchDashboardData(startDate, endDate);
+      // Không cần reset selectedRange, giữ nguyên giá trị dropdown
+    }
+  };
+
+  const handleDateRangeChange = (e) => {
+    const selectedDate = e.target.value;
+    setSelectedRange(selectedDate); // Cập nhật giá trị dropdown
+    setStartDate(selectedDate);
+
+    const calculateEndDate = (start) => {
+      const startDateObj = new Date(start);
+      const endDateObj = new Date(start);
+      const selectedOption =
+        e.target.options[e.target.selectedIndex].text.toLowerCase();
+
+      switch (selectedOption) {
+        case "today":
+          endDateObj.setDate(startDateObj.getDate() + 1);
+          break;
+        case "last 7 days":
+          endDateObj.setDate(startDateObj.getDate() + 7);
+          break;
+        case "this month":
+          endDateObj.setDate(1);
+          endDateObj.setMonth(startDateObj.getMonth() + 1);
+          endDateObj.setDate(0); // Sửa lại để lấy ngày cuối tháng chính xác
+          break;
+        case "this year":
+          endDateObj.setFullYear(startDateObj.getFullYear());
+          endDateObj.setMonth(11); // Tháng 12
+          endDateObj.setDate(31); // Ngày cuối năm
+          break;
+        default:
+          endDateObj.setDate(startDateObj.getDate() + 1);
+      }
+
+      return endDateObj.toISOString().split("T")[0];
+    };
+
+    const newEndDate = calculateEndDate(selectedDate);
+    setEndDate(newEndDate);
+    fetchDashboardData(selectedDate, newEndDate);
   };
 
   if (isLoading)
@@ -116,13 +169,40 @@ const AdminDashboard = () => {
           />
         </div>
         <select
-          value={timeFilter}
-          onChange={(e) => setTimeFilter(e.target.value)}
+          value={selectedRange} // Gán giá trị cho dropdown
+          onChange={handleDateRangeChange}
           className="border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-green-500"
         >
-          <option value="daily">Daily</option>
-          <option value="monthly">Monthly</option>
-          <option value="yearly">Yearly</option>
+          <option value="">Select Date Range</option>
+          <option value={new Date().toISOString().split("T")[0]}>Today</option>
+          <option
+            value={(() => {
+              const oneWeekAgo = new Date();
+              oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+              return oneWeekAgo.toISOString().split("T")[0];
+            })()}
+          >
+            Last 7 Days
+          </option>
+          <option
+            value={(() => {
+              const firstDayOfMonth = new Date();
+              firstDayOfMonth.setDate(1);
+              return firstDayOfMonth.toISOString().split("T")[0];
+            })()}
+          >
+            This Month
+          </option>
+          <option
+            value={(() => {
+              const firstDayOfYear = new Date();
+              firstDayOfYear.setMonth(0);
+              firstDayOfYear.setDate(1);
+              return firstDayOfYear.toISOString().split("T")[0];
+            })()}
+          >
+            This Year
+          </option>
         </select>
         <button
           onClick={handleSearch}
