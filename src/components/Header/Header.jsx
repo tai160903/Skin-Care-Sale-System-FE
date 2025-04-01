@@ -32,25 +32,33 @@ const Header = () => {
 
   const handleSearch = () => {
     if (searchQuery.trim()) {
+      // If there is a search query, navigate with the query parameter
       navigate(`/all-products?q=${encodeURIComponent(searchQuery)}`);
+    } else {
+      // If search query is empty, navigate to all-products without query parameter
+      navigate("/all-products");
     }
   };
 
   return (
     <header className="bg-white text-black py-4 px-8 flex justify-between items-center shadow-md">
-      <div className="flex items-center space-x-10  w-1/2 pl-8 w-3xl">
+      <div className="flex items-center space-x-10 w-1/2 pl-8 w-3xl">
         <Link
           to="/"
           className="text-4xl font-bold text-green-700 cursor-pointer"
+          onClick={(e) => {
+            e.preventDefault(); // Prevent default Link behavior
+            window.location.href = "/"; // Force full page reload
+          }}
         >
           SkinCare
         </Link>
-
         <TextField
           variant="outlined"
           placeholder="Bạn cần tìm gì?"
           size="small"
-          className="w-full bg-white shadow-xl rounded-full"
+          className="w-full shadow-xl rounded-full"
+          value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter") handleSearch();
@@ -58,21 +66,24 @@ const Header = () => {
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <SearchIcon className="text-gray-500" />
+                <SearchIcon
+                  className="text-gray-900 cursor-pointer"
+                  onClick={handleSearch}
+                />
               </InputAdornment>
             ),
           }}
           sx={{
             "& .MuiOutlinedInput-notchedOutline": {
-              border: "1px solid black",
+              borderColor: "#00c853", // Bright green
               borderRadius: "999px",
             },
             "&:hover .MuiOutlinedInput-notchedOutline": {
-              borderColor: "#326f51",
+              borderColor: "#00c853", // Bright green on hover
               borderWidth: "2px",
             },
             "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-              borderColor: "#326f51",
+              borderColor: "#00c853", // Bright green when focused
               borderWidth: "2px",
             },
           }}

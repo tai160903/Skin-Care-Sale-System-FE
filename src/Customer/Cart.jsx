@@ -91,7 +91,7 @@ const Cart = () => {
       {/* Tiêu đề */}
       <button
         onClick={() => navigate("/")}
-        className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300 ease-in-out"
+        className="bg-green-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-green-700 hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300 ease-in-out mb-6"
       >
         Quay về Trang Chủ
       </button>
