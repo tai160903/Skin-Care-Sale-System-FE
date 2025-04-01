@@ -9,6 +9,8 @@ import {
   Typography,
   CircularProgress,
   Box,
+  Button,
+  Container,
 } from "@mui/material";
 
 const Blog = () => {
@@ -30,54 +32,78 @@ const Blog = () => {
     fetchBlogs();
   }, []);
 
-  if (loading)
+  if (loading) {
     return (
       <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        minHeight="60vh"
+        sx={{
+          minHeight: "100vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          bgcolor: "#f5f5f5",
+        }}
       >
-        <CircularProgress color="primary" />
+        <CircularProgress size={50} thickness={4} color="primary" />
       </Box>
     );
+  }
 
   return (
-    <Box p={3}>
+    <Container maxWidth="lg" sx={{ py: 6 }}>
       <button
         onClick={() => navigate("/")}
-        className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300 ease-in-out"
+        className="bg-green-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-green-700 hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300 ease-in-out mb-6"
       >
         Quay về Trang Chủ
       </button>
-      <Typography
-        variant="h4"
-        gutterBottom
-        align="center"
-        fontWeight={700}
-        color="primary"
-        sx={{ mb: 4 }}
+      {/* Header */}
+      <Box
+        sx={{
+          textAlign: "center",
+          mb: 6,
+          position: "relative",
+        }}
       >
-        Tin Tức & Cẩm Nang
-      </Typography>
-      <Grid container spacing={3} justifyContent="flex-start">
+        <Typography
+          variant="h3"
+          component="h1"
+          sx={{
+            fontWeight: 800,
+            color: "#1a1a1a",
+            letterSpacing: "-0.5px",
+            mb: 2,
+          }}
+        >
+          Blog & Tin Tức
+        </Typography>
+        <Typography
+          variant="subtitle1"
+          sx={{ color: "#666", maxWidth: "600px", mx: "auto" }}
+        >
+          Khám phá những bài viết mới nhất, mẹo hay và thông tin hữu ích từ
+          chúng tôi
+        </Typography>
+      </Box>
+
+      {/* Blog Grid */}
+      <Grid container spacing={4}>
         {blogs.slice(0, 16).map((blog) => (
-          <Grid item xs={12} sm={6} md={4} lg={3} key={blog._id}>
+          <Grid item xs={12} sm={6} md={4} key={blog._id}>
             <Card
               onClick={() => navigate(`/blog/${blog._id}`)}
               sx={{
-                cursor: "pointer",
-                transition: "0.3s",
-                "&:hover": {
-                  transform: "scale(1.03)",
-                  boxShadow: 6,
-                },
-                boxShadow: 3,
-                borderRadius: 2,
-                overflow: "hidden",
+                height: "100%",
                 display: "flex",
                 flexDirection: "column",
-                height: "100%",
+                borderRadius: "16px",
+                overflow: "hidden",
+                boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                transition: "all 0.3s ease",
+                "&:hover": {
+                  transform: "translateY(-10px)",
+                  boxShadow: "0 6px 25px rgba(0,0,0,0.15)",
+                },
+                bgcolor: "#fff",
               }}
             >
               {blog.image && (
@@ -86,46 +112,78 @@ const Blog = () => {
                   image={blog.image}
                   alt={blog.title}
                   sx={{
-                    width: "100%",
-                    height: 200,
+                    height: 220,
                     objectFit: "cover",
+                    transition: "transform 0.3s ease",
+                    "&:hover": {
+                      transform: "scale(1.05)",
+                    },
                   }}
                 />
               )}
-              <CardContent sx={{ flex: 1, p: 2 }}>
-                <Typography
-                  variant="h6"
-                  fontWeight="bold"
+              <CardContent
+                sx={{
+                  p: 3,
+                  flexGrow: 1,
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Box>
+                  <Typography
+                    variant="h6"
+                    component="h2"
+                    sx={{
+                      fontWeight: 700,
+                      color: "#1a1a1a",
+                      mb: 1.5,
+                      lineHeight: 1.3,
+                      display: "-webkit-box",
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: "vertical",
+                      overflow: "hidden",
+                    }}
+                  >
+                    {blog.title}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: "#555",
+                      lineHeight: 1.6,
+                      display: "-webkit-box",
+                      WebkitLineClamp: 3,
+                      WebkitBoxOrient: "vertical",
+                      overflow: "hidden",
+                    }}
+                  >
+                    {blog.content}
+                  </Typography>
+                </Box>
+                <Button
+                  variant="text"
                   sx={{
-                    mb: 1,
-                    display: "-webkit-box",
-                    WebkitBoxOrient: "vertical",
-                    WebkitLineClamp: 2,
-                    overflow: "hidden",
+                    mt: 2,
+                    color: "#1976d2",
+                    fontWeight: 600,
+                    textTransform: "none",
+                    justifyContent: "flex-start",
+                    p: 0,
+                    "&:hover": {
+                      bgcolor: "transparent",
+                      color: "#115293",
+                    },
                   }}
                 >
-                  {blog.title}
-                </Typography>
-                <Typography
-                  variant="body2"
-                  color="textSecondary"
-                  sx={{
-                    fontSize: "0.9rem",
-                    lineHeight: 1.5,
-                    display: "-webkit-box",
-                    WebkitBoxOrient: "vertical",
-                    WebkitLineClamp: 3,
-                    overflow: "hidden",
-                  }}
-                >
-                  {blog.content}
-                </Typography>
+                  Đọc thêm →
+                </Button>
               </CardContent>
             </Card>
           </Grid>
         ))}
       </Grid>
-    </Box>
+    </Container>
   );
 };
 

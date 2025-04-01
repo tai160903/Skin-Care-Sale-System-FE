@@ -14,6 +14,7 @@ import { addToCompare } from "../redux/slices/compareSlice";
 import Content from "./Content";
 import { formatCurrency } from "../utils/formatCurrency";
 import reviewService from "../services/reviewService";
+
 function Detail() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -59,7 +60,14 @@ function Detail() {
     }
   }, [id]);
 
-  const handleIncreaseQuantity = () => setQuantity((prev) => prev + 1);
+  const handleIncreaseQuantity = () => {
+    if (product && quantity < product.stock) {
+      setQuantity((prev) => prev + 1);
+    } else {
+      toast.error("Số lượng vượt quá hàng tồn kho!");
+    }
+  };
+
   const handleDecreaseQuantity = () =>
     setQuantity((prev) => (prev > 1 ? prev - 1 : prev));
 
@@ -73,6 +81,16 @@ function Detail() {
 
     if (!product) {
       toast.error("Sản phẩm không tồn tại");
+      return;
+    }
+
+    if (product.stock === 0) {
+      toast.error("Sản phẩm đã hết hàng!");
+      return;
+    }
+
+    if (quantity > product.stock) {
+      toast.error("Số lượng vượt quá hàng tồn kho!");
       return;
     }
 
@@ -91,6 +109,28 @@ function Detail() {
   };
 
   const handleBuyNow = async () => {
+    if (!customerId) {
+      toast.error("Bạn phải đăng nhập!");
+      localStorage.setItem("redirectAfterLogin", window.location.pathname);
+      setTimeout(() => navigate("/signin"), 1000);
+      return;
+    }
+
+    if (!product) {
+      toast.error("Sản phẩm không tồn tại");
+      return;
+    }
+
+    if (product.stock === 0) {
+      toast.error("Sản phẩm đã hết hàng!");
+      return;
+    }
+
+    if (quantity > product.stock) {
+      toast.error("Số lượng vượt quá hàng tồn kho!");
+      return;
+    }
+
     await handleAddToCart();
     if (customerId) navigate("/cart");
   };
@@ -116,7 +156,7 @@ function Detail() {
     <div className="container mx-auto p-8">
       <button
         onClick={() => navigate("/")}
-        className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300 ease-in-out mb-6"
+        className="bg-green-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-green-700 hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300 ease-in-out mb-6"
       >
         Quay về Trang Chủ
       </button>
@@ -200,13 +240,27 @@ function Detail() {
           </div>
 
           <div className="flex items-center mt-4 space-x-4">
-            <IconButton onClick={handleDecreaseQuantity} color="error">
-              <FaMinus />
-            </IconButton>
-            <span className="text-lg font-semibold">{quantity}</span>
-            <IconButton onClick={handleIncreaseQuantity} color="primary">
-              <FaPlus />
-            </IconButton>
+            {product.stock === 0 ? (
+              <span className="text-lg font-bold text-red-500">Hết hàng</span>
+            ) : (
+              <>
+                <IconButton
+                  onClick={handleDecreaseQuantity}
+                  color="error"
+                  disabled={product.stock === 0}
+                >
+                  <FaMinus />
+                </IconButton>
+                <span className="text-lg font-semibold">{quantity}</span>
+                <IconButton
+                  onClick={handleIncreaseQuantity}
+                  color="primary"
+                  disabled={product.stock === 0}
+                >
+                  <FaPlus />
+                </IconButton>
+              </>
+            )}
           </div>
 
           <div className="mt-6 flex gap-4">
@@ -218,6 +272,7 @@ function Detail() {
                   startIcon={<FiShoppingCart />}
                   onClick={handleAddToCart}
                   className="bg-orange-500"
+                  disabled={product.stock === 0}
                 >
                   Thêm vào giỏ
                 </Button>
@@ -225,7 +280,8 @@ function Detail() {
                   variant="contained"
                   color="success"
                   onClick={handleBuyNow}
-                  className="bg-green-500"
+                  className="bg-green-200"
+                  disabled={product.stock === 0}
                 >
                   Mua ngay
                 </Button>
@@ -252,48 +308,66 @@ function Detail() {
         <Content />
       </motion.div>
       <div className="mt-8 w-full">
-        <h3 className="text-xl font-bold mb-4">Đánh giá sản phẩm</h3>
-
-        {/* Hộp chứa đánh giá có thể cuộn */}
-        <div className="border border-gray-300 rounded-lg p-4 max-h-64 overflow-y-auto">
+        <h3 className="text-2xl font-bold text-gray-800 mb-6">
+          Đánh Giá Sản Phẩm
+        </h3>
+        <div className="bg-white rounded-xl shadow-md p-6 max-h-96 overflow-y-auto">
           {reviews.length > 0 ? (
-            reviews.map((review, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: index * 0.1 }}
-                className="border-b border-gray-300 pb-4 mb-4 last:border-none"
-              >
-                <div className="flex flex-col">
-                  <span className="font-semibold">
-                    {review.customer_id.name}
-                  </span>
-                  <div className="flex items-center gap-3">
-                    <Rating
-                      value={review.rating}
-                      precision={0.5}
-                      readOnly
-                      size="small"
-                    />
-                    <div className="flex items-baseline gap-1">
-                      <span className="text-2xl font-bold text-orange-500">
-                        {review.rating ? review.rating.toFixed(1) : "0.0"}
-                      </span>
-                      <span className="text-2xl font-bold text-gray-800">
-                        /5
+            <div className="space-y-6">
+              {reviews.map((review, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: index * 0.1 }}
+                  className="border-b border-gray-200 pb-6 last:border-none last:pb-0"
+                >
+                  <div className="flex items-start gap-4">
+                    {/* Avatar */}
+                    <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0">
+                      <span className="text-gray-600 font-semibold">
+                        {review.customer_id.name.charAt(0).toUpperCase()}
                       </span>
                     </div>
+                    {/* Content */}
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between">
+                        <span className="font-semibold text-gray-800">
+                          {review.customer_id.name}
+                        </span>
+                        <small className="text-gray-500 text-sm">
+                          {new Date(review.createdAt).toLocaleDateString(
+                            "vi-VN",
+                          )}
+                        </small>
+                      </div>
+                      <div className="flex items-center gap-2 mt-1">
+                        <Rating
+                          value={review.rating}
+                          precision={0.5}
+                          readOnly
+                          size="small"
+                          sx={{ color: "#facc15" }}
+                        />
+                        <span className="text-sm font-medium text-gray-700">
+                          {review.rating ? review.rating.toFixed(1) : "0.0"}/5
+                        </span>
+                      </div>
+                      <p className="text-gray-600 mt-2 leading-relaxed">
+                        {review.comment}
+                      </p>
+                    </div>
                   </div>
-                </div>
-                <p className="text-gray-600">{review.comment}</p>
-                <small className="text-gray-400">
-                  {new Date(review.createdAt).toLocaleDateString("vi-VN")}
-                </small>
-              </motion.div>
-            ))
+                </motion.div>
+              ))}
+            </div>
           ) : (
-            <p className="text-gray-500">Chưa có đánh giá nào.</p>
+            <div className="text-center py-8">
+              <p className="text-gray-500 text-lg">Chưa có đánh giá nào</p>
+              <p className="text-gray-400 text-sm mt-1">
+                Hãy là người đầu tiên đánh giá sản phẩm này!
+              </p>
+            </div>
           )}
         </div>
       </div>

@@ -11,7 +11,6 @@ import {
   Paper,
   TextField,
   Button,
-  List,
   Avatar,
   Divider,
 } from "@mui/material";
@@ -19,9 +18,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import SendIcon from "@mui/icons-material/Send";
 
-// Component chính cho trang chi tiết blog
 const BlogDetail = () => {
-  // Khai báo state và hook
   const { id } = useParams();
   const [blog, setBlog] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -29,7 +26,6 @@ const BlogDetail = () => {
   const [comments, setComments] = useState([]);
   const navigate = useNavigate();
 
-  // Fetch dữ liệu blog và comments khi id thay đổi
   useEffect(() => {
     const fetchBlogDetail = async () => {
       try {
@@ -48,7 +44,6 @@ const BlogDetail = () => {
     setComments(savedComments);
   }, [id]);
 
-  // Xử lý submit bình luận
   const handleCommentSubmit = () => {
     if (comment.trim() === "") return;
 
@@ -62,38 +57,38 @@ const BlogDetail = () => {
     setComment("");
   };
 
-  // Render loading state
   if (loading) {
     return (
       <Box
         sx={{
+          minHeight: "100vh",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          minHeight: "50vh",
+          bgcolor: "#f5f5f5",
         }}
       >
-        <CircularProgress />
+        <CircularProgress size={50} thickness={4} color="primary" />
       </Box>
     );
   }
 
-  // Render khi không tìm thấy blog
   if (!blog) {
     return (
-      <Typography variant="h6" align="center" color="error" sx={{ mt: 5 }}>
-        Không tìm thấy bài viết!
-      </Typography>
+      <Container maxWidth="md" sx={{ py: 6 }}>
+        <Typography variant="h5" align="center" color="error">
+          Không tìm thấy bài viết!
+        </Typography>
+      </Container>
     );
   }
 
-  // Render giao diện chính
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
-      {/* Breadcrumbs điều hướng */}
+    <Container maxWidth="lg" sx={{ py: 6 }}>
+      {/* Breadcrumbs */}
       <Breadcrumbs
         separator={<NavigateNextIcon fontSize="small" />}
-        sx={{ mt: 2, mb: 3 }}
+        sx={{ mb: 4 }}
       >
         <Link
           underline="hover"
@@ -104,86 +99,106 @@ const BlogDetail = () => {
           <HomeIcon fontSize="small" sx={{ mr: 0.5 }} />
           Blog
         </Link>
-        <Typography color="text.primary">{blog.title}</Typography>
+        <Typography color="text.primary" sx={{ fontWeight: 500 }}>
+          {blog.title.slice(0, 30) + (blog.title.length > 30 ? "..." : "")}
+        </Typography>
       </Breadcrumbs>
 
-      {/* Tiêu đề blog */}
-      <Typography
-        variant="h1"
-        component="h1"
-        fontWeight="bold"
-        gutterBottom
-        sx={{
-          fontSize: { xs: "2.5rem", md: "3.75rem" },
-          color: "text.primary",
-        }}
-      >
-        {blog.title}
-      </Typography>
+      {/* Blog Header */}
+      <Box sx={{ mb: 6 }}>
+        <Typography
+          variant="h1"
+          component="h1"
+          sx={{
+            fontSize: { xs: "2rem", md: "3.5rem" },
+            fontWeight: 800,
+            color: "#1a1a1a",
+            lineHeight: 1.2,
+            mb: 2,
+          }}
+        >
+          {blog.title}
+        </Typography>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+          <Typography variant="body2" color="text.secondary">
+            {new Date().toLocaleDateString()} {/* Giả lập ngày */}
+          </Typography>
+        </Box>
+      </Box>
 
-      {/* Hình ảnh chính */}
+      {/* Main Image */}
       {blog.image && (
-        <Box sx={{ my: 4, display: "flex", justifyContent: "center" }}>
+        <Box
+          sx={{
+            mb: 6,
+            borderRadius: "16px",
+            overflow: "hidden",
+            boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+          }}
+        >
           <Box
             component="img"
             src={blog.image}
             alt={blog.title}
             sx={{
-              maxWidth: "300px",
               width: "100%",
-              borderRadius: 2,
-              boxShadow: 2,
-              transition: "transform 0.3s",
+              height: { xs: 300, md: 500 },
+              objectFit: "cover",
+              transition: "transform 0.3s ease",
               "&:hover": { transform: "scale(1.02)" },
             }}
           />
         </Box>
       )}
 
-      {/* Nội dung blog */}
-      <Paper sx={{ p: { xs: 2, md: 4 }, borderRadius: 2, mb: 6 }}>
+      {/* Blog Content */}
+      <Paper
+        elevation={0}
+        sx={{
+          p: { xs: 2, md: 4 },
+          borderRadius: "16px",
+          bgcolor: "#fff",
+          boxShadow: "0 2px 15px rgba(0,0,0,0.05)",
+          mb: 6,
+        }}
+      >
         <Typography
           variant="body1"
-          sx={{ lineHeight: 1.8, fontSize: "1.1rem", color: "text.secondary" }}
-        >
-          {blog.content}
-        </Typography>
-
-        {/* Chi tiết bổ sung */}
+          sx={{
+            fontSize: "1.125rem",
+            lineHeight: 1.8,
+            color: "#333",
+            "& p": { mb: 2 },
+          }}
+          dangerouslySetInnerHTML={{ __html: blog.content }} // Cho phép render HTML nếu cần
+        />
         {blog.detail?.length > 0 && (
           <Box sx={{ mt: 4 }}>
-            <Divider sx={{ mb: 2 }} />
-            <Typography variant="h4" fontWeight="bold" gutterBottom>
-              Chi tiết bổ sung
+            <Divider sx={{ my: 3 }} />
+            <Typography variant="h5" sx={{ fontWeight: 700, mb: 3 }}>
+              Thông tin thêm
             </Typography>
             {blog.detail.map((item) => (
-              <Box key={item._id} sx={{ mb: 3 }}>
+              <Box key={item._id} sx={{ mb: 4 }}>
                 {item.image && (
-                  <Box
-                    sx={{ display: "flex", justifyContent: "center", mb: 2 }}
-                  >
+                  <Box sx={{ mb: 3 }}>
                     <Box
                       component="img"
                       src={item.image}
                       alt="Detail image"
                       sx={{
-                        maxWidth: "200px",
                         width: "100%",
-                        borderRadius: 2,
-                        boxShadow: 2,
-                        transition: "transform 0.3s",
-                        "&:hover": { transform: "scale(1.02)" },
+                        maxHeight: 300,
+                        objectFit: "cover",
+                        borderRadius: "12px",
+                        boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
                       }}
                     />
                   </Box>
                 )}
                 <Typography
                   variant="body1"
-                  sx={{
-                    lineHeight: 1.8,
-                    fontSize: "1.1rem",
-                    color: "text.secondary",
-                  }}
+                  sx={{ fontSize: "1.125rem", lineHeight: 1.8, color: "#333" }}
                 >
                   {item.text}
                 </Typography>
@@ -193,79 +208,91 @@ const BlogDetail = () => {
         )}
       </Paper>
 
-      {/* Phần bình luận */}
-      <Box sx={{ mb: 4 }}>
-        <Divider sx={{ mb: 3 }} />
-        <Typography variant="h4" fontWeight="bold" gutterBottom>
-          Bình luận
+      {/* Comments Section */}
+      <Box sx={{ mb: 6 }}>
+        <Typography variant="h5" sx={{ fontWeight: 700, mb: 3 }}>
+          Bình luận ({comments.length})
         </Typography>
 
-        {/* Form nhập bình luận */}
+        {/* Comment Form */}
         <Paper
           sx={{
-            display: "flex",
-            alignItems: "center",
-            p: 2,
-            borderRadius: 2,
-            backgroundColor: "#f5f5f5",
-            mb: 3,
+            p: 3,
+            borderRadius: "12px",
+            bgcolor: "#f9f9f9",
+            mb: 4,
+            boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
           }}
         >
-          <Avatar sx={{ bgcolor: "primary.main", mr: 2 }}>U</Avatar>
-          <TextField
-            label="Viết bình luận..."
-            variant="outlined"
-            fullWidth
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-            sx={{ bgcolor: "white", borderRadius: 2 }}
-          />
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleCommentSubmit}
-            sx={{ ml: 2, minWidth: "100px" }}
-            endIcon={<SendIcon />}
-          >
-            Gửi
-          </Button>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <Avatar sx={{ bgcolor: "primary.main" }}>U</Avatar>
+            <TextField
+              placeholder="Viết bình luận của bạn..."
+              variant="outlined"
+              fullWidth
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: "8px",
+                  bgcolor: "#fff",
+                },
+              }}
+            />
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleCommentSubmit}
+              sx={{
+                borderRadius: "8px",
+                px: 3,
+                textTransform: "none",
+                fontWeight: 600,
+              }}
+              endIcon={<SendIcon />}
+            >
+              Gửi
+            </Button>
+          </Box>
         </Paper>
 
-        {/* Danh sách bình luận */}
-        <List>
-          {comments.length > 0 ? (
-            comments.map((cmt, index) => (
-              <Paper
-                key={index}
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  p: 2,
-                  mb: 2,
-                  borderRadius: 2,
-                  transition: "background-color 0.3s",
-                  "&:hover": { backgroundColor: "#f9f9f9" },
-                }}
-              >
-                <Avatar sx={{ bgcolor: "secondary.main", mr: 2 }}>U</Avatar>
+        {/* Comment List */}
+        {comments.length > 0 ? (
+          comments.map((cmt, index) => (
+            <Paper
+              key={index}
+              sx={{
+                p: 3,
+                mb: 2,
+                borderRadius: "12px",
+                bgcolor: "#fff",
+                boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
+                transition: "all 0.3s ease",
+                "&:hover": { boxShadow: "0 4px 15px rgba(0,0,0,0.1)" },
+              }}
+            >
+              <Box sx={{ display: "flex", gap: 2 }}>
+                <Avatar sx={{ bgcolor: "secondary.main" }}>U</Avatar>
                 <Box>
-                  <Typography variant="body1">{cmt.text}</Typography>
-                  <Typography variant="caption" color="textSecondary">
+                  <Typography variant="body1" sx={{ color: "#333" }}>
+                    {cmt.text}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
                     {cmt.time}
                   </Typography>
                 </Box>
-              </Paper>
-            ))
-          ) : (
-            <Typography
-              variant="body2"
-              color="textSecondary"
-              sx={{ textAlign: "center" }}
-            >
-              Chưa có bình luận nào.
-            </Typography>
-          )}
-        </List>
+              </Box>
+            </Paper>
+          ))
+        ) : (
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{ textAlign: "center" }}
+          >
+            Chưa có bình luận nào. Hãy là người đầu tiên!
+          </Typography>
+        )}
       </Box>
     </Container>
   );
