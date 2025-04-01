@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import routineService from "../../services/adminService/routineService";
-
+import { Paper } from "@mui/material";
 const RoutineManagement = () => {
   const [routines, setRoutines] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -98,7 +98,7 @@ const RoutineManagement = () => {
     );
 
   return (
-    <div className="container mx-auto p-6 max-w-6xl">
+    <Paper sx={{ padding: 3, borderRadius: 3, backgroundColor: "#f8f9fa" }}>
       <h1 className="text-3xl font-bold text-gray-900 mb-10 text-center">
         Quản Lý Routine
       </h1>
@@ -280,7 +280,7 @@ const RoutineManagement = () => {
           ))}
         </div>
       )}
-    </div>
+    </Paper>
   );
 };
 
