@@ -21,7 +21,7 @@ import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion";
 import { formatCurrency } from "../utils/formatCurrency";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 // Styled Components
 const StyledPaper = styled(Paper)(({ theme }) => ({
@@ -332,39 +332,45 @@ const SkinTypeQuiz = () => {
                           <Grid container spacing={2}>
                             {step.recommendProducts.map((product) => (
                               <Grid item xs={12} sm={6} key={product._id}>
-                                <Card
-                                  sx={{
-                                    p: 2,
-                                    borderRadius: "12px",
-                                    transition: "transform 0.2s",
-                                    "&:hover": { transform: "scale(1.03)" },
-                                    border: "1px solid #d9f99d",
-                                  }}
+                                <Link
+                                  to={`/product/detail/${product._id}`}
+                                  style={{ textDecoration: "none" }}
                                 >
-                                  <CardContent sx={{ textAlign: "center" }}>
-                                    <Avatar
-                                      src={product.image}
-                                      sx={{
-                                        width: 100,
-                                        height: 100,
-                                        mx: "auto",
-                                        mb: 2,
-                                      }}
-                                    />
-                                    <Typography
-                                      variant="h6"
-                                      sx={{ color: "#4b5563" }}
-                                    >
-                                      {product.name}
-                                    </Typography>
-                                    <Typography
-                                      variant="h5"
-                                      sx={{ color: "#15803d", mt: 1 }}
-                                    >
-                                      {formatCurrency(product.price)}
-                                    </Typography>
-                                  </CardContent>
-                                </Card>
+                                  <Card
+                                    sx={{
+                                      p: 2,
+                                      borderRadius: "12px",
+                                      minHeight: "100%",
+                                      transition: "transform 0.2s",
+                                      "&:hover": { transform: "scale(1.03)" },
+                                      border: "1px solid #d9f99d",
+                                    }}
+                                  >
+                                    <CardContent sx={{ textAlign: "center" }}>
+                                      <Avatar
+                                        src={product.image}
+                                        sx={{
+                                          width: 100,
+                                          height: 100,
+                                          mx: "auto",
+                                          mb: 2,
+                                        }}
+                                      />
+                                      <Typography
+                                        variant="h6"
+                                        sx={{ color: "#4b5563" }}
+                                      >
+                                        {product.name}
+                                      </Typography>
+                                      <Typography
+                                        variant="h5"
+                                        sx={{ color: "#15803d", mt: 1 }}
+                                      >
+                                        {formatCurrency(product.price)}
+                                      </Typography>
+                                    </CardContent>
+                                  </Card>
+                                </Link>
                               </Grid>
                             ))}
                           </Grid>
