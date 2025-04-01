@@ -104,6 +104,8 @@ const Sidebar = () => {
           paddingTop: 2,
           height: "100vh",
           boxShadow: "2px 0px 5px rgba(0,0,0,0.1)",
+          overflowX: "hidden",
+          scrollbarWidth: "none",
         },
       }}
     >
@@ -122,6 +124,7 @@ const Sidebar = () => {
                   fontSize: "14px",
                   color: "#555",
                   pl: 2,
+                  textOverflow: "ellipsis",
                 }}
               >
                 {section.title}
