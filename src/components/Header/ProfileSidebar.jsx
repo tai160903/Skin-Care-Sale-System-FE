@@ -17,6 +17,7 @@ import {
   Home,
   Person,
 } from "@mui/icons-material";
+import PercentIcon from "@mui/icons-material/Percent";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../../redux/slices/userSlice";
@@ -48,6 +49,16 @@ const ProfileSidebar = () => {
       path: `/profile/${customerId}/order-tracking`,
     },
     {
+      text: "Mã của tôi",
+      icon: <PercentIcon />,
+      path: `/profile/${customerId}/my-promotions`,
+    },
+    {
+      text: "Đổi điểm",
+      icon: <ListAlt />,
+      path: `/profile/${customerId}/point`,
+    },
+    {
       text: "Đổi mật khẩu",
       icon: <Settings />,
       path: `/profile/${customerId}/change-password`,
@@ -64,14 +75,12 @@ const ProfileSidebar = () => {
           width: 260,
           bgcolor: "grey.50",
           color: "grey.900",
-          paddingTop: 2,
           height: "100vh",
           borderRight: "none",
           boxShadow: "4px 0px 20px rgba(0, 0, 0, 0.05)",
         },
       }}
     >
-      {/* Header với Avatar */}
       <Box
         sx={{
           textAlign: "center",

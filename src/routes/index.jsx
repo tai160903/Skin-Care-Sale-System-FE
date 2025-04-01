@@ -45,6 +45,8 @@ import OrderDetail from "../Customer/OrderDetail";
 import ChangePassword from "../pages/ChangePassword";
 import Allproduct from "../pages/Allproduct";
 import RoutineManager from "../components/Admin/RoutineManager";
+import ChangePoint from "../Customer/ChangePoint";
+import MyPromotions from "../Customer/MyPromotions";
 
 const Router = createBrowserRouter([
   {
@@ -83,6 +85,8 @@ const Router = createBrowserRouter([
           { path: "order-tracking", element: <OrderTracking /> },
           { path: "change-password", element: <ChangePassword /> },
           { path: "order-tr", element: <OrTrack /> },
+          { path: "point", element: <ChangePoint /> },
+          { path: "my-promotions", element: <MyPromotions /> },
         ],
       },
       {
