@@ -8,7 +8,9 @@ import { Button, Typography, Box, Paper, Divider } from "@mui/material";
 
 const SuccessPayment = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+
+  //const customerId = useSelector((state) => state?.user?.customer?._id);
+
 
   const data = JSON.parse(localStorage.getItem("order"));
 

@@ -48,6 +48,10 @@ import RoutineManager from "../components/Admin/RoutineManager";
 import ChangePoint from "../Customer/ChangePoint";
 import MyPromotions from "../Customer/MyPromotions";
 
+import QuizManagement from "../components/Staff/QuizManagement";
+import RoutineManagement from "../components/Staff/RoutineManagement";
+import BlogManagement from "../components/Staff/BlogManagement";
+import ReportManagement from "../components/Staff/ReportManagement";
 const Router = createBrowserRouter([
   {
     path: "/",
@@ -135,7 +139,11 @@ const Router = createBrowserRouter([
       { path: "products", element: <ProductManagement /> },
       { path: "promotions", element: <PromotionManagement /> },
       { path: "supportcustomers", element: <CustomerSupport /> },
+      { path: "quiz", element: <QuizManagement /> },
+      { path: "routine", element: <RoutineManagement /> },
+      { path: "blogs", element: <BlogManagement /> },
       { path: "shipmanager", element: <ShipManagement /> },
+      { path: "reports", element: <ReportManagement /> },
     ],
   },
   { path: "*", element: <Error /> },

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import routineService from "../../services/adminService/routineService";
 
-const RoutineManager = () => {
+const RoutineManagement = () => {
   const [routines, setRoutines] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -284,4 +284,4 @@ const RoutineManager = () => {
   );
 };
 
-export default RoutineManager;
+export default RoutineManagement;

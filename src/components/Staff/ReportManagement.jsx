@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getDashboardData } from "../services/adminService/dashboardService";
+import { getDashboardData } from "../../services/adminService/dashboardService";
 import {
   BarChart,
   Bar,
@@ -19,86 +19,33 @@ import {
   FaSearch,
 } from "react-icons/fa";
 
-const AdminDashboard = () => {
+const ReportManagement = () => {
   const [dashboardData, setDashboardData] = useState(null);
   const [timeFilter, setTimeFilter] = useState("daily");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedRange, setSelectedRange] = useState(""); // Thêm state để lưu giá trị dropdown
-
-  // Hàm fetch data chung
-  const fetchDashboardData = async (start, end) => {
-    setIsLoading(true);
-    const data = await getDashboardData({
-      startDate: start,
-      endDate: end,
-    });
-    setDashboardData(data);
-    setIsLoading(false);
-  };
 
   // Initial data fetch
   useEffect(() => {
-    const today = new Date();
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-
-    setStartDate(today.toISOString().split("T")[0]);
-    setEndDate(tomorrow.toISOString().split("T")[0]);
-    setSelectedRange(today.toISOString().split("T")[0]); // Đặt giá trị mặc định cho dropdown
-
-    fetchDashboardData(
-      today.toISOString().split("T")[0],
-      tomorrow.toISOString().split("T")[0],
-    );
+    const fetchDefaultData = async () => {
+      setIsLoading(true);
+      const data = await getDashboardData({ timeFilter: "daily" }); // Default fetch without date filters
+      setDashboardData(data);
+      setIsLoading(false);
+    };
+    fetchDefaultData();
   }, []);
 
-  const handleSearch = () => {
-    if (startDate && endDate) {
-      fetchDashboardData(startDate, endDate);
-      // Không cần reset selectedRange, giữ nguyên giá trị dropdown
-    }
-  };
-
-  const handleDateRangeChange = (e) => {
-    const selectedDate = e.target.value;
-    setSelectedRange(selectedDate); // Cập nhật giá trị dropdown
-    setStartDate(selectedDate);
-
-    const calculateEndDate = (start) => {
-      const startDateObj = new Date(start);
-      const endDateObj = new Date(start);
-      const selectedOption =
-        e.target.options[e.target.selectedIndex].text.toLowerCase();
-
-      switch (selectedOption) {
-        case "today":
-          endDateObj.setDate(startDateObj.getDate() + 1);
-          break;
-        case "7 ngày vừa qua":
-          endDateObj.setDate(startDateObj.getDate() + 7);
-          break;
-        case "tháng này":
-          endDateObj.setDate(1);
-          endDateObj.setMonth(startDateObj.getMonth() + 1);
-          endDateObj.setDate(0); // Sửa lại để lấy ngày cuối tháng chính xác
-          break;
-        case "năm nay":
-          endDateObj.setFullYear(startDateObj.getFullYear());
-          endDateObj.setMonth(11);
-          endDateObj.setDate(31);
-          break;
-        default:
-          endDateObj.setDate(startDateObj.getDate() + 1);
-      }
-
-      return endDateObj.toISOString().split("T")[0];
-    };
-
-    const newEndDate = calculateEndDate(selectedDate);
-    setEndDate(newEndDate);
-    fetchDashboardData(selectedDate, newEndDate);
+  const handleSearch = async () => {
+    setIsLoading(true);
+    const data = await getDashboardData({
+      timeFilter,
+      startDate,
+      endDate,
+    });
+    setDashboardData(data);
+    setIsLoading(false);
   };
 
   if (isLoading)
@@ -146,7 +93,7 @@ const AdminDashboard = () => {
       <div className="flex flex-col sm:flex-row gap-4 mb-6 justify-center items-center">
         <div className="flex items-center gap-2">
           <label htmlFor="startDate" className="text-gray-700 font-medium">
-            Từ Ngày:
+            Start Date:
           </label>
           <input
             type="date"
@@ -158,7 +105,7 @@ const AdminDashboard = () => {
         </div>
         <div className="flex items-center gap-2">
           <label htmlFor="endDate" className="text-gray-700 font-medium">
-            Đến ngày:
+            End Date:
           </label>
           <input
             type="date"
@@ -169,42 +116,13 @@ const AdminDashboard = () => {
           />
         </div>
         <select
-          value={selectedRange} // Gán giá trị cho dropdown
-          onChange={handleDateRangeChange}
+          value={timeFilter}
+          onChange={(e) => setTimeFilter(e.target.value)}
           className="border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-green-500"
         >
-          <option value="">Select Date Range</option>
-          <option value={new Date().toISOString().split("T")[0]}>
-            Hôm Nay
-          </option>
-          <option
-            value={(() => {
-              const oneWeekAgo = new Date();
-              oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-              return oneWeekAgo.toISOString().split("T")[0];
-            })()}
-          >
-            7 ngày vừa qua
-          </option>
-          <option
-            value={(() => {
-              const firstDayOfMonth = new Date();
-              firstDayOfMonth.setDate(1);
-              return firstDayOfMonth.toISOString().split("T")[0];
-            })()}
-          >
-            Tháng này
-          </option>
-          <option
-            value={(() => {
-              const firstDayOfYear = new Date();
-              firstDayOfYear.setMonth(0);
-              firstDayOfYear.setDate(1);
-              return firstDayOfYear.toISOString().split("T")[0];
-            })()}
-          >
-            Năm nay
-          </option>
+          <option value="daily">Daily</option>
+          <option value="monthly">Monthly</option>
+          <option value="yearly">Yearly</option>
         </select>
         <button
           onClick={handleSearch}
@@ -219,8 +137,28 @@ const AdminDashboard = () => {
         <div className="border rounded-lg p-6 shadow-lg bg-gradient-to-r from-green-400 to-green-600 text-white flex items-center gap-4">
           <FaCalendarDay className="text-4xl" />
           <div>
-            <p className="text-lg">Doanh Thu</p>
+            <p className="text-lg">
+              {timeFilter.charAt(0).toUpperCase() + timeFilter.slice(1)} Revenue
+            </p>
             <p className="text-3xl font-bold">
+              {formatCurrency(dashboardData.revenue)}
+            </p>
+          </div>
+        </div>
+        <div className="border rounded-lg p-6 shadow-lg bg-white flex items-center gap-4">
+          <FaDollarSign className="text-green-500 text-4xl" />
+          <div>
+            <p className="text-gray-500">Monthly Revenue</p>
+            <p className="text-2xl font-bold">
+              {formatCurrency(dashboardData.revenue)}
+            </p>
+          </div>
+        </div>
+        <div className="border rounded-lg p-6 shadow-lg bg-white flex items-center gap-4">
+          <FaDollarSign className="text-green-500 text-4xl" />
+          <div>
+            <p className="text-gray-500">Yearly Revenue</p>
+            <p className="text-2xl font-bold">
               {formatCurrency(dashboardData.revenue)}
             </p>
           </div>
@@ -228,7 +166,7 @@ const AdminDashboard = () => {
         <div className="border rounded-lg p-6 shadow-lg bg-white flex items-center gap-4">
           <FaShoppingCart className="text-blue-500 text-4xl" />
           <div>
-            <p className="text-gray-500">Tổng số đơn hàng</p>
+            <p className="text-gray-500">Total Orders</p>
             <p className="text-2xl font-bold">
               {dashboardData.totalOrders || 0}
             </p>
@@ -239,7 +177,7 @@ const AdminDashboard = () => {
       {/* Best Selling Products */}
       <div className="border rounded-lg p-6 shadow-lg bg-white">
         <h2 className="text-2xl font-semibold text-gray-800 flex items-center gap-2 mb-4">
-          <FaBox className="text-green-500" /> Sản phẩm bán chạy
+          <FaBox className="text-green-500" /> Best Selling Products
         </h2>
         <ResponsiveContainer width="100%" height={350}>
           <BarChart data={dashboardData.bestSellingProducts}>
@@ -300,4 +238,4 @@ const AdminDashboard = () => {
   );
 };
 
-export default AdminDashboard;
+export default ReportManagement;

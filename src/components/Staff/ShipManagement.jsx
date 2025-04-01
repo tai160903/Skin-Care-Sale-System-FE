@@ -105,11 +105,12 @@ const ShipManagement = () => {
         selectedShipment._id,
         status,
       );
+      console.log(response);
       if (response?.data) {
         toast.success("Cập nhật trạng thái thành công!");
         fetchShipments();
-      } else {
-        toast.error("Không thể cập nhật trạng thái!");
+      } else if (response?.message) {
+        toast.error(response?.message);
       }
     } catch (error) {
       console.error("Error updating status:", error);
@@ -215,7 +216,6 @@ const ShipManagement = () => {
                     "Phone",
                     "Status",
                     "Created At",
-                    "Actions",
                   ].map((header) => (
                     <TableCell
                       key={header}
@@ -255,11 +255,19 @@ const ShipManagement = () => {
                           sx={{ display: "flex", alignItems: "center", gap: 1 }}
                         >
                           <Chip
-                            label={shipment.shipping_status}
+                            label={
+                              shipment.shipping_status === "Shipping"
+                                ? "Đang Vận Chuyển"
+                                : shipment.shipping_status === "Delivered"
+                                  ? "Giao Thành Công"
+                                  : shipment.shipping_status === "Cancelled"
+                                    ? "Giao Hàng Thất Bại"
+                                    : shipment.shipping_status
+                            }
                             sx={{
                               ...getStatusStyles(shipment.shipping_status),
                               fontWeight: 500,
-                              minWidth: 90,
+                              minWidth: 120,
                             }}
                           />
                           <IconButton
@@ -279,37 +287,23 @@ const ShipManagement = () => {
                             <MenuItem
                               onClick={() => handleStatusChange("Shipping")}
                             >
-                              🚚 Shipping
+                              Đang Vận Chuyển
                             </MenuItem>
                             <MenuItem
                               onClick={() => handleStatusChange("Delivered")}
                             >
-                              ✅ Delivered
+                              Giao Thành Công
                             </MenuItem>
                             <MenuItem
                               onClick={() => handleStatusChange("Cancelled")}
                             >
-                              ❌ Cancelled
+                              Giao Hàng Thất Bại
                             </MenuItem>
                           </Menu>
                         </Box>
                       </TableCell>
                       <TableCell align="center">
                         {new Date(shipment.createdAt).toLocaleDateString()}
-                      </TableCell>
-                      <TableCell align="center">
-                        <Button
-                          variant="contained"
-                          color="success"
-                          size="small"
-                          onClick={() => {
-                            setSelectedShipment(shipment);
-                            setOpenDialog(true);
-                          }}
-                          sx={{ borderRadius: 1, textTransform: "none" }}
-                        >
-                          Update
-                        </Button>
                       </TableCell>
                     </TableRow>
                   ))
