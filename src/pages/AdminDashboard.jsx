@@ -76,18 +76,18 @@ const AdminDashboard = () => {
         case "today":
           endDateObj.setDate(startDateObj.getDate() + 1);
           break;
-        case "last 7 days":
+        case "7 ngày vừa qua":
           endDateObj.setDate(startDateObj.getDate() + 7);
           break;
-        case "this month":
+        case "tháng này":
           endDateObj.setDate(1);
           endDateObj.setMonth(startDateObj.getMonth() + 1);
           endDateObj.setDate(0); // Sửa lại để lấy ngày cuối tháng chính xác
           break;
-        case "this year":
+        case "năm nay":
           endDateObj.setFullYear(startDateObj.getFullYear());
-          endDateObj.setMonth(11); // Tháng 12
-          endDateObj.setDate(31); // Ngày cuối năm
+          endDateObj.setMonth(11);
+          endDateObj.setDate(31);
           break;
         default:
           endDateObj.setDate(startDateObj.getDate() + 1);
@@ -146,7 +146,7 @@ const AdminDashboard = () => {
       <div className="flex flex-col sm:flex-row gap-4 mb-6 justify-center items-center">
         <div className="flex items-center gap-2">
           <label htmlFor="startDate" className="text-gray-700 font-medium">
-            Start Date:
+            Từ Ngày:
           </label>
           <input
             type="date"
@@ -158,7 +158,7 @@ const AdminDashboard = () => {
         </div>
         <div className="flex items-center gap-2">
           <label htmlFor="endDate" className="text-gray-700 font-medium">
-            End Date:
+            Đến ngày:
           </label>
           <input
             type="date"
@@ -174,7 +174,9 @@ const AdminDashboard = () => {
           className="border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-green-500"
         >
           <option value="">Select Date Range</option>
-          <option value={new Date().toISOString().split("T")[0]}>Today</option>
+          <option value={new Date().toISOString().split("T")[0]}>
+            Hôm Nay
+          </option>
           <option
             value={(() => {
               const oneWeekAgo = new Date();
@@ -182,7 +184,7 @@ const AdminDashboard = () => {
               return oneWeekAgo.toISOString().split("T")[0];
             })()}
           >
-            Last 7 Days
+            7 ngày vừa qua
           </option>
           <option
             value={(() => {
@@ -191,7 +193,7 @@ const AdminDashboard = () => {
               return firstDayOfMonth.toISOString().split("T")[0];
             })()}
           >
-            This Month
+            Tháng này
           </option>
           <option
             value={(() => {
@@ -201,7 +203,7 @@ const AdminDashboard = () => {
               return firstDayOfYear.toISOString().split("T")[0];
             })()}
           >
-            This Year
+            Năm nay
           </option>
         </select>
         <button
@@ -217,28 +219,8 @@ const AdminDashboard = () => {
         <div className="border rounded-lg p-6 shadow-lg bg-gradient-to-r from-green-400 to-green-600 text-white flex items-center gap-4">
           <FaCalendarDay className="text-4xl" />
           <div>
-            <p className="text-lg">
-              {timeFilter.charAt(0).toUpperCase() + timeFilter.slice(1)} Revenue
-            </p>
+            <p className="text-lg">Doanh Thu</p>
             <p className="text-3xl font-bold">
-              {formatCurrency(dashboardData.revenue)}
-            </p>
-          </div>
-        </div>
-        <div className="border rounded-lg p-6 shadow-lg bg-white flex items-center gap-4">
-          <FaDollarSign className="text-green-500 text-4xl" />
-          <div>
-            <p className="text-gray-500">Monthly Revenue</p>
-            <p className="text-2xl font-bold">
-              {formatCurrency(dashboardData.revenue)}
-            </p>
-          </div>
-        </div>
-        <div className="border rounded-lg p-6 shadow-lg bg-white flex items-center gap-4">
-          <FaDollarSign className="text-green-500 text-4xl" />
-          <div>
-            <p className="text-gray-500">Yearly Revenue</p>
-            <p className="text-2xl font-bold">
               {formatCurrency(dashboardData.revenue)}
             </p>
           </div>
@@ -246,7 +228,7 @@ const AdminDashboard = () => {
         <div className="border rounded-lg p-6 shadow-lg bg-white flex items-center gap-4">
           <FaShoppingCart className="text-blue-500 text-4xl" />
           <div>
-            <p className="text-gray-500">Total Orders</p>
+            <p className="text-gray-500">Tổng số đơn hàng</p>
             <p className="text-2xl font-bold">
               {dashboardData.totalOrders || 0}
             </p>
@@ -257,7 +239,7 @@ const AdminDashboard = () => {
       {/* Best Selling Products */}
       <div className="border rounded-lg p-6 shadow-lg bg-white">
         <h2 className="text-2xl font-semibold text-gray-800 flex items-center gap-2 mb-4">
-          <FaBox className="text-green-500" /> Best Selling Products
+          <FaBox className="text-green-500" /> Sản phẩm bán chạy
         </h2>
         <ResponsiveContainer width="100%" height={350}>
           <BarChart data={dashboardData.bestSellingProducts}>
