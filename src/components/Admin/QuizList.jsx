@@ -1,17 +1,11 @@
 import { useEffect, useState } from "react";
 import quizService from "../../services/quizService";
-import {
-  ChevronDown,
-  ChevronUp,
-  PlusCircle,
-  X,
-  Edit2,
-  Trash2,
-} from "react-feather";
+import { ChevronDown, ChevronUp, X, Edit2, Trash2 } from "react-feather";
+import { Paper } from "@mui/material";
 import { Pagination } from "@mui/material";
 import { toast } from "react-toastify";
 
-const ITEMS_PER_PAGE = 5;
+const ITEMS_PER_PAGE = 10;
 
 const QuizList = () => {
   const [questions, setQuestions] = useState([]);
@@ -186,11 +180,11 @@ const QuizList = () => {
   );
 
   return (
-    <div className="max-w-6xl mx-auto p-6 bg-gray-50 min-h-screen">
+    <Paper sx={{ padding: 3, borderRadius: 3, backgroundColor: "#f8f9fa" }}>
       <h2 className="text-3xl font-extrabold text-gray-900 text-center mb-10">
         Quản Lý Câu Hỏi Quiz
       </h2>
-      <button
+      {/* <button
         onClick={() => {
           setIsEditMode(false);
           setNewQuestion("");
@@ -200,7 +194,7 @@ const QuizList = () => {
         className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
       >
         <PlusCircle size={18} className="mr-2" /> Thêm Câu Hỏi
-      </button>
+      </button> */}
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -273,7 +267,7 @@ const QuizList = () => {
             <div className="flex justify-between items-center">
               <h3 className="text-lg font-semibold">{q.question}</h3>
               <div className="flex space-x-2">
-                <button
+                {/* <button
                   onClick={() => handleEdit(q)}
                   className="text-yellow-600 hover:text-yellow-800"
                 >
@@ -284,7 +278,7 @@ const QuizList = () => {
                   className="text-red-600 hover:text-red-800"
                 >
                   <Trash2 size={18} />
-                </button>
+                </button> */}
                 <button
                   onClick={() => fetchAnswers(q._id)}
                   className="text-blue-600 hover:text-blue-800"
@@ -317,7 +311,7 @@ const QuizList = () => {
           onChange={(e, value) => setCurrentPage(value)}
         />
       </div>
-    </div>
+    </Paper>
   );
 };
 

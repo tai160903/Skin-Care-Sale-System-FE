@@ -8,6 +8,7 @@ import {
   IconButton,
   Tooltip,
   Divider,
+  Typography,
   Box,
 } from "@mui/material";
 import {
@@ -51,37 +52,38 @@ const Sidebar = () => {
       icon: <AdminPanelSettings />,
       items: [
         { text: "Dashboard", icon: <Dashboard />, path: "" },
-        { text: "Blog", icon: <Article />, path: "/admin/blog" },
-        { text: "Khuyến mãi", icon: <LocalOffer />, path: "/admin/promotions" },
+        { text: "Đơn hàng", icon: <ListAlt />, path: "/admin/orders" },
+        { text: "Sản phẩm", icon: <ShoppingCart />, path: "/admin/products" },
       ],
     },
     {
       title: "Quản lý sản phẩm",
       icon: <Inventory />,
       items: [
-        { text: "Đơn hàng", icon: <ListAlt />, path: "/admin/orders" },
-        { text: "Sản phẩm", icon: <ShoppingCart />, path: "/admin/products" },
         {
           text: "Kế hoạch chăm sóc da",
           icon: <Science />,
           path: "/admin/skincare-plans",
         },
-        { text: "Đánh giá", icon: <Star />, path: "/admin/reviews" },
+        { text: "Khuyến mãi", icon: <LocalOffer />, path: "/admin/promotions" },
+        { text: "Blog", icon: <Article />, path: "/admin/blog" },
       ],
     },
     {
       title: "Quản lý người dùng",
       icon: <People />,
       items: [
-        { text: "Người dùng", icon: <ListAlt />, path: "/admin/users" },
-        { text: "Khách hàng", icon: <People />, path: "/admin/customers" },
         { text: "Nhân viên", icon: <Group />, path: "/admin/staff" },
+        { text: "Khách hàng", icon: <People />, path: "/admin/customers" },
       ],
     },
     {
-      title: "Hỗ trợ & Cài đặt",
+      title: "Đánh giá",
       icon: <Settings />,
-      items: [{ text: "Quiz", icon: <LiveHelp />, path: "/admin/faqs" }],
+      items: [
+        { text: "Quiz", icon: <LiveHelp />, path: "/admin/faqs" },
+        { text: "Đánh giá", icon: <Star />, path: "/admin/reviews" },
+      ],
     },
   ];
 
@@ -105,7 +107,32 @@ const Sidebar = () => {
         },
       }}
     >
-      <Box sx={{ display: "flex", justifyContent: "center", p: 1 }}>
+      <Box
+        sx={{
+          padding: "12px 16px",
+          backgroundColor: "#3498DB",
+          display: "flex",
+          justifyContent: open ? "space-between" : "center",
+          alignItems: "center",
+          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+          borderBottomLeftRadius: open ? 12 : 0,
+          borderBottomRightRadius: open ? 12 : 0,
+        }}
+      >
+        {open && (
+          <Typography
+            variant="h6"
+            sx={{
+              color: "#fff",
+              fontWeight: 700,
+              fontSize: "1.3rem",
+              letterSpacing: 0.5,
+            }}
+            onClick={() => navigate("/")}
+          >
+            Manager
+          </Typography>
+        )}
         <IconButton onClick={toggleDrawer}>
           <Menu sx={{ color: "#333" }} />
         </IconButton>
