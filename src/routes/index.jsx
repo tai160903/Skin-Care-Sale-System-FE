@@ -44,6 +44,7 @@ import OrderTracking from "../pages/OrderTracking";
 import OrderDetail from "../Customer/OrderDetail";
 import ChangePassword from "../pages/ChangePassword";
 import Allproduct from "../pages/Allproduct";
+import RoutineManager from "../components/Admin/RoutineManager";
 
 const Router = createBrowserRouter([
   {
@@ -108,6 +109,7 @@ const Router = createBrowserRouter([
       { path: "users", element: <User /> },
       { path: "blog", element: <BlogList /> },
       { path: "faqs", element: <QuizList /> },
+      { path: "skincare-plans", element: <RoutineManager /> },
       { path: "promotions", element: <PromoList /> },
       { path: "products", element: <ProductList /> },
       { path: "orders", element: <OrdersTable /> },
