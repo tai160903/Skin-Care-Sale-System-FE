@@ -1,4 +1,4 @@
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { formatCurrency } from "../utils/formatCurrency";
@@ -8,8 +8,9 @@ import { Button, Typography, Box, Paper, Divider } from "@mui/material";
 
 const SuccessPayment = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+
   //const customerId = useSelector((state) => state?.user?.customer?._id);
+
 
   const data = JSON.parse(localStorage.getItem("order"));
 
@@ -111,6 +112,19 @@ const SuccessPayment = () => {
                   className="text-red-600"
                 >
                   {formatCurrency(data?.data?.order?.shipping_price || 0)}
+                </Typography>
+              </Box>
+            )}
+
+            {data?.data?.order?.discount > 0 && (
+              <Box className="flex justify-between">
+                <Typography variant="body1">Giảm:</Typography>
+                <Typography
+                  variant="body1"
+                  fontWeight="bold"
+                  className="text-red-600"
+                >
+                  {formatCurrency(data?.data?.order?.discount || 0)}
                 </Typography>
               </Box>
             )}

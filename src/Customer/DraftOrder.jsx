@@ -25,6 +25,7 @@ const DraftOrder = () => {
   const cart = useSelector((state) => state.cart.items);
   const customer = useSelector((state) => state.user.customer);
 
+  const [promotionId, setPromotionId] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState("cash");
   const [phone, setPhone] = useState(customer?.phone || "");
   const [coupon, setCoupon] = useState("");
@@ -70,8 +71,9 @@ const DraftOrder = () => {
       const response = await draftOrderService.applyPromotion({
         promoCode: coupon.toUpperCase(),
       });
+      setPromotionId(response.data._id);
       setDiscountAmount(response.data.discount_percentage);
-      toast.success(response.data.message);
+      toast.success("Áp dụng mã giảm giá thành công");
     } catch (error) {
       toast.error(error.response?.data?.message || "Mã giảm giá không hợp lệ");
     }
@@ -98,6 +100,7 @@ const DraftOrder = () => {
         discounted: discount,
         shipping_price: shippingFee,
         payment_method: paymentType,
+        promotionId,
       };
 
       const response = await draftOrderService.createOrder(orderData);
@@ -120,7 +123,6 @@ const DraftOrder = () => {
 
   return (
     <Box sx={{ maxWidth: "600px", mx: "auto", py: 6, px: { xs: 2, sm: 4 } }}>
-      {/* Button quay về */}
       <Box sx={{ display: "flex", justifyContent: "flex-start", mb: 4 }}>
         <button
           onClick={() => navigate("/cart")}
@@ -130,7 +132,6 @@ const DraftOrder = () => {
         </button>
       </Box>
 
-      {/* Tiêu đề */}
       <Typography
         variant="h4"
         sx={{
@@ -142,7 +143,6 @@ const DraftOrder = () => {
       >
         Xác Nhận Đơn Hàng
       </Typography>
-      {/* Tổng quan đơn hàng */}
       <Card
         sx={{ mb: 4, borderRadius: 2, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}
       >
@@ -188,7 +188,6 @@ const DraftOrder = () => {
           </Typography>
         </CardContent>
       </Card>
-      {/* Thông tin giao hàng */}
       <Card
         sx={{ mb: 4, borderRadius: 2, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}
       >
@@ -217,7 +216,6 @@ const DraftOrder = () => {
           />
         </CardContent>
       </Card>
-      {/* Mã giảm giá */}
       <Box sx={{ display: "flex", gap: 2, mb: 4 }}>
         <TextField
           fullWidth
@@ -242,7 +240,6 @@ const DraftOrder = () => {
           Áp dụng
         </Button>
       </Box>
-      {/* Phương thức thanh toán */}
       <Card
         sx={{ mb: 4, borderRadius: 2, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}
       >
@@ -280,7 +277,6 @@ const DraftOrder = () => {
           </RadioGroup>
         </CardContent>
       </Card>
-      {/* Nút xác nhận */}
       <Button
         variant="contained"
         color="success"
