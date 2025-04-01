@@ -52,11 +52,7 @@ const Sidebar = () => {
       items: [
         { text: "Dashboard", icon: <Dashboard />, path: "" },
         { text: "Blog", icon: <Article />, path: "/admin/blog" },
-        {
-          text: "Khuyến mãi",
-          icon: <LocalOffer />,
-          path: "/admin/promotions",
-        },
+        { text: "Khuyến mãi", icon: <LocalOffer />, path: "/admin/promotions" },
       ],
     },
     {
