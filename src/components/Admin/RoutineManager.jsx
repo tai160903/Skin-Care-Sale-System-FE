@@ -261,7 +261,7 @@ const RoutineManager = () => {
                     </div>
                   )}
                   <div className="mt-6 flex justify-end gap-4">
-                    <button
+                    {/* <button
                       onClick={() => handleEdit(routine)}
                       className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all duration-200 shadow-md"
                     >
@@ -272,7 +272,7 @@ const RoutineManager = () => {
                       className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all duration-200 shadow-md"
                     >
                       Xóa
-                    </button>
+                    </button> */}
                   </div>
                 </div>
               )}

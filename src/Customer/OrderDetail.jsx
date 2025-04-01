@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   CircularProgress,
@@ -30,7 +31,7 @@ const OrderDetail = () => {
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [shipping, setShipping] = useState(null);
-
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchDetails = async () => {
       try {
@@ -122,6 +123,12 @@ const OrderDetail = () => {
 
   return (
     <Box maxWidth="800px" mx="auto" my={4}>
+      <button
+        onClick={() => navigate("/")}
+        className="bg-green-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-green-700 hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300 ease-in-out mb-6"
+      >
+        Quay về Trang Chủ
+      </button>
       {/* Khung chứa Order ID và Status */}
       <Paper elevation={3} sx={{ p: 3, borderRadius: 3, mb: 3 }}>
         <Typography variant="h5" fontWeight="bold" color="primary" mb={2}>

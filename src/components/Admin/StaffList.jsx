@@ -87,6 +87,32 @@ const StaffList = () => {
 
   // Tạo nhân viên mới
   const handleCreateEmployee = async () => {
+    const emailRegex = /^[a-zA-Z0-9._%+-]{1,16}@gmail\.com$/;
+    // Kiểm tra định dạng email
+    if (!emailRegex.test(newEmployee.email)) {
+      setSnackbarMessage("Email không hợp lệ. Vui lòng nhập đúng định dạng.");
+      setSnackbarSeverity("error");
+      setOpenSnackbar(true);
+      return;
+    }
+
+    // Kiểm tra mật khẩu ít nhất 6 ký tự
+    if (newEmployee.password.length < 6) {
+      setSnackbarMessage("Mật khẩu phải có ít nhất 6 ký tự.");
+      setSnackbarSeverity("error");
+      setOpenSnackbar(true);
+      return;
+    }
+
+    // Kiểm tra trùng email
+    const emailExists = users.some((user) => user.email === newEmployee.email);
+    if (emailExists) {
+      setSnackbarMessage("Email đã tồn tại. Vui lòng chọn email khác.");
+      setSnackbarSeverity("error");
+      setOpenSnackbar(true);
+      return;
+    }
+
     try {
       const response = await userService.createEmployee(newEmployee);
       setUsers([...users, response]);
@@ -119,7 +145,7 @@ const StaffList = () => {
           gutterBottom
           sx={{ mb: 4 }}
         >
-          <People sx={{ mr: 1, verticalAlign: "middle" }} /> Quản lý người dùng
+          <People sx={{ mr: 1, verticalAlign: "middle" }} /> Quản lý nhân viên
         </Typography>
       </motion.div>
 
@@ -146,6 +172,16 @@ const StaffList = () => {
             value={newEmployee.email}
             onChange={handleInputChange}
             sx={{ minWidth: 300 }}
+            error={
+              newEmployee.email &&
+              !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmployee.email)
+            }
+            helperText={
+              newEmployee.email &&
+              !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmployee.email)
+                ? "Email không hợp lệ!"
+                : ""
+            }
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -154,6 +190,7 @@ const StaffList = () => {
               ),
             }}
           />
+
           <TextField
             label="Mật khẩu"
             name="password"
@@ -161,6 +198,12 @@ const StaffList = () => {
             value={newEmployee.password}
             onChange={handleInputChange}
             sx={{ minWidth: 300 }}
+            error={newEmployee.password && newEmployee.password.length < 6}
+            helperText={
+              newEmployee.password && newEmployee.password.length < 6
+                ? "Mật khẩu phải có ít nhất 6 ký tự!"
+                : ""
+            }
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -176,6 +219,7 @@ const StaffList = () => {
               ),
             }}
           />
+
           <Button
             variant="contained"
             startIcon={<Add />}

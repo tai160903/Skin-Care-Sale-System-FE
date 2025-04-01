@@ -20,7 +20,7 @@ import {
   InputAdornment,
   IconButton,
 } from "@mui/material";
-import { Search as SearchIcon } from "@mui/icons-material";
+import { Search as SearchIcon, Clear as ClearIcon } from "@mui/icons-material";
 import blogadService from "../../services/adminService/blogadService";
 
 const BlogList = () => {
@@ -35,7 +35,7 @@ const BlogList = () => {
       try {
         const data = await blogadService.getBlogs();
         setBlogs(data || []);
-        setFilteredBlogs(data || []); // Hiển thị tất cả blog ban đầu
+        setFilteredBlogs(data || []);
       } catch (error) {
         console.error("Lỗi khi tải danh sách bài viết:", error);
       }
@@ -43,10 +43,9 @@ const BlogList = () => {
     fetchBlogs();
   }, []);
 
-  // Xử lý tìm kiếm khi nhấn nút Search
   const handleSearch = () => {
     if (searchTerm.trim() === "") {
-      setFilteredBlogs(blogs); // Nếu không nhập gì, hiển thị tất cả
+      setFilteredBlogs(blogs);
     } else {
       const filtered = blogs.filter((blog) =>
         blog.title.toLowerCase().includes(searchTerm.toLowerCase()),
@@ -55,20 +54,23 @@ const BlogList = () => {
     }
   };
 
-  // Xử lý khi nhấn Enter trong ô tìm kiếm
   const handleKeyPress = (e) => {
     if (e.key === "Enter") {
       handleSearch();
     }
   };
 
-  // Xử lý khi nhấp vào một blog
+  // Hàm xóa nhanh nội dung tìm kiếm
+  const handleClearSearch = () => {
+    setSearchTerm("");
+    setFilteredBlogs(blogs); // Reset danh sách về toàn bộ blog
+  };
+
   const handleRowClick = (blog) => {
     setSelectedBlog(blog);
     setOpen(true);
   };
 
-  // Đóng dialog
   const handleClose = () => {
     setOpen(false);
     setSelectedBlog(null);
@@ -88,12 +90,17 @@ const BlogList = () => {
         fullWidth
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
-        onKeyPress={handleKeyPress} // Hỗ trợ nhấn Enter để tìm kiếm
+        onKeyPress={handleKeyPress}
         sx={{ mb: 2 }}
         InputProps={{
           endAdornment: (
             <InputAdornment position="end">
-              <IconButton onClick={handleSearch}>
+              {searchTerm && (
+                <IconButton onClick={handleClearSearch} edge="end">
+                  <ClearIcon />
+                </IconButton>
+              )}
+              <IconButton onClick={handleSearch} edge="end">
                 <SearchIcon />
               </IconButton>
             </InputAdornment>
@@ -179,9 +186,8 @@ const BlogList = () => {
         </Table>
       </TableContainer>
 
-      {/* Dialog hiển thị chi tiết */}
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle sx={{ fontWeight: "bold F", color: "#1976d2" }}>
+        <DialogTitle sx={{ fontWeight: "bold", color: "#1976d2" }}>
           Chi tiết bài viết: {selectedBlog?.title}
         </DialogTitle>
         <DialogContent>
