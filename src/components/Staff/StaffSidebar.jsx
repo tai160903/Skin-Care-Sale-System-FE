@@ -18,6 +18,9 @@ import {
   ExitToApp,
   LocalShipping,
   Menu,
+  Article,
+  LiveHelp,
+  Science,
 } from "@mui/icons-material";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
@@ -41,9 +44,16 @@ const StaffSidebar = () => {
 
   const menuItems = [
     { text: "Đơn hàng", icon: <ListAlt />, path: "/staff/orders" },
-    { text: "Sản phẩm", icon: <ShoppingCart />, path: "/staff/products" },
-    { text: "Khuyến mãi", icon: <LocalOffer />, path: "/staff/promotions" },
     { text: "Giao hàng", icon: <LocalShipping />, path: "/staff/shipmanager" },
+    { text: "Sản phẩm", icon: <ShoppingCart />, path: "/staff/products" },
+    { text: "Quiz", icon: <LiveHelp />, path: "/staff/quiz" },
+    { text: "Khuyến mãi", icon: <LocalOffer />, path: "/staff/promotions" },
+    {
+      text: "Kế hoạch chăm sóc da",
+      icon: <Science />,
+      path: "/staff/routine",
+    },
+    { text: "Blog", icon: <Article />, path: "/staff/blogs" },
     { text: "Báo cáo", icon: <BarChart />, path: "/staff/reports" },
   ];
 

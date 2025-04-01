@@ -19,6 +19,8 @@ function Layout() {
     "/profile/:customerId/orderhistory",
     "/profile/:customerId/order-tr",
     "/profile/:customerId/order-tracking",
+    "/profile/:customerId/point",
+    "/profile/:customerId/my-promotions",
     "/profile/:customerId/change-password",
   ];
 
