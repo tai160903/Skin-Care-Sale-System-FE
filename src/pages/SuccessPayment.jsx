@@ -11,6 +11,7 @@ const SuccessPayment = () => {
 
   //const customerId = useSelector((state) => state?.user?.customer?._id);
 
+  const navigate = useNavigate();
 
   const data = JSON.parse(localStorage.getItem("order"));
 
