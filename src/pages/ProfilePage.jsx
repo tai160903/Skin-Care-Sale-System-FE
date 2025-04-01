@@ -76,7 +76,7 @@ const ProfilePage = () => {
           onClick={() => fetchUserData()}
           className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
         >
-          Try Again
+          Thử lại 1 lần nữa
         </button>
       </div>
     );
@@ -118,13 +118,13 @@ const ProfilePage = () => {
                   className={`pb-2 px-4 text-sm font-medium ${activeTab === "view" ? "border-b-2 border-white" : "opacity-70"}`}
                   onClick={() => setActiveTab("view")}
                 >
-                  View Profile
+                  Xem thông tin
                 </button>
                 <button
                   className={`pb-2 px-4 text-sm font-medium ${activeTab === "edit" ? "border-b-2 border-white" : "opacity-70"}`}
                   onClick={() => setActiveTab("edit")}
                 >
-                  Edit Profile
+                  Chỉnh sữa thông tin
                 </button>
               </div>
             </div>
@@ -139,7 +139,7 @@ const ProfilePage = () => {
                 <div className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <ProfileItem
-                      label="Full Name"
+                      label="Họ và tên"
                       value={userData?.name || "Not set"}
                     />
                     <ProfileItem
@@ -147,19 +147,19 @@ const ProfilePage = () => {
                       value={userData?.user?.email || "Not available"}
                     />
                     <ProfileItem
-                      label="Gender"
-                      value={userData?.gender ? "Male" : "Female"}
+                      label="Giới Tính"
+                      value={userData?.gender ? "Nam" : "Nữ"}
                     />
                     <ProfileItem
-                      label="Phone"
+                      label="Số điện thoại"
                       value={userData?.phone || "Not set"}
                     />
                     <ProfileItem
-                      label="Address"
+                      label="Địa chỉ"
                       value={userData?.address || "Not set"}
                     />
                     <ProfileItem
-                      label="Points"
+                      label="Điểm thưởng"
                       value={userData?.point || "0"}
                       badge={true}
                     />
@@ -170,7 +170,7 @@ const ProfilePage = () => {
                       onClick={() => setActiveTab("edit")}
                       className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-200"
                     >
-                      Edit Profile
+                      Chỉnh sữa
                     </button>
                   </div>
                 </div>
