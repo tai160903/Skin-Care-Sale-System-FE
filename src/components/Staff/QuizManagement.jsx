@@ -8,6 +8,7 @@ import {
   Edit2,
   Trash2,
 } from "react-feather";
+import { Paper } from "@mui/material";
 import { Pagination } from "@mui/material";
 import { toast } from "react-toastify";
 
@@ -186,7 +187,7 @@ const QuizManagement = () => {
   );
 
   return (
-    <div className="max-w-6xl mx-auto p-6 bg-gray-50 min-h-screen">
+    <Paper sx={{ padding: 3, borderRadius: 3, backgroundColor: "#f8f9fa" }}>
       <h2 className="text-3xl font-extrabold text-gray-900 text-center mb-10">
         Quản Lý Câu Hỏi Quiz
       </h2>
@@ -317,7 +318,7 @@ const QuizManagement = () => {
           onChange={(e, value) => setCurrentPage(value)}
         />
       </div>
-    </div>
+    </Paper>
   );
 };
 

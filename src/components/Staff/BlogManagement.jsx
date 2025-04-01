@@ -19,17 +19,20 @@ import {
   IconButton,
   Zoom,
   Fade,
+  InputAdornment,
 } from "@mui/material";
-import { Add, Edit, Delete } from "@mui/icons-material";
+import { Add, Edit, Delete, Search, Clear } from "@mui/icons-material";
 import blogadService from "../../services/adminService/blogadService";
 import UploadImage from "../UploadImage";
-import { toast } from "react-toastify"; // Import toast
+import { toast } from "react-toastify";
 
 const BlogManagement = () => {
   const [blogs, setBlogs] = useState([]);
+  const [filteredBlogs, setFilteredBlogs] = useState([]);
   const [open, setOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [currentBlogId, setCurrentBlogId] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
   const [newBlog, setNewBlog] = useState({
     title: "",
     content: "",
@@ -42,7 +45,8 @@ const BlogManagement = () => {
       try {
         const data = await blogadService.getBlogs();
         setBlogs(data || []);
-        toast.success("Tải danh sách bài viết thành công!");
+        setFilteredBlogs(data || []);
+        // toast.success("Tải danh sách bài viết thành công!");
       } catch (error) {
         console.error("Lỗi khi tải danh sách bài viết:", error);
         toast.error("Không thể tải danh sách bài viết!");
@@ -89,7 +93,8 @@ const BlogManagement = () => {
     if (!validateBlogData()) return;
     try {
       const createdBlog = await blogadService.createBlog(newBlog);
-
+      setBlogs([...blogs, createdBlog.data]);
+      setFilteredBlogs([...blogs, createdBlog.data]);
       setOpen(false);
       resetForm();
       toast.success(createdBlog.message);
@@ -106,6 +111,11 @@ const BlogManagement = () => {
         currentBlogId,
         newBlog,
       );
+      const updatedBlogs = blogs.map((blog) =>
+        blog._id === currentBlogId ? { ...blog, ...newBlog } : blog,
+      );
+      setBlogs(updatedBlogs);
+      setFilteredBlogs(updatedBlogs);
       setOpen(false);
       resetForm();
       toast.success(updatedBlog.message);
@@ -127,7 +137,9 @@ const BlogManagement = () => {
     if (window.confirm("Bạn có chắc chắn muốn xóa bài viết này?")) {
       try {
         await blogadService.deleteBlog(id);
-        setBlogs(blogs.filter((blog) => blog._id !== id));
+        const updatedBlogs = blogs.filter((blog) => blog._id !== id);
+        setBlogs(updatedBlogs);
+        setFilteredBlogs(updatedBlogs);
         toast.success("Xóa bài viết thành công!");
       } catch (error) {
         console.error("Lỗi khi xóa bài viết:", error);
@@ -172,63 +184,170 @@ const BlogManagement = () => {
     });
   };
 
+  // Handle search
+  const handleSearch = () => {
+    if (searchQuery.trim() === "") {
+      setFilteredBlogs(blogs);
+    } else {
+      const filtered = blogs.filter((blog) =>
+        blog.title.toLowerCase().includes(searchQuery.toLowerCase()),
+      );
+      setFilteredBlogs(filtered);
+    }
+  };
+
+  // Handle clear search
+  const handleClearSearch = () => {
+    setSearchQuery("");
+    setFilteredBlogs(blogs);
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
+
   return (
     <Paper sx={{ padding: 3, borderRadius: 3, backgroundColor: "#f8f9fa" }}>
-      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
-        <Typography variant="h5" sx={{ fontWeight: "bold" }}>
-          🛍️ Product Management
-        </Typography>
-      </Box>
-      <Button
-        variant="contained"
-        startIcon={<Add />}
+      {/* Header Section */}
+      <Box
         sx={{
-          backgroundColor: "#0288d1",
-          ":hover": { backgroundColor: "#0277bd", transform: "scale(1.05)" },
-          transition: "0.3s ease-in-out",
-          mb: 2,
-        }}
-        onClick={() => {
-          setOpen(true);
-          resetForm();
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          mb: 3,
+          borderBottom: "1px solid #e0e0e0",
+          pb: 2,
         }}
       >
-        Thêm Bài viết
-      </Button>
+        <Typography
+          variant="h5"
+          sx={{
+            fontWeight: "bold",
+            color: "#1976d2",
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          <span role="img" aria-label="blog" style={{ marginRight: 8 }}>
+            📝
+          </span>
+          Quản lý Bài viết
+        </Typography>
+        <Button
+          variant="contained"
+          startIcon={<Add />}
+          sx={{
+            backgroundColor: "#0288d1",
+            borderRadius: 2,
+            textTransform: "none",
+            padding: "8px 16px",
+            ":hover": {
+              backgroundColor: "#0277bd",
+              transform: "scale(1.03)",
+            },
+            transition: "all 0.3s ease-in-out",
+          }}
+          onClick={() => {
+            setOpen(true);
+            resetForm();
+          }}
+        >
+          Thêm Bài viết
+        </Button>
+      </Box>
 
+      {/* Search Section */}
+      <Box sx={{ mb: 3 }}>
+        <TextField
+          label="Tìm kiếm theo tiêu đề"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          onKeyPress={handleKeyPress}
+          sx={{
+            width: "100%",
+            maxWidth: 400,
+            backgroundColor: "white",
+            borderRadius: 2,
+            "& .MuiOutlinedInput-root": {
+              "& fieldset": { borderColor: "#e0e0e0" },
+              "&:hover fieldset": { borderColor: "#0288d1" },
+              "&.Mui-focused fieldset": { borderColor: "#1976d2" },
+            },
+          }}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                {searchQuery && (
+                  <IconButton
+                    onClick={handleClearSearch}
+                    size="small"
+                    sx={{
+                      color: "#757575",
+                      "&:hover": { color: "#d32f2f" },
+                    }}
+                  >
+                    <Clear fontSize="small" />
+                  </IconButton>
+                )}
+                <IconButton
+                  onClick={handleSearch}
+                  sx={{
+                    color: "#0288d1",
+                    "&:hover": { color: "#1976d2" },
+                  }}
+                >
+                  <Search />
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+        />
+      </Box>
+
+      {/* Table Section */}
       <TableContainer
         component={Paper}
-        sx={{ borderRadius: 3, boxShadow: 3, overflow: "hidden" }}
+        sx={{
+          borderRadius: 3,
+          boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+          overflow: "hidden",
+        }}
       >
         <Table>
           <TableHead sx={{ backgroundColor: "#1976d2" }}>
             <TableRow>
               <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                <strong>ID</strong>
+                Tiêu đề
               </TableCell>
               <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                <strong>Tiêu đề</strong>
+                Nội dung
               </TableCell>
               <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                <strong>Nội dung</strong>
+                Hình ảnh
               </TableCell>
               <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                <strong>Hình ảnh</strong>
+                Chi tiết
               </TableCell>
-              <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                <strong>Chi tiết</strong>
-              </TableCell>
-              <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                <strong>Hành động</strong>
+              <TableCell
+                sx={{ color: "white", fontWeight: "bold", textAlign: "center" }}
+              >
+                Hành động
               </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {blogs.length > 0 ? (
-              blogs.map((blog) => (
+            {filteredBlogs.length > 0 ? (
+              filteredBlogs.map((blog) => (
                 <Fade in key={blog._id} timeout={500}>
-                  <TableRow hover>
-                    <TableCell>{blog._id}</TableCell>
+                  <TableRow
+                    hover
+                    sx={{
+                      "&:hover": { backgroundColor: "#e3f2fd" },
+                      transition: "background-color 0.2s",
+                    }}
+                  >
                     <TableCell>{blog.title || "Không có tiêu đề"}</TableCell>
                     <TableCell>
                       <Tooltip
@@ -252,7 +371,8 @@ const BlogManagement = () => {
                             width: 80,
                             height: 50,
                             borderRadius: 5,
-                            boxShadow: "0px 2px 5px rgba(0,0,0,0.2)",
+                            objectFit: "cover",
+                            boxShadow: "0px 2px 5px rgba(0,0,0,0.1)",
                           }}
                         />
                       ) : (
@@ -267,7 +387,7 @@ const BlogManagement = () => {
                               <img
                                 src={d.image}
                                 alt={`Detail ${i}`}
-                                style={{ width: 50 }}
+                                style={{ width: 50, marginBottom: 4 }}
                               />
                               <p>{d.text}</p>
                             </div>
@@ -281,21 +401,38 @@ const BlogManagement = () => {
                         "Không có chi tiết"
                       )}
                     </TableCell>
-                    <TableCell>
+                    <TableCell sx={{ textAlign: "center" }}>
                       <Tooltip title="Chỉnh sửa" TransitionComponent={Zoom}>
                         <IconButton
-                          color="primary"
+                          sx={{
+                            color: "#0288d1",
+                            backgroundColor: "#e3f2fd",
+                            mr: 1,
+                            "&:hover": {
+                              backgroundColor: "#bbdefb",
+                              transform: "scale(1.1)",
+                            },
+                            transition: "all 0.2s",
+                          }}
                           onClick={() => handleEditBlog(blog)}
                         >
-                          <Edit />
+                          <Edit fontSize="small" />
                         </IconButton>
                       </Tooltip>
                       <Tooltip title="Xóa" TransitionComponent={Zoom}>
                         <IconButton
-                          color="error"
+                          sx={{
+                            color: "#d32f2f",
+                            backgroundColor: "#ffebee",
+                            "&:hover": {
+                              backgroundColor: "#ffcdd2",
+                              transform: "scale(1.1)",
+                            },
+                            transition: "all 0.2s",
+                          }}
                           onClick={() => handleDeleteBlog(blog._id)}
                         >
-                          <Delete />
+                          <Delete fontSize="small" />
                         </IconButton>
                       </Tooltip>
                     </TableCell>
@@ -304,7 +441,11 @@ const BlogManagement = () => {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={6} align="center">
+                <TableCell
+                  colSpan={5}
+                  align="center"
+                  sx={{ py: 4, color: "#757575" }}
+                >
                   Không có bài viết nào
                 </TableCell>
               </TableRow>
@@ -313,8 +454,21 @@ const BlogManagement = () => {
         </Table>
       </TableContainer>
 
-      <Dialog open={open} onClose={() => setOpen(false)}>
-        <DialogTitle sx={{ fontWeight: "bold", color: "#1976d2" }}>
+      {/* Dialog for Create/Edit */}
+      <Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle
+          sx={{
+            fontWeight: "bold",
+            color: "#1976d2",
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
           {editMode ? (
             <>
               <Edit sx={{ verticalAlign: "middle", mr: 1 }} />
@@ -336,6 +490,7 @@ const BlogManagement = () => {
             onChange={(e) => setNewBlog({ ...newBlog, title: e.target.value })}
             inputProps={{ maxLength: 100 }}
             helperText={`${newBlog.title.length}/100 ký tự`}
+            sx={{ mb: 2 }}
           />
           <TextField
             margin="dense"
@@ -347,15 +502,16 @@ const BlogManagement = () => {
             onChange={(e) =>
               setNewBlog({ ...newBlog, content: e.target.value })
             }
+            sx={{ mb: 2 }}
           />
-          <Typography variant="subtitle1" sx={{ mt: 2 }}>
+          <Typography variant="subtitle1" sx={{ mt: 2, mb: 1 }}>
             Hình ảnh chính
           </Typography>
           <UploadImage
             onUploadSuccess={(url) => setNewBlog({ ...newBlog, image: url })}
           />
           {newBlog.image && (
-            <Box sx={{ mt: 1 }}>
+            <Box sx={{ mt: 1, mb: 2 }}>
               <img
                 src={newBlog.image}
                 alt="Preview"
@@ -363,12 +519,15 @@ const BlogManagement = () => {
               />
             </Box>
           )}
-          <Typography variant="h6" sx={{ mt: 2 }}>
+          <Typography variant="h6" sx={{ mt: 2, mb: 1 }}>
             Chi tiết
           </Typography>
           {newBlog.detail.map((detail, index) => (
-            <Box key={index} sx={{ mb: 2 }}>
-              <Typography variant="subtitle1">
+            <Box
+              key={index}
+              sx={{ mb: 3, p: 2, border: "1px solid #e0e0e0", borderRadius: 2 }}
+            >
+              <Typography variant="subtitle1" sx={{ mb: 1 }}>
                 Phần chi tiết {index + 1}
               </Typography>
               <UploadImage
@@ -377,7 +536,7 @@ const BlogManagement = () => {
                 }
               />
               {detail.image && (
-                <Box sx={{ mt: 1 }}>
+                <Box sx={{ mt: 1, mb: 1 }}>
                   <img
                     src={detail.image}
                     alt={`Detail Preview ${index}`}
@@ -400,12 +559,19 @@ const BlogManagement = () => {
               />
             </Box>
           ))}
-          <Button variant="outlined" onClick={addDetailSection} sx={{ mt: 1 }}>
+          <Button
+            variant="outlined"
+            onClick={addDetailSection}
+            sx={{ mt: 1, borderRadius: 2, textTransform: "none" }}
+          >
             Thêm phần chi tiết
           </Button>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpen(false)} sx={{ color: "#757575" }}>
+          <Button
+            onClick={() => setOpen(false)}
+            sx={{ color: "#757575", textTransform: "none" }}
+          >
             Hủy
           </Button>
           <Button
@@ -413,6 +579,9 @@ const BlogManagement = () => {
             sx={{
               backgroundColor: "#0288d1",
               color: "#fff",
+              borderRadius: 2,
+              textTransform: "none",
+              px: 3,
               ":hover": { backgroundColor: "#0277bd" },
             }}
           >
