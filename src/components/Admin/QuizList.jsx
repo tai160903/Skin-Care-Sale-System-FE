@@ -1,58 +1,184 @@
 import { useEffect, useState } from "react";
 import quizService from "../../services/quizService";
-import { ChevronDown, ChevronUp, Edit, Trash2 } from "react-feather"; // Thêm icons
+import {
+  ChevronDown,
+  ChevronUp,
+  PlusCircle,
+  X,
+  Edit2,
+  Trash2,
+} from "react-feather";
+import { Pagination } from "@mui/material";
+import { toast } from "react-toastify";
 
-const ITEMS_PER_PAGE = 5; // Số câu hỏi mỗi trang
+const ITEMS_PER_PAGE = 5;
 
 const QuizList = () => {
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState({});
   const [expanded, setExpanded] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [skinTypes, setSkinTypes] = useState([]);
+  const [newQuestion, setNewQuestion] = useState("");
+  const [newAnswers, setNewAnswers] = useState(
+    Array(5).fill({ text: "", skinType: "" }),
+  );
+  const [editQuestionId, setEditQuestionId] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    quizService
-      .getQuiz()
-      .then((response) => {
-        setQuestions(response.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching questions:", error);
-      });
+    fetchQuestions();
+    fetchSkinTypes();
   }, []);
+
+  const fetchSkinTypes = async () => {
+    try {
+      const response = await quizService.getSkinTypes();
+      setSkinTypes(response?.data?.data || []);
+    } catch (error) {
+      console.error("Error fetching skin types:", error);
+    }
+  };
+
+  const fetchQuestions = async () => {
+    try {
+      const response = await quizService.getQuiz();
+      setQuestions(response.data || []);
+    } catch (error) {
+      console.error("Error fetching questions:", error);
+    }
+  };
 
   const fetchAnswers = async (questionId) => {
     if (answers[questionId]) {
       setExpanded((prev) => ({ ...prev, [questionId]: !prev[questionId] }));
       return;
     }
-
     try {
       const response = await quizService.getAnswer(questionId);
-      setAnswers((prev) => ({
-        ...prev,
-        [questionId]: response.data,
-      }));
+      setAnswers((prev) => ({ ...prev, [questionId]: response.data }));
       setExpanded((prev) => ({ ...prev, [questionId]: true }));
     } catch (error) {
-      console.error(
-        `Error fetching answers for question ${questionId}:`,
-        error,
-      );
+      console.error("Error fetching answers:", error);
     }
   };
 
-  const handleEdit = (questionId) => {
-    console.log(`Edit question: ${questionId}`);
-    // Logic chỉnh sửa
+  const handleCreateOrUpdate = async (e) => {
+    e.preventDefault();
+
+    if (!newQuestion.trim()) {
+      toast.warn("Vui lòng nhập câu hỏi.");
+      return;
+    }
+
+    if (newAnswers.some(({ text }) => !text.trim())) {
+      toast.warn("Vui lòng nhập đầy đủ nội dung cho tất cả đáp án.");
+      return;
+    }
+
+    if (newAnswers.some(({ skinType }) => !skinType)) {
+      toast.warn("Vui lòng chọn loại da cho tất cả đáp án.");
+      return;
+    }
+
+    const skinTypeSet = new Set(newAnswers.map(({ skinType }) => skinType));
+    if (skinTypeSet.size !== newAnswers.length) {
+      toast.warn("Không được chọn trùng loại da cho các đáp án.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      if (isEditMode) {
+        const response = await quizService.updateQuiz(editQuestionId, {
+          question: newQuestion,
+          answers: newAnswers,
+        });
+        setQuestions(
+          questions.map((q) => (q._id === editQuestionId ? response.data : q)),
+        );
+        setCurrentPage(1);
+        fetchQuestions();
+        toast.success("Cập nhật câu hỏi thành công!");
+      } else {
+        const response = await quizService.createQuiz({
+          question: newQuestion,
+          answers: newAnswers,
+        });
+        setQuestions([...questions, response.data]);
+        toast.success("Tạo câu hỏi thành công!");
+        setCurrentPage(1);
+        fetchQuestions();
+      }
+
+      setNewQuestion("");
+      setNewAnswers(Array(5).fill({ text: "", skinType: "" }));
+      setIsModalOpen(false);
+      setIsEditMode(false);
+      setEditQuestionId(null);
+    } catch (error) {
+      console.error("Error:", error);
+      toast.error(
+        `Đã xảy ra lỗi khi ${isEditMode ? "cập nhật" : "tạo"} câu hỏi.`,
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleDelete = (questionId) => {
-    console.log(`Delete question: ${questionId}`);
-    // Logic xóa
+  const handleEdit = async (question) => {
+    setIsEditMode(true);
+    setEditQuestionId(question._id);
+    setNewQuestion(question.question);
+    const fetchedAnswers = await quizService.getAnswer(question._id);
+    setNewAnswers(
+      fetchedAnswers.data.map((ans) => ({
+        text: ans.text,
+        skinType: ans.skinType._id,
+      })),
+    );
+    setIsModalOpen(true);
   };
 
-  // Phân trang
+  const handleDelete = async (questionId) => {
+    if (!window.confirm("Bạn có chắc muốn xóa câu hỏi này không?")) return;
+    if (
+      !window.confirm("Hành động này không thể hoàn tác. Xác nhận xóa lần nữa?")
+    )
+      return;
+
+    setLoading(true);
+    try {
+      await quizService.deleteQuiz(questionId);
+      setQuestions(questions.filter((q) => q._id !== questionId));
+      setAnswers((prev) => {
+        const newAnswers = { ...prev };
+        delete newAnswers[questionId];
+        return newAnswers;
+      });
+      setExpanded((prev) => {
+        const newExpanded = { ...prev };
+        delete newExpanded[questionId];
+        return newExpanded;
+      });
+      toast.success("Xóa câu hỏi thành công!");
+      setCurrentPage(1);
+    } catch (error) {
+      console.error("Error deleting question:", error);
+      toast.error("Đã xảy ra lỗi khi xóa câu hỏi.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateAnswer = (index, field, value) => {
+    setNewAnswers((prev) =>
+      prev.map((ans, i) => (i === index ? { ...ans, [field]: value } : ans)),
+    );
+  };
+
   const totalPages = Math.ceil(questions.length / ITEMS_PER_PAGE);
   const paginatedQuestions = questions.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
@@ -64,144 +190,133 @@ const QuizList = () => {
       <h2 className="text-3xl font-extrabold text-gray-900 text-center mb-10">
         Quản Lý Câu Hỏi Quiz
       </h2>
+      <button
+        onClick={() => {
+          setIsEditMode(false);
+          setNewQuestion("");
+          setNewAnswers(Array(5).fill({ text: "", skinType: "" }));
+          setIsModalOpen(true);
+        }}
+        className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+      >
+        <PlusCircle size={18} className="mr-2" /> Thêm Câu Hỏi
+      </button>
 
-      {questions.length > 0 ? (
-        <div className="space-y-6">
-          {/* Bảng */}
-          <div className="overflow-x-auto rounded-xl shadow-lg">
-            <table className="min-w-full bg-white">
-              <thead className="bg-gray-200 text-gray-700">
-                <tr>
-                  <th className="py-4 px-6 text-left text-sm font-semibold uppercase tracking-wider">
-                    ID
-                  </th>
-                  <th className="py-4 px-6 text-left text-sm font-semibold uppercase tracking-wider">
-                    Câu Hỏi
-                  </th>
-                  <th className="py-4 px-6 text-left text-sm font-semibold uppercase tracking-wider">
-                    Hành Động
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {paginatedQuestions.map((question) => (
-                  <>
-                    <tr
-                      key={question._id}
-                      className="hover:bg-gray-50 transition-colors duration-200"
-                    >
-                      <td className="py-4 px-6 text-sm text-gray-600 font-mono">
-                        {question._id}
-                      </td>
-                      <td className="py-4 px-6 text-base text-gray-900 font-medium">
-                        {question.question}
-                      </td>
-                      <td className="py-4 px-6 flex items-center space-x-4">
-                        <button
-                          onClick={() => fetchAnswers(question._id)}
-                          className="flex items-center text-blue-600 hover:text-blue-800 font-medium transition-colors"
-                        >
-                          {expanded[question._id] ? (
-                            <>
-                              <ChevronUp size={18} className="mr-1" />
-                              Ẩn
-                            </>
-                          ) : (
-                            <>
-                              <ChevronDown size={18} className="mr-1" />
-                              Xem
-                            </>
-                          )}
-                        </button>
-                        <button
-                          onClick={() => handleEdit(question._id)}
-                          className="flex items-center px-3 py-1 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 transition-colors"
-                        >
-                          <Edit size={16} className="mr-1" />
-                          Sửa
-                        </button>
-                        <button
-                          onClick={() => handleDelete(question._id)}
-                          className="flex items-center px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors"
-                        >
-                          <Trash2 size={16} className="mr-1" />
-                          Xóa
-                        </button>
-                      </td>
-                    </tr>
-                    {expanded[question._id] && answers[question._id] && (
-                      <tr>
-                        <td
-                          colSpan="3"
-                          className="py-4 px-6 bg-gray-100 text-gray-700"
-                        >
-                          <div>
-                            <strong className="text-gray-800">
-                              Câu trả lời:
-                            </strong>
-                            {Array.isArray(answers[question._id]) ? (
-                              <ul className="list-disc pl-6 mt-2 space-y-1">
-                                {answers[question._id].map((answer, index) => (
-                                  <li key={index}>
-                                    {answer.text}{" "}
-                                    {answer.skinType && (
-                                      <span className="text-gray-600">
-                                        ({answer.skinType})
-                                      </span>
-                                    )}
-                                  </li>
-                                ))}
-                              </ul>
-                            ) : (
-                              <p className="mt-2">
-                                {answers[question._id].text}{" "}
-                                {answers[question._id].skinType && (
-                                  <span className="text-gray-600">
-                                    ({answers[question._id].skinType})
-                                  </span>
-                                )}
-                              </p>
-                            )}
-                          </div>
-                        </td>
-                      </tr>
-                    )}
-                  </>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Phân trang */}
-          {totalPages > 1 && (
-            <div className="flex justify-center items-center space-x-2 mt-6">
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-bold">
+                {isEditMode ? "Chỉnh Sửa Câu Hỏi" : "Tạo Câu Hỏi Mới"}
+              </h3>
               <button
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={() => setIsModalOpen(false)}
+                className="text-gray-600 hover:text-gray-800"
               >
-                Trước
-              </button>
-              <span className="text-gray-700">
-                Trang {currentPage} / {totalPages}
-              </span>
-              <button
-                onClick={() =>
-                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                }
-                disabled={currentPage === totalPages}
-                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Sau
+                <X size={20} />
               </button>
             </div>
-          )}
-        </div>
-      ) : (
-        <div className="text-center text-gray-500 italic p-6 bg-white rounded-lg shadow-md">
-          Không tìm thấy câu hỏi nào.
+            <form onSubmit={handleCreateOrUpdate} className="space-y-4">
+              <input
+                type="text"
+                value={newQuestion}
+                onChange={(e) => setNewQuestion(e.target.value)}
+                placeholder="Nhập câu hỏi..."
+                className="w-full p-3 border rounded-md"
+              />
+              {newAnswers.map((answer, index) => (
+                <div key={index} className="flex space-x-2">
+                  <input
+                    type="text"
+                    value={answer.text}
+                    onChange={(e) =>
+                      updateAnswer(index, "text", e.target.value)
+                    }
+                    placeholder={`Nhập đáp án ${index + 1}...`}
+                    className="flex-grow p-3 border rounded-md"
+                  />
+                  <select
+                    value={answer.skinType}
+                    onChange={(e) =>
+                      updateAnswer(index, "skinType", e.target.value)
+                    }
+                    className="p-3 border rounded-md"
+                  >
+                    <option value="">Chọn loại da</option>
+                    {skinTypes.map(({ _id, VNname }) => (
+                      <option key={_id} value={_id}>
+                        {VNname}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              ))}
+              <button
+                type="submit"
+                className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700"
+                disabled={loading}
+              >
+                {loading
+                  ? "Đang xử lý..."
+                  : isEditMode
+                    ? "Cập Nhật"
+                    : "Thêm Câu Hỏi"}
+              </button>
+            </form>
+          </div>
         </div>
       )}
+
+      <div className="mt-6 space-y-6">
+        {paginatedQuestions.map((q) => (
+          <div key={q._id} className="p-4 bg-white rounded-lg shadow-md">
+            <div className="flex justify-between items-center">
+              <h3 className="text-lg font-semibold">{q.question}</h3>
+              <div className="flex space-x-2">
+                <button
+                  onClick={() => handleEdit(q)}
+                  className="text-yellow-600 hover:text-yellow-800"
+                >
+                  <Edit2 size={18} />
+                </button>
+                <button
+                  onClick={() => handleDelete(q._id)}
+                  className="text-red-600 hover:text-red-800"
+                >
+                  <Trash2 size={18} />
+                </button>
+                <button
+                  onClick={() => fetchAnswers(q._id)}
+                  className="text-blue-600 hover:text-blue-800"
+                >
+                  {expanded[q._id] ? (
+                    <ChevronUp size={18} />
+                  ) : (
+                    <ChevronDown size={18} />
+                  )}
+                </button>
+              </div>
+            </div>
+            {expanded[q._id] && (
+              <div className="mt-2 text-gray-700">
+                {answers[q._id]?.map((ans) => (
+                  <p key={ans._id}>
+                    {ans.text} ({ans.skinType.VNname})
+                  </p>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      <div className="flex justify-center mt-6">
+        <Pagination
+          count={totalPages}
+          page={currentPage}
+          onChange={(e, value) => setCurrentPage(value)}
+        />
+      </div>
     </div>
   );
 };

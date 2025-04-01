@@ -10,6 +10,7 @@ import {
   CircularProgress,
   Box,
 } from "@mui/material";
+import { toast } from "react-toastify";
 
 const BlogList = () => {
   const [blogs, setBlogs] = useState([]);
@@ -20,9 +21,11 @@ const BlogList = () => {
     const fetchBlogs = async () => {
       try {
         const data = await getBlogs();
-        setBlogs(data);
+        setBlogs(
+          data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)),
+        );
       } catch (error) {
-        console.error("Error fetching blogs:", error);
+        toast.error("Error fetching blogs:", error);
       } finally {
         setLoading(false);
       }
