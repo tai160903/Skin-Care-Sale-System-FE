@@ -19,7 +19,6 @@ const shipService = {
   },
   updateStatus: async (id, status) => {
     try {
-      console.log("check:", id, status);
       const response = await axiosClient.put(
         `${API_BASE_URL}/update-status/${id}`,
         {
