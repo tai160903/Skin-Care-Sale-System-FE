@@ -138,9 +138,38 @@ const OrderDetail = () => {
           </Grid>
           <Grid item xs={6}>
             <List>
-              <ListItem>
-                <ListItemText primary="Status" secondary={order.order_status} />
-              </ListItem>
+            <ListItem>
+            <ListItemText
+              primary="Status"
+              secondary={
+                <Typography
+                  sx={{
+                    color:
+                      order.order_status === "pending"
+                        ? "orange"
+                        : order.order_status === "confirmed"
+                        ? "blue"
+                        : order.order_status === "completed"
+                        ? "green"
+                        : order.order_status === "cancelled"
+                        ? "red"
+                        : "inherit",
+                    fontWeight: "bold",
+                  }}
+                >
+                  {order.order_status === "pending"
+                    ? "Chờ xác nhận"
+                    : order.order_status === "confirmed"
+                    ? "Đã xác nhận"
+                    : order.order_status === "completed"
+                    ? "Đã hoàn thành"
+                    : order.order_status === "cancelled"
+                    ? "Đã hủy"
+                    : order.order_status}
+                </Typography>
+              }
+            />
+          </ListItem>
             </List>
           </Grid>
         </Grid>
@@ -157,126 +186,141 @@ const OrderDetail = () => {
           </Typography>
 
           <List>
-            {order.items.map((product, index) => (
-              <ListItem
-                key={index}
-                sx={{
-                  borderBottom:
-                    index !== order.items.length - 1
-                      ? "1px solid #ddd"
-                      : "none",
-                  alignItems: "center",
-                  p: 2,
-                }}
-              >
-                <ListItem
-                  sx={{ display: "flex", alignItems: "center", gap: 2 }}
-                >
-                  <ListItemAvatar>
-                    <Avatar
-                      src={product.product_id.image}
-                      alt={product.product_id.name}
-                      variant="square"
-                      sx={{ width: 40, height: 40 }}
-                    />
-                  </ListItemAvatar>
+  {order.items.map((product, index) => (
+    <ListItem
+      key={index}
+      sx={{
+        borderBottom:
+          index !== order.items.length - 1 ? "1px solid #ddd" : "none",
+        alignItems: "center",
+        p: 2,
+      }}
+    >
+      <ListItem sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+        <ListItemAvatar>
+          <Avatar
+            src={product.product_id.image}
+            alt={product.product_id.name}
+            variant="square"
+            sx={{ width: 40, height: 40 }}
+          />
+        </ListItemAvatar>
 
-                  <ListItemText
-                    primary={product.product_id.name}
-                    secondary={
-                      <>
-                        <Typography component="span">
-                          <strong>Giá:</strong>{" "}
-                          {new Intl.NumberFormat("vi-VN", {
-                            style: "currency",
-                            currency: "VND",
-                          }).format(product.product_id?.price || 0)}
-                        </Typography>
-                        <Typography component="span" sx={{ display: "block" }}>
-                          <strong>Số lượng:</strong> {product.quantity}
-                        </Typography>
-                      </>
-                    }
-                    sx={{ display: "flex", flexDirection: "column" }}
-                  />
-                </ListItem>
+        <ListItemText
+          primary={product.product_id.name}
+          secondary={
+            <>
+              <Typography component="span">
+                <strong>Giá:</strong>{" "}
+                {new Intl.NumberFormat("vi-VN", {
+                  style: "currency",
+                  currency: "VND",
+                }).format(product.product_id?.price || 0)}
+              </Typography>
+              <Typography component="span" sx={{ display: "block" }}>
+                <strong>Số lượng:</strong> {product.quantity}
+              </Typography>
+            </>
+          }
+          sx={{ display: "flex", flexDirection: "column" }}
+        />
+      </ListItem>
 
-                <Button
-                  variant="contained"
-                  color="primary"
-                  sx={{ ml: "auto" }}
-                  onClick={() => setOpenIndex(index)}
-                >
-                  Đánh giá
-                </Button>
+      {/* Nút Đánh giá */}
+      <Button
+        variant="contained"
+        color="primary"
+        sx={{ ml: "auto" }}
+        onClick={() => setOpenIndex(index)}
+      >
+        Đánh giá
+      </Button>
 
-                <Dialog
-                  open={openIndex === index}
-                  onClose={() => setOpenIndex(null)}
-                >
-                  <DialogTitle>Đánh giá sản phẩm</DialogTitle>
-                  <DialogContent>
-                    {/* Rating để đánh giá sao */}
-                    <Rating
-                      value={ratings[index] || 0}
-                      precision={0.5} // Cho phép đánh giá 0.5 sao
-                      onChange={(event, newValue) =>
-                        setRatings({ ...ratings, [index]: newValue })
-                      }
-                    />
+      {/* Nút Trả hàng - chỉ hiển thị khi order_status là completed */}
+      {order.order_status === "completed" && (
+        <Button
+        variant="contained"
+        sx={{
+          ml: 2,
+          backgroundColor: "#FF5722", // Màu cam
+          color: "#fff", // Màu chữ trắng
+          "&:hover": {
+            backgroundColor: "#E64A19", // Màu khi hover
+          },
+        }}
+        onClick={() => handleReturnRequest(product.product_id._id)}
+      >
+          Trả hàng
+        </Button>
+      )}
 
-                    {/* TextField để nhập đánh giá */}
-                    <TextField
-                      label="Nhập đánh giá của bạn"
-                      fullWidth
-                      multiline
-                      rows={3}
-                      value={reviews[index] || ""}
-                      onChange={(e) =>
-                        setReviews({ ...reviews, [index]: e.target.value })
-                      }
-                      sx={{ mt: 2 }}
-                    />
-                  </DialogContent>
-
-                  <DialogActions>
-                    <Button
-                      onClick={() => setOpenIndex(null)}
-                      color="secondary"
-                    >
-                      Hủy
-                    </Button>
-                    <Button
-                      onClick={() =>
-                        handleSubmitReview(index, product.product_id._id)
-                      }
-                      color="primary"
-                    >
-                      Gửi đánh giá
-                    </Button>
-                  </DialogActions>
-                </Dialog>
-              </ListItem>
-            ))}
-          </List>
-        </Paper>
-        <Paper
-          elevation={2}
-          sx={{ p: 2, bgcolor: "success.lighter", mt: 2, borderRadius: 2 }}
-        >
-          <Typography
-            variant="h6"
-            fontWeight="bold"
-            color="success.main"
-            textAlign="right"
+      {/* Dialog Đánh giá */}
+      <Dialog open={openIndex === index} onClose={() => setOpenIndex(null)}>
+        <DialogTitle>Đánh giá sản phẩm</DialogTitle>
+        <DialogContent>
+          <Rating
+            value={ratings[index] || 0}
+            precision={0.5}
+            onChange={(event, newValue) =>
+              setRatings({ ...ratings, [index]: newValue })
+            }
+          />
+          <TextField
+            label="Nhập đánh giá của bạn"
+            fullWidth
+            multiline
+            rows={3}
+            value={reviews[index] || ""}
+            onChange={(e) =>
+              setReviews({ ...reviews, [index]: e.target.value })
+            }
+            sx={{ mt: 2 }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenIndex(null)} color="secondary">
+            Hủy
+          </Button>
+          <Button
+            onClick={() => handleSubmitReview(index, product.product_id._id)}
+            color="primary"
           >
-            Tổng giá trị đơn hàng:{" "}
-            {new Intl.NumberFormat("vi-VN", {
-              style: "currency",
-              currency: "VND",
-            }).format(order.totalPay || 0)}
-          </Typography>
+            Gửi đánh giá
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </ListItem>
+  ))}
+</List>
         </Paper>
+       <Paper
+  elevation={2}
+  sx={{ p: 2, bgcolor: "success.lighter", mt: 2, borderRadius: 2 }}
+>
+  <Typography variant="h6" fontWeight="bold" color="success.main" textAlign="right">
+    Tổng giá sản phẩm:{" "}
+    {new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    }).format(order.totalPay - order.shipping_price  || 0)}
+  </Typography>
+  
+  <Typography variant="h6" fontWeight="bold" color="success.main" textAlign="right">
+    Phí vận chuyển:{" "}
+    {new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    }).format(order.shipping_price || 0)}
+  </Typography>
+
+  <Typography variant="h6" fontWeight="bold" color="success.main" textAlign="right">
+    Tổng thanh toán:{" "}
+    {new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    }).format((order.totalPay || 0))}
+  </Typography>
+</Paper>
       </Paper>
 
       {/* Khung chứa các thông tin còn lại */}
@@ -307,11 +351,11 @@ const OrderDetail = () => {
           </ListItem>
           <Divider />
           <ListItem>
-            <ListItemText
-              primary="Order Date"
-              secondary={new Date(order.createdAt).toLocaleDateString()}
-            />
-          </ListItem>
+        <ListItemText
+          primary="Order Date"
+          secondary={new Date(order.createdAt).toLocaleDateString("vi-VN")}
+          />
+        </ListItem>
         </List>
       </Paper>
     </Box>
