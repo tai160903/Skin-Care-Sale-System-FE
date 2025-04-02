@@ -14,7 +14,6 @@ import {
   ListAlt,
   ShoppingCart,
   LocalOffer,
-  BarChart,
   ExitToApp,
   LocalShipping,
   Menu,
@@ -26,7 +25,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { logout } from "../../redux/slices/userSlice";
 import { useDispatch } from "react-redux";
-
+import ShoppingBasketIcon from "@mui/icons-material/ShoppingBasket";
 const StaffSidebar = () => {
   const location = useLocation();
   const [open, setOpen] = useState(true);
@@ -46,6 +45,11 @@ const StaffSidebar = () => {
     { text: "Đơn hàng", icon: <ListAlt />, path: "/staff/orders" },
     { text: "Giao hàng", icon: <LocalShipping />, path: "/staff/shipmanager" },
     { text: "Sản phẩm", icon: <ShoppingCart />, path: "/staff/products" },
+    {
+      text: "Danh sách hoàn trả hàng",
+      icon: <ShoppingBasketIcon />,
+      path: "/staff/retore",
+    },
     { text: "Quiz", icon: <LiveHelp />, path: "/staff/quiz" },
     { text: "Khuyến mãi", icon: <LocalOffer />, path: "/staff/promotions" },
     {

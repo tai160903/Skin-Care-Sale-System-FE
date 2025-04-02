@@ -141,7 +141,7 @@ const Header = () => {
                   <LinkItem to={`/profile/${customerId}`} label="Hồ sơ" />
                   {role === "admin" && <LinkItem to="/admin" label="Quản lý" />}
                   {role === "staff" && (
-                    <LinkItem to="/staff" label="Nhân viên" />
+                    <LinkItem to="/staff/orders" label="Nhân viên" />
                   )}
                   <LinkItem
                     to={`/profile/${customerId}/order-tracking`}
