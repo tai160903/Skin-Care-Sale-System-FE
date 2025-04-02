@@ -81,7 +81,7 @@ const OrderDetail = () => {
       toast.error("Vui lòng điền lý do và upload ảnh!");
       return;
     }
-    console.log("customerId:", order.customer_id)
+    console.log("customerId:", order.customer_id);
 
     try {
       const restore = await axios.post(`http://localhost:8080/api/restore`, {
