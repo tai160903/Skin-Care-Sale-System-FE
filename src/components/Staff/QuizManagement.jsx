@@ -28,6 +28,7 @@ const QuizManagement = () => {
   );
   const [editQuestionId, setEditQuestionId] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({ question: "", answers: [] });
 
   useEffect(() => {
     fetchQuestions();
@@ -66,52 +67,96 @@ const QuizManagement = () => {
     }
   };
 
-  const handleCreateOrUpdate = async (e) => {
-    e.preventDefault();
+  const validateForm = () => {
+    const trimmedQuestion = newQuestion.trim();
+    let newErrors = { question: "", answers: Array(5).fill("") };
+    let isValid = true;
 
-    if (!newQuestion.trim()) {
-      toast.warn("Vui lòng nhập câu hỏi.");
-      return;
+    // Validation cho câu hỏi
+    if (!trimmedQuestion) {
+      newErrors.question = "Vui lòng nhập câu hỏi hợp lệ.";
+      toast.warn(newErrors.question);
+      isValid = false;
+    } else {
+      const spamPattern = /^(.)\1*$|^[^a-zA-Z0-9À-ỹ\s]+$/;
+      if (spamPattern.test(trimmedQuestion)) {
+        newErrors.question =
+          "Câu hỏi không được chứa ký tự spam hoặc lặp lại vô nghĩa.";
+        toast.warn(newErrors.question);
+        isValid = false;
+      } else if (
+        !isEditMode &&
+        questions.some(
+          (q) => q.question.toLowerCase() === trimmedQuestion.toLowerCase(),
+        )
+      ) {
+        newErrors.question =
+          "Câu hỏi này đã tồn tại. Vui lòng nhập câu hỏi khác.";
+        toast.warn(newErrors.question);
+        isValid = false;
+      }
     }
 
-    if (newAnswers.some(({ text }) => !text.trim())) {
-      toast.warn("Vui lòng nhập đầy đủ nội dung cho tất cả đáp án.");
-      return;
-    }
+    // Validation cho đáp án
+    newAnswers.forEach((answer, index) => {
+      const trimmedText = answer.text.trim();
+      if (!trimmedText) {
+        newErrors.answers[index] = "Vui lòng nhập nội dung đáp án.";
+        isValid = false;
+      } else {
+        const spamPattern = /^(.)\1*$|^[^a-zA-Z0-9À-ỹ\s]+$/;
+        if (spamPattern.test(trimmedText)) {
+          newErrors.answers[index] =
+            "Đáp án không được chứa ký tự spam hoặc lặp lại vô nghĩa.";
+          isValid = false;
+        }
+      }
 
-    if (newAnswers.some(({ skinType }) => !skinType)) {
-      toast.warn("Vui lòng chọn loại da cho tất cả đáp án.");
-      return;
-    }
+      if (!answer.skinType) {
+        newErrors.answers[index] = "Vui lòng chọn loại da.";
+        isValid = false;
+      }
+    });
 
     const skinTypeSet = new Set(newAnswers.map(({ skinType }) => skinType));
     if (skinTypeSet.size !== newAnswers.length) {
       toast.warn("Không được chọn trùng loại da cho các đáp án.");
-      return;
+      isValid = false;
     }
+
+    setErrors(newErrors);
+    if (!isValid) {
+      newErrors.answers.forEach((error, index) => {
+        if (error) toast.warn(`Đáp án ${index + 1}: ${error}`);
+      });
+    }
+    return isValid;
+  };
+
+  const handleCreateOrUpdate = async (e) => {
+    e.preventDefault();
+
+    if (!validateForm()) return;
 
     setLoading(true);
     try {
+      const trimmedQuestion = newQuestion.trim();
       if (isEditMode) {
         const response = await quizService.updateQuiz(editQuestionId, {
-          question: newQuestion,
+          question: trimmedQuestion,
           answers: newAnswers,
         });
         setQuestions(
           questions.map((q) => (q._id === editQuestionId ? response.data : q)),
         );
-        setCurrentPage(1);
-        fetchQuestions();
         toast.success("Cập nhật câu hỏi thành công!");
       } else {
         const response = await quizService.createQuiz({
-          question: newQuestion,
+          question: trimmedQuestion,
           answers: newAnswers,
         });
         setQuestions([...questions, response.data]);
         toast.success("Tạo câu hỏi thành công!");
-        setCurrentPage(1);
-        fetchQuestions();
       }
 
       setNewQuestion("");
@@ -119,6 +164,9 @@ const QuizManagement = () => {
       setIsModalOpen(false);
       setIsEditMode(false);
       setEditQuestionId(null);
+      setErrors({ question: "", answers: [] });
+      fetchQuestions();
+      setCurrentPage(1);
     } catch (error) {
       console.error("Error:", error);
       toast.error(
@@ -140,6 +188,7 @@ const QuizManagement = () => {
         skinType: ans.skinType._id,
       })),
     );
+    setErrors({ question: "", answers: Array(5).fill("") });
     setIsModalOpen(true);
   };
 
@@ -196,6 +245,7 @@ const QuizManagement = () => {
           setIsEditMode(false);
           setNewQuestion("");
           setNewAnswers(Array(5).fill({ text: "", skinType: "" }));
+          setErrors({ question: "", answers: Array(5).fill("") });
           setIsModalOpen(true);
         }}
         className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
@@ -218,38 +268,50 @@ const QuizManagement = () => {
               </button>
             </div>
             <form onSubmit={handleCreateOrUpdate} className="space-y-4">
-              <input
-                type="text"
-                value={newQuestion}
-                onChange={(e) => setNewQuestion(e.target.value)}
-                placeholder="Nhập câu hỏi..."
-                className="w-full p-3 border rounded-md"
-              />
+              <div>
+                <input
+                  type="text"
+                  value={newQuestion}
+                  onChange={(e) => setNewQuestion(e.target.value)}
+                  placeholder="Nhập câu hỏi..."
+                  className="w-full p-3 border rounded-md"
+                />
+                {errors.question && (
+                  <p className="text-red-500 text-sm mt-1">{errors.question}</p>
+                )}
+              </div>
               {newAnswers.map((answer, index) => (
-                <div key={index} className="flex space-x-2">
-                  <input
-                    type="text"
-                    value={answer.text}
-                    onChange={(e) =>
-                      updateAnswer(index, "text", e.target.value)
-                    }
-                    placeholder={`Nhập đáp án ${index + 1}...`}
-                    className="flex-grow p-3 border rounded-md"
-                  />
-                  <select
-                    value={answer.skinType}
-                    onChange={(e) =>
-                      updateAnswer(index, "skinType", e.target.value)
-                    }
-                    className="p-3 border rounded-md"
-                  >
-                    <option value="">Chọn loại da</option>
-                    {skinTypes.map(({ _id, VNname }) => (
-                      <option key={_id} value={_id}>
-                        {VNname}
-                      </option>
-                    ))}
-                  </select>
+                <div key={index} className="space-y-2">
+                  <div className="flex space-x-2">
+                    <input
+                      type="text"
+                      value={answer.text}
+                      onChange={(e) =>
+                        updateAnswer(index, "text", e.target.value)
+                      }
+                      placeholder={`Nhập đáp án ${index + 1}...`}
+                      className="flex-grow p-3 border rounded-md"
+                    />
+                    <select
+                      value={answer.skinType}
+                      onChange={(e) =>
+                        updateAnswer(index, "skinType", e.target.value)
+                      }
+                      className="p-3 border rounded-md"
+                    >
+                      <option value="">Chọn loại da</option>
+                      {skinTypes.map(({ _id, VNname }) => (
+                        <option key={_id} value={_id}>
+                          {VNname}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  {errors.answers[index] && (
+                    <p className="text-red-500 text-sm">
+                      {errors.answers[index]}
+                    </p>
+                  )}
                 </div>
               ))}
               <button

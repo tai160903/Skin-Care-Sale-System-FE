@@ -57,31 +57,66 @@ const BlogManagement = () => {
 
   // Hàm validate dữ liệu
   const validateBlogData = () => {
-    if (!newBlog.title.trim()) {
+    const trimmedTitle = newBlog.title.trim();
+    const trimmedContent = newBlog.content.trim();
+
+    // Validate tiêu đề
+    if (!trimmedTitle) {
       toast.error("Tiêu đề không được để trống!");
       return false;
     }
-    if (newBlog.title.length > 100) {
+    if (trimmedTitle.length > 100) {
       toast.error("Tiêu đề không được vượt quá 100 ký tự!");
       return false;
     }
-    if (!newBlog.content.trim()) {
+    const spamPattern = /^(.)\1*$|^[^a-zA-Z0-9À-ỹ\s]+$/;
+    if (spamPattern.test(trimmedTitle)) {
+      toast.error("Tiêu đề không được chứa ký tự spam hoặc lặp lại vô nghĩa!");
+      return false;
+    }
+    if (
+      !editMode &&
+      blogs.some(
+        (blog) => blog.title.toLowerCase() === trimmedTitle.toLowerCase(),
+      )
+    ) {
+      toast.error("Tiêu đề này đã tồn tại! Vui lòng chọn tiêu đề khác.");
+      return false;
+    }
+
+    // Validate nội dung
+    if (!trimmedContent) {
       toast.error("Nội dung không được để trống!");
       return false;
     }
+    if (spamPattern.test(trimmedContent)) {
+      toast.error("Nội dung không được chứa ký tự spam hoặc lặp lại vô nghĩa!");
+      return false;
+    }
+
+    // Validate hình ảnh chính
     if (!newBlog.image) {
       toast.error("Hình ảnh chính không được để trống!");
       return false;
     }
+
+    // Validate chi tiết
     for (let i = 0; i < newBlog.detail.length; i++) {
       const detail = newBlog.detail[i];
-      if (!detail.image || !detail.text.trim()) {
+      const trimmedDetailText = detail.text.trim();
+      if (!detail.image || !trimmedDetailText) {
         toast.error(`Phần chi tiết ${i + 1} phải có cả hình ảnh và nội dung!`);
         return false;
       }
-      if (detail.text.length > 500) {
+      if (trimmedDetailText.length > 500) {
         toast.error(
           `Nội dung chi tiết ${i + 1} không được vượt quá 500 ký tự!`,
+        );
+        return false;
+      }
+      if (spamPattern.test(trimmedDetailText)) {
+        toast.error(
+          `Nội dung chi tiết ${i + 1} không được chứa ký tự spam hoặc lặp lại vô nghĩa!`,
         );
         return false;
       }
