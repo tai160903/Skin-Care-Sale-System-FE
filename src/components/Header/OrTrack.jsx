@@ -37,9 +37,10 @@ const OrderTr = () => {
     const fetchOrders = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:8080/api/shippings?customerId=${customerId}`,
+          `http://localhost:8080/api/shippings/customer/${customerId}`,
         );
-        const orderData = res.data?.data?.data || [];
+        const orderData = res.data?.data || [];
+        console.log("res:", res.data);
         setOrders(orderData);
         setFilteredOrders(orderData); // Hiển thị toàn bộ đơn hàng ban đầu
       } catch (error) {
