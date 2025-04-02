@@ -21,7 +21,7 @@ import PercentIcon from "@mui/icons-material/Percent";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../../redux/slices/userSlice";
-
+import AssignmentReturnIcon from "@mui/icons-material/AssignmentReturn";
 const ProfileSidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -57,6 +57,11 @@ const ProfileSidebar = () => {
       text: "Đổi điểm",
       icon: <ListAlt />,
       path: `/profile/${customerId}/point`,
+    },
+    {
+      text: "Trả hàng",
+      icon: <AssignmentReturnIcon />,
+      path: `/profile/${customerId}/return`,
     },
     {
       text: "Đổi mật khẩu",

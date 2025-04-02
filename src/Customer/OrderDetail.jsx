@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   CircularProgress,
@@ -32,7 +33,7 @@ const OrderDetail = () => {
   const [loading, setLoading] = useState(true);
   const [shipping, setShipping] = useState(null);
   const [returnedProducts, setReturnedProducts] = useState([]);
-
+  const navigate = useNavigate();
 
   useEffect(() => {
     const savedReturnedProducts = localStorage.getItem("returnedProducts");
@@ -80,6 +81,7 @@ const OrderDetail = () => {
       toast.error("Vui lòng điền lý do và upload ảnh!");
       return;
     }
+    console.log("customerId:", order.customer_id)
 
     try {
       const restore = await axios.post(`http://localhost:8080/api/restore`, {
@@ -119,7 +121,7 @@ const OrderDetail = () => {
     try {
       const response = await axios.post(
         "http://localhost:8080/api/reviews",
-        reviewData
+        reviewData,
       );
       console.log("Đánh giá thành công:", response.data);
       toast.success("Đánh giá của bạn đã được gửi!", {
@@ -136,7 +138,7 @@ const OrderDetail = () => {
             {
               position: "top-right",
               autoClose: 3000,
-            }
+            },
           );
         } else {
           toast.error("Có lỗi xảy ra, vui lòng thử lại sau.", {
@@ -163,6 +165,12 @@ const OrderDetail = () => {
 
   return (
     <Box maxWidth="800px" mx="auto" my={4}>
+      <button
+        onClick={() => navigate("/")}
+        className="bg-green-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-green-700 hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300 ease-in-out mb-6"
+      >
+        Quay về Trang Chủ
+      </button>
       {/* Khung chứa Order ID và Status */}
       <Paper elevation={3} sx={{ p: 3, borderRadius: 3, mb: 3 }}>
         <Typography variant="h5" fontWeight="bold" color="primary" mb={2}>
@@ -189,24 +197,24 @@ const OrderDetail = () => {
                           order.order_status === "pending"
                             ? "orange"
                             : order.order_status === "confirmed"
-                            ? "blue"
-                            : order.order_status === "completed"
-                            ? "green"
-                            : order.order_status === "cancelled"
-                            ? "red"
-                            : "inherit",
+                              ? "blue"
+                              : order.order_status === "completed"
+                                ? "green"
+                                : order.order_status === "cancelled"
+                                  ? "red"
+                                  : "inherit",
                         fontWeight: "bold",
                       }}
                     >
                       {order.order_status === "pending"
                         ? "Chờ xác nhận"
                         : order.order_status === "confirmed"
-                        ? "Đã xác nhận"
-                        : order.order_status === "completed"
-                        ? "Đã hoàn thành"
-                        : order.order_status === "cancelled"
-                        ? "Đã hủy"
-                        : order.order_status}
+                          ? "Đã xác nhận"
+                          : order.order_status === "completed"
+                            ? "Đã hoàn thành"
+                            : order.order_status === "cancelled"
+                              ? "Đã hủy"
+                              : order.order_status}
                     </Typography>
                   }
                 />
@@ -282,22 +290,23 @@ const OrderDetail = () => {
                 </Button>
 
                 {/* Nút Trả hàng */}
-                {order.order_status === "completed" && !returnedProducts.includes(product.product_id._id) && (
-                  <Button
-                    variant="contained"
-                    sx={{
-                      ml: 2,
-                      backgroundColor: "#FF5722",
-                      color: "#fff",
-                      "&:hover": {
-                        backgroundColor: "#E64A19",
-                      },
-                    }}
-                    onClick={() => setReturnOpenIndex(index)}
-                  >
-                    Trả hàng
-                  </Button>
-                )}
+                {order.order_status === "completed" &&
+                  !returnedProducts.includes(product.product_id._id) && (
+                    <Button
+                      variant="contained"
+                      sx={{
+                        ml: 2,
+                        backgroundColor: "#FF5722",
+                        color: "#fff",
+                        "&:hover": {
+                          backgroundColor: "#E64A19",
+                        },
+                      }}
+                      onClick={() => setReturnOpenIndex(index)}
+                    >
+                      Trả hàng
+                    </Button>
+                  )}
 
                 {/* Dialog Đánh giá */}
                 <Dialog
@@ -370,7 +379,9 @@ const OrderDetail = () => {
                       Hủy
                     </Button>
                     <Button
-                      onClick={() => handleReturnRequest(product.product_id._id)}
+                      onClick={() =>
+                        handleReturnRequest(product.product_id._id)
+                      }
                       color="primary"
                     >
                       Gửi

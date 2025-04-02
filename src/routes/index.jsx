@@ -47,7 +47,7 @@ import Allproduct from "../pages/Allproduct";
 import RoutineManager from "../components/Admin/RoutineManager";
 import ChangePoint from "../Customer/ChangePoint";
 import MyPromotions from "../Customer/MyPromotions";
-
+import ReturnProduct from "../Customer/ReturnProduct";
 import QuizManagement from "../components/Staff/QuizManagement";
 import RoutineManagement from "../components/Staff/RoutineManagement";
 import BlogManagement from "../components/Staff/BlogManagement";
@@ -91,6 +91,7 @@ const Router = createBrowserRouter([
           { path: "order-tr", element: <OrTrack /> },
           { path: "point", element: <ChangePoint /> },
           { path: "my-promotions", element: <MyPromotions /> },
+          { path: "return", element: <ReturnProduct /> },
         ],
       },
       {

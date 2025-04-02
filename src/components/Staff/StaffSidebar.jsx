@@ -54,7 +54,7 @@ const StaffSidebar = () => {
       path: "/staff/routine",
     },
     { text: "Blog", icon: <Article />, path: "/staff/blogs" },
-    { text: "Báo cáo", icon: <BarChart />, path: "/staff/reports" },
+    // { text: "Báo cáo", icon: <BarChart />, path: "/staff/reports" },
   ];
 
   return (
@@ -99,6 +99,7 @@ const StaffSidebar = () => {
               fontSize: "1.3rem",
               letterSpacing: 0.5,
             }}
+            onClick={() => navigate("/")}
           >
             Staff
           </Typography>

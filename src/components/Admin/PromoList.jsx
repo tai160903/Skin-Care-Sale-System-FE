@@ -1,12 +1,7 @@
 import { useEffect, useState } from "react";
+import { getPromotion } from "../../services/adminService/promoService";
+import { toast } from "react-toastify";
 import {
-  getPromotion,
-  createPromotion,
-  updatePromotion,
-  deletePromotion,
-} from "../../services/adminService/promoService";
-import {
-  Button,
   Box,
   Typography,
   Table,
@@ -16,369 +11,323 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
+  Chip,
+  Button,
+  CircularProgress,
   TextField,
+  IconButton,
+  InputAdornment,
 } from "@mui/material";
-import { toast } from "react-toastify";
+import RefreshIcon from "@mui/icons-material/Refresh";
+import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import SearchIcon from "@mui/icons-material/Search";
+import ClearIcon from "@mui/icons-material/Clear";
 
 const PromoList = () => {
   const [promotions, setPromotions] = useState([]);
   const [filteredPromotions, setFilteredPromotions] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [startDateFilter, setStartDateFilter] = useState("");
-  const [endDateFilter, setEndDateFilter] = useState("");
-  const [openDialog, setOpenDialog] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "",
-    code: "",
-    description: "",
-    discount_percentage: "",
-    start_date: "",
-    end_date: "",
-  });
-  const [editingId, setEditingId] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [searchName, setSearchName] = useState("");
 
   useEffect(() => {
     fetchPromotions();
   }, []);
 
   const fetchPromotions = async () => {
+    setLoading(true);
     try {
-      const data = await getPromotion();
-      const promoData = Array.isArray(data) ? data : [];
+      const response = await getPromotion();
+      const promoData = Array.isArray(response) ? response : [];
       setPromotions(promoData);
-      setFilteredPromotions(promoData);
-      toast.success("Tải danh sách khuyến mãi thành công!");
+      setFilteredPromotions(promoData); // Hiển thị tất cả khuyến mãi ban đầu
     } catch (error) {
       console.error("Lỗi khi tải khuyến mãi:", error);
+      toast.error("Không thể tải danh sách khuyến mãi");
       setPromotions([]);
       setFilteredPromotions([]);
-      toast.error("Không thể tải danh sách khuyến mãi!");
+    } finally {
+      setLoading(false);
     }
   };
 
-  useEffect(() => {
-    let filtered = promotions || [];
+  // Hàm tìm kiếm
+  const handleSearch = () => {
+    const filtered = promotions.filter((promo) => {
+      const promoStartDate = new Date(promo.start_date);
+      const promoEndDate = new Date(promo.end_date);
 
-    if (searchTerm) {
-      filtered = filtered.filter((promo) =>
-        (promo.name || "").toLowerCase().includes(searchTerm.toLowerCase()),
-      );
-    }
+      const matchesStartDate = startDate
+        ? promoStartDate.toLocaleDateString() ===
+          startDate.toDate().toLocaleDateString()
+        : true;
+      const matchesEndDate = endDate
+        ? promoEndDate.toLocaleDateString() ===
+          endDate.toDate().toLocaleDateString()
+        : true;
+      const matchesName = searchName
+        ? promo.name.toLowerCase().includes(searchName.toLowerCase())
+        : true;
 
-    if (startDateFilter) {
-      filtered = filtered.filter(
-        (promo) => new Date(promo.start_date) >= new Date(startDateFilter),
-      );
-    }
-
-    if (endDateFilter) {
-      filtered = filtered.filter(
-        (promo) => new Date(promo.end_date) <= new Date(endDateFilter),
-      );
-    }
-
+      return matchesStartDate && matchesEndDate && matchesName;
+    });
     setFilteredPromotions(filtered);
-  }, [searchTerm, startDateFilter, endDateFilter, promotions]);
-
-  const handleOpenDialog = (promotion = null) => {
-    if (promotion) {
-      setEditingId(promotion._id);
-      setFormData({
-        name: promotion.name || "",
-        code: promotion.code || "",
-        description: promotion.description || "",
-        discount_percentage: promotion.discount_percentage || "",
-        start_date: promotion.start_date?.split("T")[0] || "",
-        end_date: promotion.end_date?.split("T")[0] || "",
-      });
-    } else {
-      setEditingId(null);
-      setFormData({
-        name: "",
-        code: "",
-        description: "",
-        discount_percentage: "",
-        start_date: "",
-        end_date: "",
-      });
-    }
-    setOpenDialog(true);
   };
 
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
+  // Xóa tìm kiếm tên
+  const handleClearSearchName = () => {
+    setSearchName("");
+    handleSearch(); // Tự động tìm kiếm lại sau khi xóa
   };
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  // Xóa tất cả bộ lọc
+  const handleClearAllFilters = () => {
+    setSearchName("");
+    setStartDate(null);
+    setEndDate(null);
+    setFilteredPromotions(promotions); // Hiển thị lại tất cả khuyến mãi
   };
 
-  const validateForm = () => {
-    if (!(formData.name || "").trim()) {
-      toast.error("Tên khuyến mãi không được để trống!");
-      return false;
-    }
-    if (!(formData.code || "").trim()) {
-      toast.error("Mã khuyến mãi không được để trống!");
-      return false;
-    }
-    if (
-      formData.discount_percentage === "" ||
-      formData.discount_percentage < 0 ||
-      formData.discount_percentage > 100
-    ) {
-      toast.error("Phần trăm giảm giá phải từ 0 đến 100!");
-      return false;
-    }
-    if (!formData.start_date) {
-      toast.error("Ngày bắt đầu không được để trống!");
-      return false;
-    }
-    if (!formData.end_date) {
-      toast.error("Ngày kết thúc không được để trống!");
-      return false;
-    }
-    if (new Date(formData.start_date) > new Date(formData.end_date)) {
-      toast.error("Ngày bắt đầu phải trước ngày kết thúc!");
-      return false;
-    }
-    return true;
-  };
-
-  const handleSubmit = async () => {
-    if (!validateForm()) return;
-
-    const promoData = {
-      ...formData,
-      discount_percentage: Number(formData.discount_percentage),
-      start_date: new Date(formData.start_date).toISOString(),
-      end_date: new Date(formData.end_date).toISOString(),
-    };
-
-    try {
-      if (editingId) {
-        await updatePromotion(editingId, promoData);
-        toast.success("Cập nhật khuyến mãi thành công!");
-      } else {
-        await createPromotion(promoData);
-        toast.success("Tạo khuyến mãi thành công!");
-      }
-      fetchPromotions();
-      handleCloseDialog();
-    } catch (error) {
-      console.error("Lỗi khi lưu khuyến mãi:", error);
-      toast.error(error.response?.data?.message || "Không thể lưu khuyến mãi!");
-    }
-  };
-
-  const handleDelete = async (id) => {
-    if (window.confirm("Bạn có chắc chắn muốn xóa?")) {
-      try {
-        const result = await deletePromotion(id);
-        if (result.success) {
-          toast.success(result.message);
-          fetchPromotions();
-        } else {
-          toast.error(result.message);
-        }
-      } catch (error) {
-        toast.error("Không thể xóa khuyến mãi!", error);
-      }
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleSearch();
     }
   };
 
   return (
     <Paper sx={{ padding: 3, borderRadius: 3, backgroundColor: "#f8f9fa" }}>
-      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
-        <Typography variant="h5" sx={{ fontWeight: "bold" }}>
-          🎉 Quản lí Khuyến mãi
-        </Typography>
-      </Box>
-      <div style={{ display: "flex", gap: "10px", marginBottom: "15px" }}>
-        <TextField
-          label="Tìm kiếm theo tên"
-          variant="outlined"
-          size="small"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-        <TextField
-          label="Bắt đầu từ"
-          type="date"
-          InputLabelProps={{ shrink: true }}
-          variant="outlined"
-          size="small"
-          value={startDateFilter}
-          onChange={(e) => setStartDateFilter(e.target.value)}
-        />
-        <TextField
-          label="Kết thúc đến"
-          type="date"
-          InputLabelProps={{ shrink: true }}
-          variant="outlined"
-          size="small"
-          value={endDateFilter}
-          onChange={(e) => setEndDateFilter(e.target.value)}
-        />
-      </div>
-      <Button
-        variant="contained"
+      {/* Phần tiêu đề */}
+      <Box
         sx={{
-          backgroundColor: "#0288d1",
-          ":hover": { backgroundColor: "#0277bd", transform: "scale(1.05)" },
-          transition: "0.3s ease-in-out",
-          mb: 2,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          mb: 3,
+          borderBottom: "1px solid #e0e0e0",
+          pb: 2,
         }}
-        onClick={() => handleOpenDialog()}
       >
-        Thêm Khuyến mãi
-      </Button>
-      <TableContainer component={Paper} sx={{ borderRadius: 3, boxShadow: 3 }}>
-        <Table>
-          <TableHead sx={{ backgroundColor: "#1976d2" }}>
-            <TableRow>
-              <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                Tên
-              </TableCell>
-              <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                Mã
-              </TableCell>
-              <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                Mô tả
-              </TableCell>
-              <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                Giảm giá (%)
-              </TableCell>
-              <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                Bắt đầu
-              </TableCell>
-              <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                Kết thúc
-              </TableCell>
-              <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                Hành động
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {(filteredPromotions || []).map((promo) => (
-              <TableRow key={promo._id}>
-                <TableCell>{promo.name || "Không có tên"}</TableCell>
-                <TableCell>{promo.code || "Không có mã"}</TableCell>
-                <TableCell>{promo.description || "Không có mô tả"}</TableCell>
-                <TableCell>{promo.discount_percentage || 0}%</TableCell>
-                <TableCell>
-                  {promo.start_date
-                    ? new Date(promo.start_date).toLocaleDateString()
-                    : "Không xác định"}
-                </TableCell>
-                <TableCell>
-                  {promo.end_date
-                    ? new Date(promo.end_date).toLocaleDateString()
-                    : "Không xác định"}
-                </TableCell>
-                <TableCell>
-                  <Button
-                    variant="outlined"
-                    color="primary"
-                    onClick={() => handleOpenDialog(promo)}
-                  >
-                    Sửa
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    color="secondary"
-                    onClick={() => handleDelete(promo._id)}
-                    style={{ marginLeft: "10px" }}
-                  >
-                    Xóa
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+        <Typography
+          variant="h5"
+          sx={{
+            fontWeight: "bold",
+            color: "#1976d2",
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          <span role="img" aria-label="khuyến mãi" style={{ marginRight: 8 }}>
+            🎉
+          </span>
+          Quản lý Khuyến mãi
+        </Typography>
+        <Button
+          variant="contained"
+          startIcon={<RefreshIcon />}
+          onClick={fetchPromotions}
+          sx={{
+            backgroundColor: "#0288d1",
+            borderRadius: 2,
+            textTransform: "none",
+            padding: "8px 16px",
+            ":hover": {
+              backgroundColor: "#0277bd",
+              transform: "scale(1.03)",
+            },
+            transition: "all 0.3s ease-in-out",
+          }}
+        >
+          Làm mới
+        </Button>
+      </Box>
 
-      <Dialog open={openDialog} onClose={handleCloseDialog}>
-        <DialogTitle>
-          {editingId ? "Sửa Khuyến mãi" : "Thêm Khuyến mãi"}
-        </DialogTitle>
-        <DialogContent>
+      {/* Phần bộ lọc/tìm kiếm */}
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <Box
+          sx={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: 2,
+            mb: 4,
+            alignItems: "center",
+          }}
+        >
           <TextField
-            fullWidth
-            margin="dense"
-            label="Tên"
-            name="name"
-            value={formData.name || ""}
-            onChange={handleChange}
-            inputProps={{ maxLength: 50 }}
-            helperText={`${(formData.name || "").length}/50 ký tự`}
+            label="Tìm kiếm theo tên"
+            value={searchName}
+            onChange={(e) => setSearchName(e.target.value)}
+            onKeyPress={handleKeyPress}
+            sx={{
+              flex: "1 1 300px",
+              minWidth: 200,
+              backgroundColor: "white",
+              borderRadius: 2,
+              "& .MuiOutlinedInput-root": {
+                "& fieldset": { borderColor: "#e0e0e0" },
+                "&:hover fieldset": { borderColor: "#0288d1" },
+                "&.Mui-focused fieldset": { borderColor: "#1976d2" },
+              },
+            }}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  {searchName && (
+                    <IconButton
+                      onClick={handleClearSearchName}
+                      size="small"
+                      sx={{
+                        color: "#757575",
+                        "&:hover": { color: "#d32f2f" },
+                      }}
+                    >
+                      <ClearIcon fontSize="small" />
+                    </IconButton>
+                  )}
+                  <IconButton
+                    onClick={handleSearch}
+                    sx={{
+                      color: "#0288d1",
+                      "&:hover": { color: "#1976d2" },
+                    }}
+                  >
+                    <SearchIcon />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
           />
-          <TextField
-            fullWidth
-            margin="dense"
-            label="Mã"
-            name="code"
-            value={formData.code || ""}
-            onChange={handleChange}
-            inputProps={{ maxLength: 20 }}
-            helperText={`${(formData.code || "").length}/20 ký tự`}
-          />
-          <TextField
-            fullWidth
-            margin="dense"
-            label="Mô tả"
-            name="description"
-            value={formData.description || ""}
-            onChange={handleChange}
-            inputProps={{ maxLength: 200 }}
-            helperText={`${(formData.description || "").length}/200 ký tự`}
-          />
-          <TextField
-            fullWidth
-            margin="dense"
-            label="Giảm giá (%)"
-            name="discount_percentage"
-            type="number"
-            value={formData.discount_percentage || ""}
-            onChange={handleChange}
-            inputProps={{ min: 0, max: 100 }}
-          />
-          <TextField
-            fullWidth
-            margin="dense"
+          <DatePicker
             label="Ngày bắt đầu"
-            name="start_date"
-            type="date"
-            value={formData.start_date || ""}
-            onChange={handleChange}
-            InputLabelProps={{ shrink: true }}
+            value={startDate}
+            onChange={(newValue) => setStartDate(newValue)}
+            sx={{ flex: "1 1 200px", minWidth: 150 }}
+            slotProps={{ textField: { variant: "outlined" } }}
           />
-          <TextField
-            fullWidth
-            margin="dense"
+          <DatePicker
             label="Ngày kết thúc"
-            name="end_date"
-            type="date"
-            value={formData.end_date || ""}
-            onChange={handleChange}
-            InputLabelProps={{ shrink: true }}
+            value={endDate}
+            onChange={(newValue) => setEndDate(newValue)}
+            sx={{ flex: "1 1 200px", minWidth: 150 }}
+            slotProps={{ textField: { variant: "outlined" } }}
           />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog} color="secondary">
-            Hủy
+          <Button
+            variant="outlined"
+            color="secondary"
+            startIcon={<ClearIcon />}
+            onClick={handleClearAllFilters}
+            sx={{
+              borderRadius: 2,
+              textTransform: "none",
+              padding: "8px 16px",
+              borderColor: "#d32f2f",
+              color: "#d32f2f",
+              "&:hover": {
+                borderColor: "#b71c1c",
+                color: "#b71c1c",
+                backgroundColor: "#ffebee",
+              },
+            }}
+          >
+            Xóa bộ lọc
           </Button>
-          <Button onClick={handleSubmit} color="primary">
-            {editingId ? "Cập nhật" : "Thêm"}
-          </Button>
-        </DialogActions>
-      </Dialog>
+        </Box>
+      </LocalizationProvider>
+
+      {/* Phần bảng */}
+      {loading ? (
+        <Box sx={{ display: "flex", justifyContent: "center", py: 5 }}>
+          <CircularProgress color="primary" />
+        </Box>
+      ) : (
+        <TableContainer
+          component={Paper}
+          sx={{
+            borderRadius: 2,
+            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+            overflow: "hidden",
+          }}
+        >
+          <Table>
+            <TableHead>
+              <TableRow
+                sx={{
+                  bgcolor: "#1976d2",
+                  "& th": { color: "#fff", fontWeight: 600 },
+                }}
+              >
+                {[
+                  "Tên",
+                  "Mã",
+                  "Mô tả",
+                  "Giảm giá (%)",
+                  "Ngày bắt đầu",
+                  "Ngày kết thúc",
+                  "Trạng thái",
+                ].map((header) => (
+                  <TableCell key={header} align="center">
+                    {header}
+                  </TableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {filteredPromotions.length > 0 ? (
+                filteredPromotions.map((promo) => (
+                  <TableRow
+                    key={promo._id}
+                    hover
+                    sx={{
+                      "&:hover": { bgcolor: "#e3f2fd" },
+                      transition: "background-color 0.2s",
+                    }}
+                  >
+                    <TableCell align="center">{promo.name}</TableCell>
+                    <TableCell align="center">{promo.code}</TableCell>
+                    <TableCell align="center">{promo.description}</TableCell>
+                    <TableCell align="center">
+                      {promo.discount_percentage}%
+                    </TableCell>
+                    <TableCell align="center">
+                      {new Date(promo.start_date).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell align="center">
+                      {new Date(promo.end_date).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell align="center">
+                      <Chip
+                        label={
+                          new Date(promo.end_date) > new Date()
+                            ? "Đang hoạt động"
+                            : "Hết hạn"
+                        }
+                        color={
+                          new Date(promo.end_date) > new Date()
+                            ? "success"
+                            : "error"
+                        }
+                        size="small"
+                        sx={{ fontWeight: 500 }}
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={7}
+                    align="center"
+                    sx={{ py: 4, color: "#757575" }}
+                  >
+                    Không tìm thấy chương trình khuyến mãi nào.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
     </Paper>
   );
 };

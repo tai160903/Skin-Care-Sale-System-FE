@@ -33,62 +33,97 @@ function ChangePoint() {
   ];
 
   return (
-    <div className="max-w-md mx-auto p-5 border border-gray-300 rounded-lg shadow-md text-center">
-      <h1 className="text-gray-800 text-2xl font-bold mb-4">Đổi điểm thưởng</h1>
-      <p className="text-base font-bold mb-4">
-        Điểm hiện tại: <span className="text-blue-600">{points}</span>
-      </p>
-      <div className="space-y-2">
-        {redemptionOptions.map((option) => (
-          <label
-            key={option.id}
-            className={`block p-3 border rounded-md cursor-pointer transition-colors ${
-              points < option.pointCost
-                ? "bg-gray-100 border-gray-200 text-gray-400"
-                : "bg-gray-50 border-gray-300 hover:bg-gray-100"
-            }`}
-          >
-            <input
-              type="radio"
-              name="redeemOption"
-              value={option.id}
-              onChange={() => setSelectedOption(option)}
-              disabled={points < option.pointCost}
-              className="mr-2"
-            />
-            {option.pointCost} điểm - Giảm <strong>{option.discount}</strong>
-          </label>
-        ))}
-      </div>
-      <button
-        onClick={handleRedeem}
-        disabled={!selectedOption || points < selectedOption.pointCost}
-        className={`w-full py-2 mt-4 text-white font-bold rounded-md transition-colors ${
-          !selectedOption || points < selectedOption.pointCost
-            ? "bg-blue-400 cursor-not-allowed"
-            : "bg-blue-600 hover:bg-blue-700"
-        }`}
-      >
-        Đổi ngay
-      </button>
-      {promotion && (
-        <div className="mt-5 p-4 border border-green-500 rounded-md bg-green-50">
-          <h3 className="text-green-600 text-xl font-bold mb-2">
-            Đổi điểm thành công!
-          </h3>
-          <p>
-            <strong>Mã giảm giá:</strong> {promotion.code}
-          </p>
-          <p>
-            <strong>Giảm:</strong> {promotion.discount_percentage}%
-          </p>
-          <p>
-            <strong>Hiệu lực:</strong>{" "}
-            {new Date(promotion.start_date).toLocaleDateString()} -{" "}
-            {new Date(promotion.end_date).toLocaleDateString()}
-          </p>
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+      <div className="max-w-md w-full bg-white rounded-xl shadow-lg p-6">
+        {/* Header */}
+        <h1 className="text-2xl font-bold text-gray-800 text-center mb-6">
+          Đổi Điểm Thưởng
+        </h1>
+
+        {/* Current Points */}
+        <div className="bg-blue-50 rounded-lg p-4 mb-6 text-center">
+          <p className="text-sm text-gray-600">Điểm hiện tại</p>
+          <p className="text-3xl font-bold text-blue-600">{points}</p>
         </div>
-      )}
+
+        {/* Redemption Options */}
+        <div className="space-y-4 mb-6">
+          {redemptionOptions.map((option) => (
+            <label
+              key={option.id}
+              className={`flex items-center p-4 rounded-lg border cursor-pointer transition-all duration-200 ${
+                points < option.pointCost
+                  ? "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed"
+                  : selectedOption?.id === option.id
+                    ? "bg-blue-50 border-blue-500"
+                    : "bg-white border-gray-300 hover:bg-gray-50"
+              }`}
+            >
+              <input
+                type="radio"
+                name="redeemOption"
+                value={option.id}
+                onChange={() => setSelectedOption(option)}
+                disabled={points < option.pointCost}
+                className="h-5 w-5 text-blue-600 focus:ring-blue-500"
+              />
+              <div className="ml-3 flex-1">
+                <p className="font-semibold">{option.pointCost} điểm</p>
+                <p className="text-sm">
+                  Giảm{" "}
+                  <span className="font-bold text-green-600">
+                    {option.discount}
+                  </span>
+                </p>
+              </div>
+              {points < option.pointCost && (
+                <span className="text-xs text-red-500">Không đủ điểm</span>
+              )}
+            </label>
+          ))}
+        </div>
+
+        {/* Redeem Button */}
+        <button
+          onClick={handleRedeem}
+          disabled={!selectedOption || points < selectedOption?.pointCost}
+          className={`w-full py-3 rounded-lg font-semibold text-white transition-all duration-200 ${
+            !selectedOption || points < selectedOption?.pointCost
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-blue-600 hover:bg-blue-700"
+          }`}
+        >
+          Đổi Ngay
+        </button>
+
+        {/* Promotion Result */}
+        {promotion && (
+          <div className="mt-6 p-4 bg-green-50 rounded-lg border border-green-200">
+            <h3 className="text-lg font-semibold text-green-700 mb-3">
+              Đổi Điểm Thành Công!
+            </h3>
+            <div className="space-y-2 text-sm">
+              <p>
+                <span className="font-medium">Mã giảm giá:</span>{" "}
+                <span className="font-mono bg-gray-100 px-2 py-1 rounded">
+                  {promotion.code}
+                </span>
+              </p>
+              <p>
+                <span className="font-medium">Giảm:</span>{" "}
+                <span className="text-green-600 font-semibold">
+                  {promotion.discount_percentage}%
+                </span>
+              </p>
+              <p>
+                <span className="font-medium">Hiệu lực:</span>{" "}
+                {new Date(promotion.start_date).toLocaleDateString("vi-VN")} -{" "}
+                {new Date(promotion.end_date).toLocaleDateString("vi-VN")}
+              </p>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

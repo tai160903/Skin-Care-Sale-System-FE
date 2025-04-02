@@ -22,6 +22,7 @@ function Layout() {
     "/profile/:customerId/point",
     "/profile/:customerId/my-promotions",
     "/profile/:customerId/change-password",
+    "/profile/:customerId/return",
   ];
 
   const hideHeaderFooter = paths.some((path) => matchPath(path, pathname));
