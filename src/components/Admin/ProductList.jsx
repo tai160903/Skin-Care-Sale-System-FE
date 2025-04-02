@@ -24,22 +24,35 @@ import {
   DialogActions,
   InputLabel,
   FormControl,
+  InputAdornment,
+  IconButton,
 } from "@mui/material";
 import UploadImage from "../UploadImage";
+import { useLocation, useNavigate } from "react-router-dom";
+import SearchIcon from "@mui/icons-material/Search";
+import ClearIcon from "@mui/icons-material/Clear";
 
 const ProductList = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+
+  const initialPage = parseInt(queryParams.get("page")) || 1;
+  const initialCategory = queryParams.get("category") || "";
+
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [category, setCategory] = useState("All");
-  const [open, setOpen] = useState(false);
-  const [page, setPage] = useState(1);
+  const [selectedCategory, setSelectedCategory] = useState(initialCategory);
+  const [page, setPage] = useState(initialPage);
   const [limit] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
   const [skinTypes, setSkinTypes] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const [editingProduct, setEditingProduct] = useState(null);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [categories, setCategories] = useState([]);
+  const [open, setOpen] = useState(false);
 
   const [newProduct, setNewProduct] = useState({
     name: "",
@@ -59,37 +72,31 @@ const ProductList = () => {
     fetchProducts();
     fetchSkinTypes();
     fetchCategories();
-  }, [page]);
+  }, []); // Initial fetch only
 
-  const handleOpenConfirmDialog = (product) => {
-    setSelectedProduct(product);
-    setConfirmDialogOpen(true);
-  };
+  useEffect(() => {
+    const newParams = new URLSearchParams();
+    newParams.set("page", page);
+    if (selectedCategory) newParams.set("category", selectedCategory);
+    navigate(`?${newParams.toString()}`, { replace: true });
+  }, [page, selectedCategory, navigate]);
 
-  const handleConfirmDisable = async () => {
-    if (!selectedProduct) return;
-    try {
-      await productService.updateProduct(selectedProduct._id, {
-        isDisabled: !selectedProduct.isDisabled,
-      });
-      toast.success(
-        `Product ${selectedProduct.isDisabled ? "enabled" : "disabled"} successfully!`,
-      );
-      fetchProducts();
-    } catch (error) {
-      toast.error("Failed to update product status", error);
-    } finally {
-      setConfirmDialogOpen(false);
-      setSelectedProduct(null);
-    }
-  };
+  // Fetch products when searchQuery changes
+  useEffect(() => {
+    fetchProducts();
+  }, [searchQuery, page, selectedCategory]);
 
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const response = await productService.getAllProducts({ page, limit });
+      const params = {
+        page,
+        limit,
+        category: selectedCategory || undefined,
+        q: searchQuery || undefined,
+      };
+      const response = await productService.getAllProducts(params);
       if (response?.data && Array.isArray(response.data.data)) {
-        console.log(response.data.data);
         setProducts(response.data.data);
         setTotalPages(response?.data?.totalPages || 1);
       } else {
@@ -115,30 +122,40 @@ const ProductList = () => {
   const fetchCategories = async () => {
     try {
       const response = await productService.getCategories();
-      console.log("Categories:", response.data);
       setCategories(response.data);
     } catch (error) {
       toast.error("Failed to fetch categories", error);
     }
   };
 
-  // const handleCreateProduct = async () => {
-  //   try {
-  //     await productService.createProduct(newProduct);
-  //     toast.success("Product created successfully!");
-  //     setOpen(false);
-  //     fetchProducts();
-  //   } catch (error) {
-  //     toast.error("Failed to create product", error);
-  //   }
-  // };
+  const handleOpenConfirmDialog = (product) => {
+    setSelectedProduct(product);
+    setConfirmDialogOpen(true);
+  };
+
+  const handleConfirmDisable = async () => {
+    if (!selectedProduct) return;
+    try {
+      await productService.updateProduct(selectedProduct._id, {
+        isDisabled: !selectedProduct.isDisabled,
+      });
+      toast.success(
+        `Product ${selectedProduct.isDisabled ? "enabled" : "disabled"} successfully!`,
+      );
+      fetchProducts();
+    } catch (error) {
+      toast.error("Failed to update product status", error);
+    } finally {
+      setConfirmDialogOpen(false);
+      setSelectedProduct(null);
+    }
+  };
+
   const handleCreateProduct = async () => {
-    // Kiểm tra các trường bắt buộc
     if (!newProduct.name || newProduct.name.trim() === "") {
       toast.error("Tên sản phẩm không được để trống!");
       return;
     }
-
     if (
       !newProduct.price ||
       isNaN(newProduct.price) ||
@@ -147,17 +164,14 @@ const ProductList = () => {
       toast.error("Giá sản phẩm phải là số và lớn hơn 0!");
       return;
     }
-
     if (!newProduct.category) {
       toast.error("Vui lòng chọn danh mục!");
       return;
     }
-
     if (!newProduct.image) {
       toast.error("Vui lòng tải lên hình ảnh sản phẩm!");
       return;
     }
-
     try {
       await productService.createProduct(newProduct);
       toast.success("Product created successfully!");
@@ -169,17 +183,15 @@ const ProductList = () => {
   };
 
   const handleEditProduct = (product) => {
-    console.log("product:", product);
     setEditingProduct(product);
     setOpen(true);
   };
+
   const handleUpdateProduct = async () => {
-    // Kiểm tra các trường bắt buộc
     if (!editingProduct.name || editingProduct.name.trim() === "") {
       toast.error("Tên sản phẩm không được để trống!");
       return;
     }
-
     if (
       !editingProduct.price ||
       isNaN(editingProduct.price) ||
@@ -188,17 +200,14 @@ const ProductList = () => {
       toast.error("Giá sản phẩm phải là số và lớn hơn 0!");
       return;
     }
-
     if (!editingProduct.category) {
       toast.error("Vui lòng chọn danh mục!");
       return;
     }
-
     if (!editingProduct.image) {
       toast.error("Vui lòng tải lên hình ảnh sản phẩm!");
       return;
     }
-
     try {
       await productService.updateProduct(editingProduct._id, editingProduct);
       toast.success("Product updated successfully!");
@@ -210,17 +219,27 @@ const ProductList = () => {
     }
   };
 
-  // const handleUpdateProduct = async () => {
-  //   try {
-  //     await productService.updateProduct(editingProduct._id, editingProduct);
-  //     toast.success("Product updated successfully!");
-  //     setOpen(false);
-  //     setEditingProduct(null);
-  //     fetchProducts();
-  //   } catch (error) {
-  //     toast.error("Failed to update product", error);
-  //   }
-  // };
+  const handleCategoryChange = (e) => {
+    setSelectedCategory(e.target.value);
+    setPage(1);
+  };
+
+  const handleSearch = () => {
+    setPage(1);
+    fetchProducts();
+  };
+
+  const handleClearSearch = () => {
+    setSearchQuery("");
+    setPage(1);
+    // fetchProducts is triggered by useEffect when searchQuery changes
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
 
   return (
     <Paper sx={{ padding: 3, borderRadius: 3, backgroundColor: "#f8f9fa" }}>
@@ -243,15 +262,51 @@ const ProductList = () => {
         </Box>
       </Box>
 
-      <Select
-        value={category}
-        onChange={(e) => setCategory(e.target.value)}
-        sx={{ marginBottom: 2, backgroundColor: "white", borderRadius: 2 }}
-      >
-        <MenuItem value="All">All Categories</MenuItem>
-        <MenuItem value="Skincare">Skincare</MenuItem>
-        <MenuItem value="Suncare">Suncare</MenuItem>
-      </Select>
+      <Box sx={{ display: "flex", gap: 2, mb: 4, flexWrap: "wrap" }}>
+        <TextField
+          label="Tìm kiếm sản phẩm"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          onKeyPress={handleKeyPress}
+          sx={{
+            flex: "1 1 300px",
+            minWidth: 200,
+            backgroundColor: "white",
+            borderRadius: 2,
+          }}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                {searchQuery && (
+                  <IconButton onClick={handleClearSearch} size="small">
+                    <ClearIcon fontSize="small" />
+                  </IconButton>
+                )}
+                <IconButton onClick={handleSearch}>
+                  <SearchIcon />
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+        />
+        <FormControl sx={{ minWidth: 150 }}>
+          <InputLabel>Danh mục</InputLabel>
+          <Select
+            value={selectedCategory}
+            onChange={handleCategoryChange}
+            label="Danh mục"
+            sx={{ backgroundColor: "white", borderRadius: 2 }}
+          >
+            <MenuItem value="">Tất cả sản phẩm</MenuItem>
+            {categories.map((cat) => (
+              <MenuItem key={cat._id} value={cat._id}>
+                {cat.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Box>
+
       {loading ? (
         <Typography align="center" sx={{ color: "gray" }}>
           Loading products...
@@ -324,7 +379,7 @@ const ProductList = () => {
                         </Button>
                         <Button
                           variant="contained"
-                          color={product.isDisabled ? "success" : "error"} // Enable = xanh, Disable = đỏ
+                          color={product.isDisabled ? "success" : "error"}
                           onClick={() => handleOpenConfirmDialog(product)}
                         >
                           {product.isDisabled ? "Enable" : "Disable"}
@@ -335,7 +390,7 @@ const ProductList = () => {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={6} align="center" sx={{ color: "gray" }}>
+                  <TableCell colSpan={8} align="center" sx={{ color: "gray" }}>
                     No products available.
                   </TableCell>
                 </TableRow>
@@ -466,7 +521,7 @@ const ProductList = () => {
           </Button>
           <Button
             onClick={handleConfirmDisable}
-            color={selectedProduct?.isDisabled ? "success" : "error"} // Enable = xanh, Disable = đỏ
+            color={selectedProduct?.isDisabled ? "success" : "error"}
             variant="contained"
           >
             {selectedProduct?.isDisabled ? "Enable" : "Disable"}

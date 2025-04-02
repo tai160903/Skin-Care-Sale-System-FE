@@ -16,6 +16,7 @@ import {
   TextField,
   IconButton,
   Button,
+  TablePagination,
 } from "@mui/material";
 import { LocalShipping, CreditCard, MonetizationOn } from "@mui/icons-material";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
@@ -29,6 +30,8 @@ const OrderTracking = () => {
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
 
   useEffect(() => {
     if (!customerId) {
@@ -68,21 +71,30 @@ const OrderTracking = () => {
         order._id.toLowerCase().includes(searchQuery.toLowerCase()),
       );
       setFilteredOrders(filtered);
+      setPage(0); // Reset to first page when searching
     } else {
       setFilteredOrders(orders);
+      setPage(0);
     }
   };
 
   const handleClearSearch = () => {
     setSearchQuery("");
     setFilteredOrders(orders);
+    setPage(0);
   };
 
-  // Hàm xử lý khi nhấn nút "Mua lại"
   const handleBuyAgain = (orderId) => {
-    // Giả sử order.order_id chứa thông tin sản phẩm đã đặt
-    // Chuyển hướng đến trang chi tiết sản phẩm hoặc giỏ hàng
-    navigate(`/detail/${orderId}`); // Điều chỉnh đường dẫn theo cấu trúc route của bạn
+    navigate(`/detail/${orderId}`);
+  };
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
   };
 
   const getPaymentChip = (method) => {
@@ -129,6 +141,12 @@ const OrderTracking = () => {
       </Box>
     );
   }
+
+  // Calculate the orders to display based on current page and rows per page
+  const paginatedOrders = filteredOrders.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage,
+  );
 
   return (
     <Paper sx={{ padding: 3, borderRadius: 3, backgroundColor: "#f8f9fa" }}>
@@ -210,8 +228,8 @@ const OrderTracking = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredOrders.length > 0 ? (
-              filteredOrders.map((order) => {
+            {paginatedOrders.length > 0 ? (
+              paginatedOrders.map((order) => {
                 const paymentInfo = getPaymentChip(
                   order.order_id?.payment_method,
                 );
@@ -287,6 +305,19 @@ const OrderTracking = () => {
             )}
           </TableBody>
         </Table>
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
+          component="div"
+          count={filteredOrders.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+          labelRowsPerPage="Số hàng mỗi trang:"
+          labelDisplayedRows={({ from, to, count }) =>
+            `${from}–${to} trong ${count !== -1 ? count : `hơn ${to}`}`
+          }
+        />
       </TableContainer>
     </Paper>
   );

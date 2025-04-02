@@ -22,6 +22,9 @@ import {
   TextField,
   InputAdornment,
   IconButton,
+  Button,
+  FormControl,
+  InputLabel,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import SearchIcon from "@mui/icons-material/Search";
@@ -61,30 +64,20 @@ const OrdersTable = () => {
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [statusFilter, setStatusFilter] = useState("Tất cả");
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const limit = 10;
 
   useEffect(() => {
     fetchOrders();
-  }, [statusFilter, page]);
+  }, [page]);
 
   const fetchOrders = async () => {
     try {
-      let data;
-      if (statusFilter === "Tất cả") {
-        data = await orderService.getAllOrders({ page, limit });
-      } else {
-        // Chuyển đổi trạng thái tiếng Việt sang giá trị API
-        const statusMap = {
-          "Đang xử lý": "pending",
-          "Hoàn thành": "completed",
-          "Đã hủy": "cancelled",
-        };
-        const apiStatus = statusMap[statusFilter];
-        data = await orderService.getOrdersByStatus(apiStatus, { page, limit });
-      }
+      const data = await orderService.getAllOrders({ page, limit });
       setTotalPages(data.data.totalPages || 1);
       setOrders(data.data.data || []);
       setFilteredOrders(data.data.data || []);
@@ -96,13 +89,40 @@ const OrdersTable = () => {
     }
   };
 
-  const handleSearch = () => {
+  const handleFilter = () => {
     let filtered = [...orders];
-    if (searchTerm.trim()) {
-      filtered = filtered.filter((order) =>
-        order._id.toLowerCase().includes(searchTerm.toLowerCase()),
+
+    // Áp dụng bộ lọc trạng thái
+    if (statusFilter !== "Tất cả") {
+      const statusMap = {
+        "Đang xử lý": "pending",
+        "Hoàn thành": "completed",
+        "Đã hủy": "cancelled",
+      };
+      filtered = filtered.filter(
+        (order) => order.order_status.toLowerCase() === statusMap[statusFilter],
       );
     }
+
+    // Áp dụng bộ lọc ngày
+    if (startDate) {
+      filtered = filtered.filter(
+        (order) => new Date(order.createdAt) >= new Date(startDate),
+      );
+    }
+    if (endDate) {
+      filtered = filtered.filter(
+        (order) => new Date(order.createdAt) <= new Date(endDate),
+      );
+    }
+
+    // Áp dụng tìm kiếm theo mã đơn hàng
+    if (searchQuery.trim()) {
+      filtered = filtered.filter((order) =>
+        order._id.toLowerCase().includes(searchQuery.toLowerCase()),
+      );
+    }
+
     setFilteredOrders(filtered);
     if (filtered.length === 0) {
       toast.warn("Không tìm thấy đơn hàng nào phù hợp!");
@@ -110,14 +130,27 @@ const OrdersTable = () => {
   };
 
   const handleClearSearch = () => {
-    setSearchTerm("");
-    setFilteredOrders(orders);
+    setSearchQuery("");
+    handleFilter(); // Reapply filters without search query
+  };
+
+  const handleClearAllFilters = () => {
+    setSearchQuery("");
+    setStatusFilter("Tất cả");
+    setStartDate("");
+    setEndDate("");
+    setFilteredOrders(orders); // Reset to all orders
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleFilter();
+    }
   };
 
   const handleStatusChange = (e) => {
     setStatusFilter(e.target.value);
     setPage(1); // Reset về trang 1 khi thay đổi trạng thái
-    setSearchTerm(""); // Xóa tìm kiếm khi thay đổi trạng thái
   };
 
   return (
@@ -153,47 +186,83 @@ const OrdersTable = () => {
           <TextField
             label="Tìm kiếm theo ID đơn hàng"
             variant="outlined"
-            size="small"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            onKeyPress={(e) => e.key === "Enter" && handleSearch()}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyPress={handleKeyPress}
             sx={{ flex: 1, minWidth: 250, bgcolor: "#fff" }}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
-                  {searchTerm && (
+                  {searchQuery && (
                     <IconButton onClick={handleClearSearch} edge="end">
                       <ClearIcon />
                     </IconButton>
                   )}
-                  <IconButton onClick={handleSearch} edge="end">
+                  <IconButton onClick={handleFilter} edge="end">
                     <SearchIcon />
                   </IconButton>
                 </InputAdornment>
               ),
             }}
           />
-          <Select
-            value={statusFilter}
-            onChange={handleStatusChange}
+          <FormControl sx={{ minWidth: 150 }}>
+            <InputLabel>Trạng thái</InputLabel>
+            <Select
+              value={statusFilter}
+              label="Trạng thái"
+              onChange={handleStatusChange}
+              sx={{
+                bgcolor: "#fff",
+                borderRadius: 2,
+                "& .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#2563eb",
+                },
+                "&:hover .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#1d4ed8",
+                },
+              }}
+            >
+              <MenuItem value="Tất cả">Tất cả</MenuItem>
+              <MenuItem value="Đang xử lý">Đang xử lý</MenuItem>
+              <MenuItem value="Hoàn thành">Hoàn thành</MenuItem>
+              <MenuItem value="Đã hủy">Đã hủy</MenuItem>
+            </Select>
+          </FormControl>
+          <TextField
+            label="Ngày bắt đầu"
+            type="date"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+            InputLabelProps={{ shrink: true }}
+            sx={{ minWidth: 150, bgcolor: "#fff", borderRadius: 2 }}
+          />
+          <TextField
+            label="Ngày kết thúc"
+            type="date"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+            InputLabelProps={{ shrink: true }}
+            sx={{ minWidth: 150, bgcolor: "#fff", borderRadius: 2 }}
+          />
+          <Button
+            variant="outlined"
+            startIcon={<ClearIcon />}
+            onClick={handleClearAllFilters}
             sx={{
-              minWidth: 150,
-              bgcolor: "#fff",
               borderRadius: 2,
-              "& .MuiOutlinedInput-notchedOutline": {
-                borderColor: "#2563eb",
-              },
-              "&:hover .MuiOutlinedInput-notchedOutline": {
-                borderColor: "#1d4ed8",
+              textTransform: "none",
+              padding: "8px 16px",
+              borderColor: "#d32f2f",
+              color: "#d32f2f",
+              "&:hover": {
+                borderColor: "#b71c1c",
+                color: "#b71c1c",
+                backgroundColor: "#ffebee",
               },
             }}
-            displayEmpty
           >
-            <MenuItem value="Tất cả">Tất cả</MenuItem>
-            <MenuItem value="Đang xử lý">Đang xử lý</MenuItem>
-            <MenuItem value="Hoàn thành">Hoàn thành</MenuItem>
-            <MenuItem value="Đã hủy">Đã hủy</MenuItem>
-          </Select>
+            Xóa bộ lọc
+          </Button>
         </Box>
       </Box>
 
