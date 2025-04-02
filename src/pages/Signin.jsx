@@ -87,20 +87,20 @@ function Signin() {
   };
 
   return (
-    <div className="h-screen flex items-center justify-center bg-[url('assets/snowy-mountains.jpg')] bg-cover">
+    <div className="h-screen flex items-center justify-center bg-[#dedede] bg-cover">
       <ToastContainer position="top-right" />
       {loading ? (
         <Loading />
       ) : (
-        <div className="w-full max-w-md mx-auto border-2 rounded-lg p-10 backdrop-blur-lg">
+        <div className="w-full max-w-md mx-auto border-2 rounded-lg p-10 bg-white border-gray-500">
           <div
             className="flex justify-between items-center"
             onClick={() => navigate("/")}
           >
             <button onClick={() => navigate("/")}>
-              <FaArrowLeftLong className="inline" /> Back to home
+              <FaArrowLeftLong className="inline" /> Về trang chủ
             </button>
-            <h1 className="text-center text-2xl font-bold">Signin</h1>
+            <h1 className="text-center text-2xl font-bold">Đăng nhập</h1>
           </div>
           <form onSubmit={handleSubmit} className="">
             <div className="flex justify-center m-5">
@@ -118,7 +118,7 @@ function Signin() {
               <input
                 type={`${showPassword ? "text" : "password"}`}
                 name="password"
-                placeholder="Password"
+                placeholder="Mật khẩu"
                 value={data.password}
                 onChange={handleChange}
                 className="px-2 py-1 border-2 border-gray-700 rounded-md w-full"
@@ -136,7 +136,7 @@ function Signin() {
               </div>
             </div>
             <div>
-              <Link to={"/forgot-password"}>Forgot Password?</Link>
+              <Link to={"/forgot-password"}>Quên mật khẩu?</Link>
             </div>
             <div className="my-5 flex justify-center  ">
               <button
@@ -144,18 +144,18 @@ function Signin() {
                 className={`w-1/2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg ${!(data.email && data.password) ? "cursor-not-allowed bg-slate-500" : "transition "}`}
                 disabled={!data.email || !data.password}
               >
-                Submit
+                Đăng nhập
               </button>
             </div>
           </form>
           <div className="mt-4">
             <p className="text-sm">
-              {`Don't have an account?`}
+              {`Bạn chưa có tài khoản?`}
               <a
                 href="/signup"
                 className={`text-blue-600 underline hover:text-blue-800 ps-2 `}
               >
-                Signup
+                Đăng ký
               </a>
             </p>
           </div>
@@ -196,7 +196,7 @@ function Signin() {
                   fill="#EB4335"
                 />
               </svg>
-              <p>Login with google</p>
+              <p>Đăng nhập với Google</p>
             </button>
           </div>
         </div>

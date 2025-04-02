@@ -1,25 +1,36 @@
 import { useEffect, useState } from "react";
 import routineService from "../../services/adminService/routineService";
-import { Paper } from "@mui/material";
-import { toast } from "react-toastify"; // Thêm toast để thông báo
+import {
+  Paper,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
+  TextField,
+  TextareaAutosize,
+} from "@mui/material";
+import { toast } from "react-toastify";
+import skintypeService from "../../services/adminService/skinTypeService";
 
 const RoutineManagement = () => {
   const [routines, setRoutines] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [editingRoutine, setEditingRoutine] = useState(null);
+  const [skinTypes, setSkinTypes] = useState([]);
   const [expandedRoutine, setExpandedRoutine] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false); // State cho modal tạo mới
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
     skinType: "",
     steps: [
       { stepNumber: 1, title: "", description: "", recommendProducts: [] },
     ],
   });
-  const [errors, setErrors] = useState({ skinType: "", steps: [] }); // State cho lỗi
+  const [errors, setErrors] = useState({ skinType: "", steps: [] });
 
   useEffect(() => {
     fetchRoutines();
+    fetchSkinTypes();
   }, []);
 
   const fetchRoutines = async () => {
@@ -30,6 +41,15 @@ const RoutineManagement = () => {
     } catch (err) {
       setError("Không thể tải danh sách routines.", err);
       setLoading(false);
+    }
+  };
+
+  const fetchSkinTypes = async () => {
+    try {
+      const response = await skintypeService.getSkinTypes();
+      setSkinTypes(response.data);
+    } catch (error) {
+      toast.error("Failed to fetch skin types", error);
     }
   };
 
@@ -67,7 +87,7 @@ const RoutineManagement = () => {
   const handleChange = (e, stepIndex = null, field = null) => {
     if (stepIndex === null) {
       setFormData({ ...formData, [e.target.name]: e.target.value });
-      setErrors({ ...errors, [e.target.name]: "" }); // Xóa lỗi khi nhập
+      setErrors({ ...errors, [e.target.name]: "" });
     } else {
       const updatedSteps = [...formData.steps];
       updatedSteps[stepIndex] = {
@@ -80,7 +100,7 @@ const RoutineManagement = () => {
         steps: errors.steps.map((step, i) =>
           i === stepIndex ? { ...step, [field]: "" } : step,
         ),
-      }); // Xóa lỗi khi nhập
+      });
     }
   };
 
@@ -158,7 +178,7 @@ const RoutineManagement = () => {
     let isValid = true;
 
     if (!formData.skinType.trim()) {
-      newErrors.skinType = "Loại da không được để trống.";
+      newErrors.skinType = "Vui lòng chọn loại da.";
       toast.warn(newErrors.skinType);
       isValid = false;
     }
@@ -239,22 +259,27 @@ const RoutineManagement = () => {
               </button>
             </div>
             <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Loại da
-                </label>
-                <input
-                  type="text"
+              <FormControl fullWidth>
+                <InputLabel id="skin-type-label">Loại da</InputLabel>
+                <Select
+                  labelId="skin-type-label"
+                  id="skinType"
                   name="skinType"
                   value={formData.skinType}
                   onChange={(e) => handleChange(e)}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                  placeholder="Nhập loại da..."
-                />
+                  label="Loại da"
+                >
+                  {skinTypes.map((type) => (
+                    <MenuItem key={type._id} value={type._id}>
+                      {type.VNname}
+                    </MenuItem>
+                  ))}
+                </Select>
                 {errors.skinType && (
                   <p className="text-red-500 text-sm mt-1">{errors.skinType}</p>
                 )}
-              </div>
+              </FormControl>
+
               {formData.steps.map((step, index) => (
                 <div
                   key={step.stepNumber}
@@ -264,30 +289,27 @@ const RoutineManagement = () => {
                     Bước {step.stepNumber}
                   </h4>
                   <div className="space-y-2">
-                    <label className="block text-sm font-medium text-gray-700">
-                      Tiêu đề
-                    </label>
-                    <input
-                      type="text"
+                    <TextField
+                      label="Tiêu đề"
+                      variant="outlined"
+                      fullWidth
                       value={step.title}
                       onChange={(e) => handleChange(e, index, "title")}
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                      placeholder="Nhập tiêu đề..."
+                      error={!!errors.steps[index]?.title}
+                      helperText={errors.steps[index]?.title}
                     />
-                    {errors.steps[index]?.title && (
-                      <p className="text-red-500 text-sm mt-1">
-                        {errors.steps[index].title}
-                      </p>
-                    )}
                   </div>
                   <div className="space-y-2 mt-4">
-                    <label className="block text-sm font-medium text-gray-700">
-                      Mô tả
-                    </label>
-                    <textarea
+                    <InputLabel>Mô tả</InputLabel>
+                    <TextareaAutosize
+                      minRows={4}
                       value={step.description}
                       onChange={(e) => handleChange(e, index, "description")}
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition min-h-[120px]"
+                      className={`w-full p-3 border rounded-lg ${
+                        errors.steps[index]?.description
+                          ? "border-red-500"
+                          : "border-gray-300"
+                      }`}
                       placeholder="Nhập mô tả..."
                     />
                     {errors.steps[index]?.description && (
@@ -339,24 +361,28 @@ const RoutineManagement = () => {
                   <h2 className="text-2xl font-semibold text-gray-800">
                     Chỉnh sửa Routine ID: {routine._id}
                   </h2>
-                  <div className="space-y-2">
-                    <label className="block text-sm font-medium text-gray-700">
-                      Loại da
-                    </label>
-                    <input
-                      type="text"
+                  <FormControl fullWidth>
+                    <InputLabel id="edit-skin-type-label">Loại da</InputLabel>
+                    <Select
+                      labelId="edit-skin-type-label"
+                      id="skinType"
                       name="skinType"
                       value={formData.skinType}
                       onChange={(e) => handleChange(e)}
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                      placeholder="Nhập loại da..."
-                    />
+                      label="Loại da"
+                    >
+                      {skinTypes.map((type) => (
+                        <MenuItem key={type._id} value={type.name}>
+                          {type.VNname}
+                        </MenuItem>
+                      ))}
+                    </Select>
                     {errors.skinType && (
                       <p className="text-red-500 text-sm mt-1">
                         {errors.skinType}
                       </p>
                     )}
-                  </div>
+                  </FormControl>
                   {formData.steps.map((step, index) => (
                     <div
                       key={step.stepNumber}
@@ -366,32 +392,29 @@ const RoutineManagement = () => {
                         Bước {step.stepNumber}
                       </h4>
                       <div className="space-y-2">
-                        <label className="block text-sm font-medium text-gray-700">
-                          Tiêu đề
-                        </label>
-                        <input
-                          type="text"
+                        <TextField
+                          label="Tiêu đề"
+                          variant="outlined"
+                          fullWidth
                           value={step.title}
                           onChange={(e) => handleChange(e, index, "title")}
-                          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                          placeholder="Nhập tiêu đề..."
+                          error={!!errors.steps[index]?.title}
+                          helperText={errors.steps[index]?.title}
                         />
-                        {errors.steps[index]?.title && (
-                          <p className="text-red-500 text-sm mt-1">
-                            {errors.steps[index].title}
-                          </p>
-                        )}
                       </div>
                       <div className="space-y-2 mt-4">
-                        <label className="block text-sm font-medium text-gray-700">
-                          Mô tả
-                        </label>
-                        <textarea
+                        <InputLabel>Mô tả</InputLabel>
+                        <TextareaAutosize
+                          minRows={4}
                           value={step.description}
                           onChange={(e) =>
                             handleChange(e, index, "description")
                           }
-                          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition min-h-[120px]"
+                          className={`w-full p-3 border rounded-lg ${
+                            errors.steps[index]?.description
+                              ? "border-red-500"
+                              : "border-gray-300"
+                          }`}
                           placeholder="Nhập mô tả..."
                         />
                         {errors.steps[index]?.description && (
@@ -424,12 +447,9 @@ const RoutineManagement = () => {
                     onClick={() => toggleExpand(routine._id)}
                   >
                     <div>
-                      <h2 className="text-xl font-semibold text-gray-800">
-                        Routine ID: {routine._id}
+                      <h2 className="text-gray-600 mt-1">
+                        <strong>Loại da:</strong> {routine.skinType.VNname}
                       </h2>
-                      <p className="text-gray-600 mt-1">
-                        <strong>Loại da:</strong> {routine.skinType}
-                      </p>
                     </div>
                     <span className="text-sm text-indigo-600 font-medium">
                       {expandedRoutine === routine._id

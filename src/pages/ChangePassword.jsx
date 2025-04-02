@@ -51,15 +51,13 @@ const ChangePassword = () => {
         { userId, oldPassword, newPassword, confirmNewPassword },
       );
 
-      // Kiểm tra response từ server
-      if (response.data.success) {
+      if (response.data.status === 200) {
         toast.success("Đổi mật khẩu thành công!");
-        // Reset form sau khi thành công
         setOldPassword("");
         setNewPassword("");
         setConfirmNewPassword("");
       } else {
-        toast.error(response.data.message || "Có lỗi xảy ra khi đổi mật khẩu!");
+        toast.error("Có lỗi xảy ra khi đổi mật khẩu!");
       }
     } catch (err) {
       // Xử lý các lỗi cụ thể từ server
