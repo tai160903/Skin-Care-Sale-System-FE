@@ -37,7 +37,7 @@ function ListProduct() {
           page,
           limit,
         });
-        setData(response.data.data);
+        setData(response.data.data.filter((item) => !item.isDisabled));
         setTotalPages(response.data.totalPages);
       } catch (error) {
         toast.error(error.response?.data?.message || "Không thể tải sản phẩm");
