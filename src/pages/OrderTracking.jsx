@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useOutletContext, useNavigate } from "react-router-dom";
+import { useOutletContext } from "react-router-dom";
 import {
   Table,
   TableBody,
@@ -15,17 +15,14 @@ import {
   Chip,
   TextField,
   IconButton,
-  Button,
   TablePagination,
 } from "@mui/material";
 import { LocalShipping, CreditCard, MonetizationOn } from "@mui/icons-material";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import SearchIcon from "@mui/icons-material/Search";
 import ClearIcon from "@mui/icons-material/Clear";
 
 const OrderTracking = () => {
   const { customerId } = useOutletContext();
-  const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -82,10 +79,6 @@ const OrderTracking = () => {
     setSearchQuery("");
     setFilteredOrders(orders);
     setPage(0);
-  };
-
-  const handleBuyAgain = (orderId) => {
-    navigate(`/detail/${orderId}`);
   };
 
   const handleChangePage = (event, newPage) => {
@@ -216,7 +209,6 @@ const OrderTracking = () => {
                 "Địa chỉ giao hàng",
                 "Phương thức thanh toán",
                 "Ngày đặt hàng",
-                "Hành động",
               ].map((header) => (
                 <TableCell
                   key={header}
@@ -277,19 +269,6 @@ const OrderTracking = () => {
                       {order.createdAt
                         ? new Date(order.createdAt).toLocaleDateString("vi-VN")
                         : "Không xác định"}
-                    </TableCell>
-                    <TableCell>
-                      <Button
-                        variant="contained"
-                        color="success"
-                        startIcon={<ShoppingCartIcon />}
-                        onClick={() =>
-                          handleBuyAgain(order.order_id?._id || order._id)
-                        }
-                        size="small"
-                      >
-                        Mua lại
-                      </Button>
                     </TableCell>
                   </TableRow>
                 );
