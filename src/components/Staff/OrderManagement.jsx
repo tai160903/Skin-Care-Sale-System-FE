@@ -25,7 +25,6 @@ import {
   IconButton,
   FormControl,
   InputLabel,
-  InputAdornment,
 } from "@mui/material";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import SearchIcon from "@mui/icons-material/Search";
@@ -72,8 +71,9 @@ const OrderManagement = () => {
     fetchOrders();
   }, [page]);
 
-  const handleSearch = () => {
-    let filtered = [...orders];
+  // Hàm áp dụng tất cả các bộ lọc (giống ShipManagement)
+  const applyFilters = (data) => {
+    let filtered = [...data];
 
     // Áp dụng bộ lọc trạng thái
     if (statusFilter !== "Tất cả") {
@@ -87,6 +87,7 @@ const OrderManagement = () => {
         (order) => order.order_status.toLowerCase() === statusMap[statusFilter],
       );
     }
+
     // Áp dụng bộ lọc ngày
     if (startDate) {
       filtered = filtered.filter(
@@ -101,38 +102,56 @@ const OrderManagement = () => {
 
     // Áp dụng tìm kiếm theo mã đơn hàng hoặc mã khách hàng
     if (searchQuery.trim()) {
-      filtered = filtered.filter((order) => {
-        const orderIdMatch = order._id
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase());
-        const customerIdMatch = order.customer_id
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase());
-        return orderIdMatch || customerIdMatch;
-      });
+      filtered = filtered.filter(
+        (order) =>
+          order._id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          order.customer_id.toLowerCase().includes(searchQuery.toLowerCase()),
+      );
     }
 
     setFilteredOrders(filtered);
   };
 
+  // Hàm xử lý tìm kiếm
+  const handleSearch = () => {
+    applyFilters(orders);
+  };
+
+  // Hàm xóa tìm kiếm
   const handleClearSearch = () => {
     setSearchQuery("");
-    handleSearch(); // Reapply filters without search query
+    applyFilters(orders); // Áp dụng lại bộ lọc mà không có searchQuery
   };
 
-  const handleClearAllFilters = () => {
-    setSearchQuery("");
-    setStatusFilter("Tất cả");
-    setStartDate("");
-    setEndDate("");
-    setFilteredOrders(orders); // Reset to all orders
-  };
+  // useEffect để tự động áp dụng bộ lọc (trừ searchQuery)
+  useEffect(() => {
+    let filtered = [...orders];
 
-  const handleKeyPress = (e) => {
-    if (e.key === "Enter") {
-      handleSearch();
+    if (statusFilter !== "Tất cả") {
+      const statusMap = {
+        "Đang chờ xác nhận": "pending",
+        "Đã xác nhận": "confirmed",
+        "Đã hoàn thành": "completed",
+        "Đã hủy": "cancelled",
+      };
+      filtered = filtered.filter(
+        (order) => order.order_status.toLowerCase() === statusMap[statusFilter],
+      );
     }
-  };
+
+    if (startDate) {
+      filtered = filtered.filter(
+        (order) => new Date(order.createdAt) >= new Date(startDate),
+      );
+    }
+    if (endDate) {
+      filtered = filtered.filter(
+        (order) => new Date(order.createdAt) <= new Date(endDate),
+      );
+    }
+
+    setFilteredOrders(filtered);
+  }, [statusFilter, startDate, endDate, orders]);
 
   const getStatusLabel = (status) => {
     switch (status?.toLowerCase()) {
@@ -200,103 +219,53 @@ const OrderManagement = () => {
   return (
     <Paper sx={{ padding: 3, borderRadius: 3, backgroundColor: "#f8f9fa" }}>
       {/* Header Section */}
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          mb: 3,
-          borderBottom: "1px solid #e0e0e0",
-          pb: 2,
-        }}
-      >
-        <Typography
-          variant="h5"
-          sx={{
-            fontWeight: "bold",
-            color: "#1976d2",
-            display: "flex",
-            alignItems: "center",
-          }}
-        >
-          <span role="img" aria-label="đơn hàng" style={{ marginRight: 8 }}>
-            📦
-          </span>
-          Quản lý Đơn hàng
+      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
+        <Typography variant="h5" sx={{ fontWeight: 600, color: "#1a237e" }}>
+          📦 Quản Lý Đơn Hàng
         </Typography>
         <Button
-          variant="contained"
+          variant="outlined"
+          color="primary"
           startIcon={<RefreshIcon />}
           onClick={fetchOrders}
-          sx={{
-            backgroundColor: "#0288d1",
-            borderRadius: 2,
-            textTransform: "none",
-            padding: "8px 16px",
-            ":hover": {
-              backgroundColor: "#0277bd",
-              transform: "scale(1.03)",
-            },
-            transition: "all 0.3s ease-in-out",
-          }}
+          sx={{ borderRadius: 20, textTransform: "none" }}
         >
           Làm mới
         </Button>
       </Box>
 
-      {/* Filter Section */}
-      <Box sx={{ display: "flex", gap: 2, mb: 4, flexWrap: "wrap" }}>
+      {/* Filter Section (Giống ShipManagement) */}
+      <Box sx={{ display: "flex", gap: 2, mb: 3, flexWrap: "wrap" }}>
         <TextField
-          label="Tìm kiếm theo mã đơn hoặc khách hàng"
+          label="Tìm mã đơn hàng"
+          variant="outlined"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          onKeyPress={handleKeyPress}
-          sx={{
-            flex: "1 1 300px",
-            minWidth: 250,
-            backgroundColor: "white",
-            borderRadius: 2,
-            "& .MuiOutlinedInput-root": {
-              "& fieldset": { borderColor: "#e0e0e0" },
-              "&:hover fieldset": { borderColor: "#0288d1" },
-              "&.Mui-focused fieldset": { borderColor: "#1976d2" },
-            },
-          }}
           InputProps={{
             endAdornment: (
-              <InputAdornment position="end">
+              <>
                 {searchQuery && (
-                  <IconButton
-                    onClick={handleClearSearch}
-                    size="small"
-                    sx={{
-                      color: "#757575",
-                      "&:hover": { color: "#d32f2f" },
-                    }}
-                  >
-                    <ClearIcon fontSize="small" />
+                  <IconButton onClick={handleClearSearch}>
+                    <ClearIcon />
                   </IconButton>
                 )}
-                <IconButton
-                  onClick={handleSearch}
-                  sx={{
-                    color: "#0288d1",
-                    "&:hover": { color: "#1976d2" },
-                  }}
-                >
-                  <SearchIcon />
+                <IconButton onClick={handleSearch}>
+                  <SearchIcon color="primary" />
                 </IconButton>
-              </InputAdornment>
+              </>
             ),
           }}
+          onKeyPress={(e) => {
+            if (e.key === "Enter") handleSearch();
+          }}
+          sx={{ minWidth: 250 }}
         />
         <FormControl sx={{ minWidth: 150 }}>
-          <InputLabel>Trạng thái</InputLabel>
+          <InputLabel>Trạng Thái</InputLabel>
           <Select
             value={statusFilter}
-            label="Trạng thái"
+            label="Trạng Thái"
             onChange={(e) => setStatusFilter(e.target.value)}
-            sx={{ backgroundColor: "white", borderRadius: 2 }}
           >
             <MenuItem value="Tất cả">Tất cả</MenuItem>
             <MenuItem value="Đang chờ xác nhận">Đang chờ xác nhận</MenuItem>
@@ -306,40 +275,21 @@ const OrderManagement = () => {
           </Select>
         </FormControl>
         <TextField
-          label="Ngày bắt đầu"
+          label="Ngày Bắt Đầu"
           type="date"
           value={startDate}
           onChange={(e) => setStartDate(e.target.value)}
           InputLabelProps={{ shrink: true }}
-          sx={{ minWidth: 150, backgroundColor: "white", borderRadius: 2 }}
+          sx={{ minWidth: 150 }}
         />
         <TextField
-          label="Ngày kết thúc"
+          label="Ngày Kết Thúc"
           type="date"
           value={endDate}
           onChange={(e) => setEndDate(e.target.value)}
           InputLabelProps={{ shrink: true }}
-          sx={{ minWidth: 150, backgroundColor: "white", borderRadius: 2 }}
+          sx={{ minWidth: 150 }}
         />
-        <Button
-          variant="outlined"
-          startIcon={<ClearIcon />}
-          onClick={handleClearAllFilters}
-          sx={{
-            borderRadius: 2,
-            textTransform: "none",
-            padding: "8px 16px",
-            borderColor: "#d32f2f",
-            color: "#d32f2f",
-            "&:hover": {
-              borderColor: "#b71c1c",
-              color: "#b71c1c",
-              backgroundColor: "#ffebee",
-            },
-          }}
-        >
-          Xóa bộ lọc
-        </Button>
       </Box>
 
       {/* Table Section */}
