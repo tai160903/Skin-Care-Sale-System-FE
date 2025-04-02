@@ -122,14 +122,49 @@ const ProductList = () => {
     }
   };
 
+  // const handleCreateProduct = async () => {
+  //   try {
+  //     await productService.createProduct(newProduct);
+  //     toast.success("Product created successfully!");
+  //     setOpen(false);
+  //     fetchProducts();
+  //   } catch (error) {
+  //     toast.error("Failed to create product", error);
+  //   }
+  // };
   const handleCreateProduct = async () => {
+    // Kiểm tra các trường bắt buộc
+    if (!newProduct.name || newProduct.name.trim() === "") {
+      toast.error("Tên sản phẩm không được để trống!");
+      return;
+    }
+
+    if (
+      !newProduct.price ||
+      isNaN(newProduct.price) ||
+      Number(newProduct.price) <= 0
+    ) {
+      toast.error("Giá sản phẩm phải là số và lớn hơn 0!");
+      return;
+    }
+
+    if (!newProduct.category) {
+      toast.error("Vui lòng chọn danh mục!");
+      return;
+    }
+
+    if (!newProduct.image) {
+      toast.error("Vui lòng tải lên hình ảnh sản phẩm!");
+      return;
+    }
+
     try {
       await productService.createProduct(newProduct);
       toast.success("Product created successfully!");
       setOpen(false);
       fetchProducts();
     } catch (error) {
-      toast.error("Failed to create product", error);
+      toast.error("Failed to create product: " + error.message);
     }
   };
 
@@ -138,8 +173,32 @@ const ProductList = () => {
     setEditingProduct(product);
     setOpen(true);
   };
-
   const handleUpdateProduct = async () => {
+    // Kiểm tra các trường bắt buộc
+    if (!editingProduct.name || editingProduct.name.trim() === "") {
+      toast.error("Tên sản phẩm không được để trống!");
+      return;
+    }
+
+    if (
+      !editingProduct.price ||
+      isNaN(editingProduct.price) ||
+      Number(editingProduct.price) <= 0
+    ) {
+      toast.error("Giá sản phẩm phải là số và lớn hơn 0!");
+      return;
+    }
+
+    if (!editingProduct.category) {
+      toast.error("Vui lòng chọn danh mục!");
+      return;
+    }
+
+    if (!editingProduct.image) {
+      toast.error("Vui lòng tải lên hình ảnh sản phẩm!");
+      return;
+    }
+
     try {
       await productService.updateProduct(editingProduct._id, editingProduct);
       toast.success("Product updated successfully!");
@@ -147,9 +206,21 @@ const ProductList = () => {
       setEditingProduct(null);
       fetchProducts();
     } catch (error) {
-      toast.error("Failed to update product", error);
+      toast.error("Failed to update product: " + error.message);
     }
   };
+
+  // const handleUpdateProduct = async () => {
+  //   try {
+  //     await productService.updateProduct(editingProduct._id, editingProduct);
+  //     toast.success("Product updated successfully!");
+  //     setOpen(false);
+  //     setEditingProduct(null);
+  //     fetchProducts();
+  //   } catch (error) {
+  //     toast.error("Failed to update product", error);
+  //   }
+  // };
 
   return (
     <Paper sx={{ padding: 3, borderRadius: 3, backgroundColor: "#f8f9fa" }}>
