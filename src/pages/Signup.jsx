@@ -53,19 +53,19 @@ function Signup() {
   };
 
   return (
-    <div className="h-screen flex items-center justify-center bg-[url('assets/snowy-mountains.jpg')] bg-cover">
+    <div className="h-screen flex items-center justify-center bg-[#dedede] bg-cover">
       {loading ? (
         <Loading />
       ) : (
-        <div className="w-full max-w-md mx-auto border-2 rounded-lg p-10 backdrop-blur-lg">
+        <div className="w-full max-w-md mx-auto border-2 rounded-lg p-10 bg-white border-gray-500">
           <div
             className="flex justify-between items-center"
             onClick={() => navigate("/")}
           >
             <p className="cursor-pointer text-blue-500 hover:text-blue-700">
-              <FaArrowLeftLong className="inline" /> Back to home
+              <FaArrowLeftLong className="inline" /> Về trang chủ
             </p>
-            <h1 className="text-center text-2xl font-bold">Signup</h1>
+            <h1 className="text-center text-2xl font-bold">Đăng ký</h1>
           </div>
           <form onSubmit={handleSubmit}>
             <div className="flex justify-center m-5">
@@ -83,7 +83,7 @@ function Signup() {
               <input
                 type={`${showPassword ? "text" : "password"}`}
                 name="password"
-                placeholder="Password"
+                placeholder="Mật khẩu"
                 value={data.password}
                 onChange={handleChange}
                 className="px-2 py-1 border-2 border-gray-700 rounded-md w-full"
@@ -104,7 +104,7 @@ function Signup() {
               <input
                 type={`${showConfirmPassword ? "text" : "password"}`}
                 name="confirmPassword"
-                placeholder="Confirm password"
+                placeholder="Xâc nhận mật khẩu"
                 value={data.confirmPassword}
                 onChange={handleChange}
                 className="px-2 py-1 border-2 border-gray-700 rounded-md w-full"
@@ -127,18 +127,18 @@ function Signup() {
                 className={`w-1/2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg ${!(data.email && data.password) ? "cursor-not-allowed bg-slate-500" : "transition "}`}
                 disabled={!data.email && !data.password}
               >
-                Submit
+                Đăng ký
               </button>
             </div>
           </form>
           <div className="mt-4">
             <p>
-              {"Already have an account?"}
+              {"Bạn đã có tài khoản?"}
               <a
                 href="/signin"
                 className="text-blue-500 underline hover:text-blue-700 ps-2"
               >
-                Signin
+                Đăng nhập
               </a>
             </p>
           </div>
@@ -146,7 +146,7 @@ function Signup() {
             <span className="w-1/2">
               <hr />
             </span>
-            <p className="text-slate-600">OR</p>
+            <p className="text-slate-600">Hoặc</p>
             <span className="w-1/2">
               <hr />
             </span>
@@ -179,7 +179,7 @@ function Signup() {
                   fill="#EB4335"
                 />
               </svg>
-              <p>Signup with google</p>
+              <p>Đăng ký với Google</p>
             </button>
           </div>
         </div>
