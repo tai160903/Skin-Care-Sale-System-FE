@@ -13,15 +13,19 @@ import {
   Typography,
   Box,
   Chip,
+  Pagination, // Thêm Pagination từ MUI
 } from "@mui/material";
 import { LocalShipping, CreditCard, MonetizationOn } from "@mui/icons-material";
 
 const OrderTracking = () => {
-  const { customerId } = useOutletContext(); // Lấy customerId từ Outlet context
+  const { customerId } = useOutletContext();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1); // Trang hiện tại
+  const [totalPages, setTotalPages] = useState(1); // Tổng số trang
+  const ordersPerPage = 7; // Số đơn hàng mỗi trang (có thể thay đổi)
 
-  // Fetch danh sách đơn hàng khi customerId thay đổi
+  // Fetch danh sách đơn hàng khi customerId hoặc page thay đổi
   useEffect(() => {
     if (!customerId) {
       console.error("customerId is undefined");
@@ -32,19 +36,28 @@ const OrderTracking = () => {
     const fetchOrders = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:8080/api/shippings?customer_id=${customerId}`,
+          `http://localhost:8080/api/shippings?customer_id=${customerId}&page=${page}&limit=${ordersPerPage}`
         );
-        setOrders(res.data?.data?.data || []);
+        const data = res.data?.data || {};
+        console.log(data);
+        setOrders(data.data || []); 
+        setTotalPages(data.totalPages); 
       } catch (error) {
         console.error("Error fetching orders:", error);
         setOrders([]);
+        setTotalPages(1);
       } finally {
         setLoading(false);
       }
     };
 
     fetchOrders();
-  }, [customerId]);
+  }, [customerId, page]); // Thêm page vào dependency array
+
+  // Hàm xử lý thay đổi trang
+  const handlePageChange = (event, newPage) => {
+    setPage(newPage);
+  };
 
   // Hàm xác định màu và biểu tượng cho phương thức thanh toán
   const getPaymentChip = (method) => {
@@ -52,11 +65,7 @@ const OrderTracking = () => {
       case "stripe":
         return { label: "Stripe", color: "warning", icon: <CreditCard /> };
       case "cash":
-        return {
-          label: "Tiền mặt",
-          color: "success",
-          icon: <MonetizationOn />,
-        };
+        return { label: "Tiền mặt", color: "success", icon: <MonetizationOn /> };
       default:
         return { label: method || "N/A", color: "default", icon: null };
     }
@@ -124,9 +133,7 @@ const OrderTracking = () => {
           <TableBody>
             {orders.length > 0 ? (
               orders.map((order) => {
-                const paymentInfo = getPaymentChip(
-                  order.order_id?.payment_method,
-                );
+                const paymentInfo = getPaymentChip(order.order_id?.payment_method);
                 return (
                   <TableRow
                     key={order._id}
@@ -147,12 +154,12 @@ const OrderTracking = () => {
                           order.shipping_status === "Shipped"
                             ? "info"
                             : order.shipping_status === "Pending"
-                              ? "warning"
-                              : order.shipping_status === "Cancelled"
-                                ? "error"
-                                : order.shipping_status === "Delivered"
-                                  ? "success"
-                                  : "default"
+                            ? "warning"
+                            : order.shipping_status === "Cancelled"
+                            ? "error"
+                            : order.shipping_status === "Delivered"
+                            ? "success"
+                            : "default"
                         }
                         icon={<LocalShipping />}
                         sx={{ fontWeight: "medium" }}
@@ -187,6 +194,20 @@ const OrderTracking = () => {
           </TableBody>
         </Table>
       </TableContainer>
+
+      {/* Phân trang */}
+      {totalPages > 1 && (
+        <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
+          <Pagination
+            count={totalPages}
+            page={page}
+            onChange={handlePageChange}
+            color="primary"
+            showFirstButton
+            showLastButton
+          />
+        </Box>
+      )}
     </Box>
   );
 };
