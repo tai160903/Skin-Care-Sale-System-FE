@@ -52,6 +52,7 @@ import QuizManagement from "../components/Staff/QuizManagement";
 import RoutineManagement from "../components/Staff/RoutineManagement";
 import BlogManagement from "../components/Staff/BlogManagement";
 import ReportManagement from "../components/Staff/ReportManagement";
+import RestoreManagement from "../components/Staff/RetoreManagement";
 const Router = createBrowserRouter([
   {
     path: "/",
@@ -145,6 +146,7 @@ const Router = createBrowserRouter([
       { path: "blogs", element: <BlogManagement /> },
       { path: "shipmanager", element: <ShipManagement /> },
       { path: "reports", element: <ReportManagement /> },
+      { path: "retore", element: <RestoreManagement /> },
     ],
   },
   { path: "*", element: <Error /> },
