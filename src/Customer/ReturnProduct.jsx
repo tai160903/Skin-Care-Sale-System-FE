@@ -13,7 +13,8 @@ import {
   CircularProgress,
 } from "@mui/material";
 
-const ReturnProductList = () => { // Lấy customerId từ URL
+const ReturnProductList = () => {
+  // Lấy customerId từ URL
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -23,7 +24,7 @@ const ReturnProductList = () => { // Lấy customerId từ URL
     const fetchRequests = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8080/api/restore/customer/${customerId}`
+          `http://localhost:8080/api/restore/customer/${customerId}`,
         );
         console.log("data:", response.data.data);
         setRequests(response.data.data); // Giả sử API trả về danh sách yêu cầu
@@ -64,7 +65,12 @@ const ReturnProductList = () => { // Lấy customerId từ URL
         backgroundColor: "#f9f9f9",
       }}
     >
-      <Typography variant="h5" gutterBottom textAlign="center" fontWeight="bold">
+      <Typography
+        variant="h5"
+        gutterBottom
+        textAlign="center"
+        fontWeight="bold"
+      >
         Danh Sách Yêu Cầu Trả Sản Phẩm Của Bạn
       </Typography>
       <Divider sx={{ mb: 2 }} />
@@ -101,38 +107,40 @@ const ReturnProductList = () => { // Lấy customerId từ URL
                 <strong>Lý do:</strong> {req.reason}
               </Typography>
               <Box sx={{ mt: 1 }}>
-              <Chip
-                label={{
-                  Pending: "Chờ xử lý",
-                  Accepted: "Đã chấp nhận",
-                  Reject: "Bị từ chối",
-                }[req.restore_status] || "Không xác định"}
-                color={
-                  req.restore_status === "Accepted"
-                    ? "success"
-                    : req.restore_status === "Reject"
-                    ? "error"
-                    : "warning"
-                }
-              />
-            </Box>
-            {req.restore_status !== "Pending" && req.staff_respone && (
-              <Typography
-                variant="body2"
-                sx={{
-                  mt: 1,
-                  fontStyle: "italic",
-                  fontWeight: "bold",
-                  color: req.restore_status === "Accepted" ? "green" : "red",
-                  backgroundColor:
-                    req.restore_status === "Accepted" ? "#e0f7fa" : "#ffebee",
-                  p: 1,
-                  borderRadius: 1,
-                }}
-              >
-                <strong>Phản hồi:</strong> {req.staff_respone}
-              </Typography>
-            )}
+                <Chip
+                  label={
+                    {
+                      Pending: "Chờ xử lý",
+                      Accepted: "Đã chấp nhận",
+                      Reject: "Bị từ chối",
+                    }[req.restore_status] || "Không xác định"
+                  }
+                  color={
+                    req.restore_status === "Accepted"
+                      ? "success"
+                      : req.restore_status === "Reject"
+                        ? "error"
+                        : "warning"
+                  }
+                />
+              </Box>
+              {req.restore_status !== "Pending" && req.staff_respone && (
+                <Typography
+                  variant="body2"
+                  sx={{
+                    mt: 1,
+                    fontStyle: "italic",
+                    fontWeight: "bold",
+                    color: req.restore_status === "Accepted" ? "green" : "red",
+                    backgroundColor:
+                      req.restore_status === "Accepted" ? "#e0f7fa" : "#ffebee",
+                    p: 1,
+                    borderRadius: 1,
+                  }}
+                >
+                  <strong>Phản hồi:</strong> {req.staff_respone}
+                </Typography>
+              )}
             </CardContent>
           </Card>
         ))

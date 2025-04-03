@@ -1,4 +1,4 @@
-import { Grid, Box, Typography, Button } from "@mui/material";
+import { Grid, Box, Typography } from "@mui/material";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -128,23 +128,6 @@ const Adv = () => {
                     >
                       {banner.offer}
                     </Typography>
-                    <Button
-                      variant="contained"
-                      sx={{
-                        bgcolor: "#00c853", // Changed to green
-                        borderRadius: 20,
-                        px: 4,
-                        py: 1,
-                        fontWeight: 600,
-                        "&:hover": {
-                          bgcolor: "#00b248", // Darker green for hover
-                          transform: "translateY(-2px)",
-                        },
-                        transition: "all 0.3s ease",
-                      }}
-                    >
-                      Mua Ngay
-                    </Button>
                   </Box>
                 </Box>
               </Grid>
@@ -210,25 +193,6 @@ const Adv = () => {
                   >
                     TẶNG 10% ĐƠN ĐẦU
                   </Typography>
-                  <Button
-                    variant="outlined"
-                    sx={{
-                      borderColor: "#00c853", // Changed to green
-                      color: "#00c853", // Changed to green
-                      borderRadius: 20,
-                      px: 4,
-                      py: 1.5,
-                      fontWeight: 600,
-                      "&:hover": {
-                        bgcolor: "#00c853", // Changed to green
-                        color: "white",
-                        borderColor: "#00c853", // Changed to green
-                      },
-                      transition: "all 0.3s ease",
-                    }}
-                  >
-                    Nhận Ưu Đãi
-                  </Button>
                 </Box>
               </Grid>
             </Grid>
