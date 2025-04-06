@@ -73,6 +73,13 @@ const ShipManagement = () => {
     fetchShipments();
   }, [page]);
 
+  const statusMapping = {
+    pending: { text: "Đang chờ xác nhận", color: "#FFA500" },
+    confirmed: { text: "Đã xác nhận", color: "#00008B" },
+    completed: { text: "Đã hoàn thành", color: "#008000" },
+    cancelled: { text: "Đã hủy", color: "#FF0000" },
+  };
+
   const applyFilters = (data) => {
     let filtered = [...data];
 
@@ -311,6 +318,7 @@ const ShipManagement = () => {
                 {[
                   "Mã Đơn Hàng",
                   "Tổng Giá",
+                  "Trạng Thái Đơn Hàng",
                   "Địa Chỉ Giao Hàng",
                   "Số Điện Thoại",
                   "Trạng Thái",
@@ -338,6 +346,17 @@ const ShipManagement = () => {
                     </TableCell>
                     <TableCell align="center">
                       {formatCurrency(shipment.order_id.totalPay)}
+                    </TableCell>
+                    <TableCell align="center">
+                      <span
+                        style={{
+                          color:
+                            statusMapping[shipment.order_id.order_status].color,
+                          fontWeight: "bold", // Làm chữ đậm
+                        }}
+                      >
+                        {statusMapping[shipment.order_id.order_status].text}
+                      </span>
                     </TableCell>
                     <TableCell align="center">
                       {shipment.shipping_address}

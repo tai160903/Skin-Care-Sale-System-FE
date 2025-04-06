@@ -8,9 +8,12 @@ import {
   InputLabel,
   TextField,
   TextareaAutosize,
+  Button,
+  Autocomplete,
 } from "@mui/material";
 import { toast } from "react-toastify";
 import skintypeService from "../../services/adminService/skinTypeService";
+import productService from "../../services/productService";
 
 const RoutineManagement = () => {
   const [routines, setRoutines] = useState([]);
@@ -18,6 +21,7 @@ const RoutineManagement = () => {
   const [error, setError] = useState(null);
   const [editingRoutine, setEditingRoutine] = useState(null);
   const [skinTypes, setSkinTypes] = useState([]);
+  const [products, setProducts] = useState([]);
   const [expandedRoutine, setExpandedRoutine] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -31,6 +35,7 @@ const RoutineManagement = () => {
   useEffect(() => {
     fetchRoutines();
     fetchSkinTypes();
+    fetchProducts();
   }, []);
 
   const fetchRoutines = async () => {
@@ -53,6 +58,17 @@ const RoutineManagement = () => {
     }
   };
 
+  const fetchProducts = async () => {
+    try {
+      const response = await productService.getAll();
+      console.log("response:", response.data?.data);
+      setProducts(response.data?.data);
+    } catch (error) {
+      console.log("error:", error);
+      toast.error("Failed to fetch products", error);
+    }
+  };
+
   const handleDelete = async (routineId) => {
     if (window.confirm("Bạn có chắc chắn muốn xóa routine này?")) {
       try {
@@ -70,12 +86,12 @@ const RoutineManagement = () => {
     setEditingRoutine(routine._id);
     setExpandedRoutine(null);
     setFormData({
-      skinType: routine.skinType,
+      skinType: routine.skinType._id,
       steps: routine.steps.map((step) => ({
         stepNumber: step.stepNumber,
         title: step.title,
         description: step.description,
-        recommendProducts: step.recommendProducts.map((prod) => prod._id),
+        recommendProducts: step.recommendProducts.map((prod) => prod),
       })),
     });
     setErrors({
@@ -104,6 +120,34 @@ const RoutineManagement = () => {
     }
   };
 
+  const handleAddProduct = (stepIndex, product) => {
+    if (!product) return;
+
+    const updatedSteps = [...formData.steps];
+    const isProductAlreadyAdded = updatedSteps[
+      stepIndex
+    ].recommendProducts.some((prod) => prod._id === product._id);
+
+    if (!isProductAlreadyAdded) {
+      updatedSteps[stepIndex].recommendProducts.push(product);
+      setFormData({ ...formData, steps: updatedSteps });
+      toast.success(
+        `Đã thêm sản phẩm ${product.name} vào bước ${stepIndex + 1}`,
+      );
+    } else {
+      toast.warn("Sản phẩm này đã được thêm rồi!");
+    }
+  };
+
+  const handleRemoveProduct = (stepIndex, productId) => {
+    const updatedSteps = [...formData.steps];
+    updatedSteps[stepIndex].recommendProducts = updatedSteps[
+      stepIndex
+    ].recommendProducts.filter((prod) => prod._id !== productId);
+    setFormData({ ...formData, steps: updatedSteps });
+    toast.success("Đã xóa sản phẩm khỏi bước!");
+  };
+
   const handleUpdate = async (routineId) => {
     if (!validateForm()) return;
     try {
@@ -111,16 +155,33 @@ const RoutineManagement = () => {
         routineId,
         formData,
       );
+      console.log("Updated Routine:", updatedRoutine); // Kiểm tra dữ liệu trả về
+
+      // Ánh xạ skinType từ danh sách skinTypes
+      const skinTypeData = skinTypes.find(
+        (type) =>
+          type._id ===
+          (updatedRoutine.skinType?._id || updatedRoutine.skinType),
+      );
+      const enrichedRoutine = {
+        ...updatedRoutine,
+        skinType: skinTypeData || {
+          _id: updatedRoutine.skinType,
+          VNname: "Không xác định",
+        },
+      };
+
       setRoutines(
         routines.map((routine) =>
-          routine._id === routineId ? updatedRoutine : routine,
+          routine._id === routineId ? enrichedRoutine : routine,
         ),
       );
       setEditingRoutine(null);
-      fetchRoutines();
+      await fetchRoutines(); // Làm mới dữ liệu từ server
       setFormData({ skinType: "", steps: [] });
       toast.success("Cập nhật routine thành công!");
     } catch (error) {
+      console.error("Update error:", error);
       setError("Không thể cập nhật routine.", error);
       toast.error("Không thể cập nhật routine!");
     }
@@ -318,6 +379,80 @@ const RoutineManagement = () => {
                       </p>
                     )}
                   </div>
+                  <div className="mt-4">
+                    <h5 className="text-sm font-medium text-gray-500 mb-2">
+                      Sản phẩm gợi ý:
+                    </h5>
+                    <Autocomplete
+                      options={products}
+                      getOptionLabel={(option) => option.name}
+                      onChange={(event, newValue) =>
+                        handleAddProduct(index, newValue)
+                      }
+                      renderOption={(props, option) => (
+                        <li
+                          {...props}
+                          style={{ display: "flex", alignItems: "center" }}
+                        >
+                          <img
+                            src={option.image}
+                            alt={option.name}
+                            style={{
+                              width: "40px",
+                              height: "40px",
+                              objectFit: "cover",
+                              marginRight: "10px",
+                              borderRadius: "4px",
+                            }}
+                          />
+                          {option.name}
+                        </li>
+                      )}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Tìm kiếm sản phẩm"
+                          variant="outlined"
+                          fullWidth
+                        />
+                      )}
+                    />
+                    {step.recommendProducts.length > 0 && (
+                      <ul className="mt-3 space-y-4">
+                        {step.recommendProducts.map((product) => (
+                          <li
+                            key={product._id}
+                            className="flex items-start gap-4 border-t pt-4"
+                          >
+                            <img
+                              src={product.image}
+                              alt={product.name}
+                              className="w-16 h-16 object-cover rounded-md shadow-sm"
+                            />
+                            <div>
+                              <p className="font-semibold text-gray-800">
+                                {product.name}
+                              </p>
+                              <p className="text-gray-600 text-sm">
+                                Giá: {product.price.toLocaleString()} VND
+                              </p>
+                              <Button
+                                variant="outlined"
+                                color="error"
+                                size="small"
+                                onClick={() =>
+                                  handleRemoveProduct(index, product._id)
+                                }
+                                sx={{ mt: 1 }}
+                              >
+                                Xóa
+                              </Button>
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
                 </div>
               ))}
               <button
@@ -372,7 +507,7 @@ const RoutineManagement = () => {
                       label="Loại da"
                     >
                       {skinTypes.map((type) => (
-                        <MenuItem key={type._id} value={type.name}>
+                        <MenuItem key={type._id} value={type._id}>
                           {type.VNname}
                         </MenuItem>
                       ))}
@@ -423,8 +558,88 @@ const RoutineManagement = () => {
                           </p>
                         )}
                       </div>
+                      <div className="mt-4">
+                        <h5 className="text-sm font-medium text-gray-500 mb-2">
+                          Sản phẩm gợi ý:
+                        </h5>
+                        <Autocomplete
+                          options={products}
+                          getOptionLabel={(option) => option.name}
+                          onChange={(event, newValue) =>
+                            handleAddProduct(index, newValue)
+                          }
+                          renderOption={(props, option) => (
+                            <li
+                              {...props}
+                              style={{ display: "flex", alignItems: "center" }}
+                            >
+                              <img
+                                src={option.image}
+                                alt={option.name}
+                                style={{
+                                  width: "40px",
+                                  height: "40px",
+                                  objectFit: "cover",
+                                  marginRight: "10px",
+                                  borderRadius: "4px",
+                                }}
+                              />
+                              {option.name}
+                            </li>
+                          )}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              label="Tìm kiếm sản phẩm"
+                              variant="outlined"
+                              fullWidth
+                            />
+                          )}
+                        />
+                        {step.recommendProducts.length > 0 && (
+                          <ul className="mt-3 space-y-4">
+                            {step.recommendProducts.map((product) => (
+                              <li
+                                key={product._id}
+                                className="flex items-start gap-4 border-t pt-4"
+                              >
+                                <img
+                                  src={product.image}
+                                  alt={product.name}
+                                  className="w-16 h-16 object-cover rounded-md shadow-sm"
+                                />
+                                <div>
+                                  <p className="font-semibold text-gray-800">
+                                    {product.name}
+                                  </p>
+                                  <p className="text-gray-600 text-sm">
+                                    Giá: {product.price.toLocaleString()} VND
+                                  </p>
+                                  <Button
+                                    variant="outlined"
+                                    color="error"
+                                    size="small"
+                                    onClick={() =>
+                                      handleRemoveProduct(index, product._id)
+                                    }
+                                    sx={{ mt: 1 }}
+                                  >
+                                    Xóa
+                                  </Button>
+                                </div>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
                     </div>
                   ))}
+                  <button
+                    onClick={addStep}
+                    className="w-full py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all duration-200"
+                  >
+                    Thêm Bước
+                  </button>
                   <div className="flex justify-end gap-4">
                     <button
                       onClick={() => handleUpdate(routine._id)}
@@ -498,12 +713,6 @@ const RoutineManagement = () => {
                                     </p>
                                     <p className="text-gray-600 text-sm">
                                       Giảm giá: {product.discountPercentage}%
-                                    </p>
-                                    <p className="text-gray-600 text-sm">
-                                      Mô tả: {product.description}
-                                    </p>
-                                    <p className="text-gray-600 text-sm">
-                                      Thành phần: {product.ingredient}
                                     </p>
                                   </div>
                                 </li>
