@@ -24,6 +24,7 @@ import {
 import { useLocation, useNavigate } from "react-router-dom";
 import SearchIcon from "@mui/icons-material/Search";
 import ClearIcon from "@mui/icons-material/Clear";
+import { formatCurrency } from "../../utils/formatCurrency";
 
 const ProductManagement = () => {
   const navigate = useNavigate();
@@ -270,7 +271,7 @@ const ProductManagement = () => {
                         {product?.category?.name || "N/A"}
                       </TableCell>
                       <TableCell align="center">
-                        ${product.price?.toFixed(2) || "0.00"}
+                        {formatCurrency(product.price)}
                       </TableCell>
                       <TableCell align="center">{product.stock || 0}</TableCell>
                       <TableCell align="center">

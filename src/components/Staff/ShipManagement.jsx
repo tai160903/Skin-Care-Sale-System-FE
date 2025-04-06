@@ -30,6 +30,7 @@ import RefreshIcon from "@mui/icons-material/Refresh";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import SearchIcon from "@mui/icons-material/Search";
 import ClearIcon from "@mui/icons-material/Clear";
+import { formatCurrency } from "../../utils/formatCurrency";
 
 const ShipManagement = () => {
   const [shipments, setShipments] = useState([]);
@@ -298,7 +299,6 @@ const ShipManagement = () => {
         />
       </Box>
 
-      {/* Bảng */}
       {loading ? (
         <Box sx={{ textAlign: "center", py: 5 }}>
           <Typography color="text.secondary">Đang tải danh sách...</Typography>
@@ -337,7 +337,7 @@ const ShipManagement = () => {
                       {shipment.order_id._id}
                     </TableCell>
                     <TableCell align="center">
-                      ${shipment.order_id.totalPay.toFixed(2)}
+                      {formatCurrency(shipment.order_id.totalPay)}
                     </TableCell>
                     <TableCell align="center">
                       {shipment.shipping_address}
