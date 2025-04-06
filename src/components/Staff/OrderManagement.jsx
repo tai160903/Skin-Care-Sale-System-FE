@@ -270,7 +270,6 @@ const OrderManagement = () => {
             <MenuItem value="Tất cả">Tất cả</MenuItem>
             <MenuItem value="Đang chờ xác nhận">Đang chờ xác nhận</MenuItem>
             <MenuItem value="Đã xác nhận">Đã xác nhận</MenuItem>
-            <MenuItem value="Đã hoàn thành">Đã hoàn thành</MenuItem>
             <MenuItem value="Đã hủy">Đã hủy</MenuItem>
           </Select>
         </FormControl>
@@ -393,13 +392,8 @@ const OrderManagement = () => {
                                   "& .MuiSvgIcon-root": { color: "#1976d2" },
                                 }}
                               >
-                                <MenuItem value="confirmed">
-                                  Đã xác nhận
-                                </MenuItem>
-                                <MenuItem value="completed">
-                                  Đã hoàn thành
-                                </MenuItem>
-                                <MenuItem value="cancelled">Đã hủy</MenuItem>
+                                <MenuItem value="confirmed">Xác Nhận</MenuItem>
+                                <MenuItem value="cancelled">Hủy</MenuItem>
                               </Select>
                             )}
                         </Box>
