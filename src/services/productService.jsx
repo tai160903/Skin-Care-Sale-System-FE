@@ -25,6 +25,8 @@ const productService = {
     return axiosClient.get(`/api/products?${params.toString()}`);
   },
 
+  getAll: () => axiosClient.get(`/api/products/getAll`),
+
   getAllCategory: () => axiosClient.get(`/api/categories`),
 
   getCategories: () => axiosClient.get("/api/categories"),
