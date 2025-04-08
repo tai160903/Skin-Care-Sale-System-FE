@@ -17,6 +17,7 @@ import {
   ButtonGroup,
   TextField,
   IconButton,
+  TablePagination,
 } from "@mui/material";
 import { LocalShipping, CreditCard, MonetizationOn } from "@mui/icons-material";
 import SearchIcon from "@mui/icons-material/Search";
@@ -26,23 +27,27 @@ const OrderTr = () => {
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState("All");
+  const [filter, setFilter] = useState("Pending"); // Đặt mặc định là "Pending"
   const [searchDate, setSearchDate] = useState("");
-  const [searchQuery, setSearchQuery] = useState(""); // Thêm state cho tìm kiếm mã đơn hàng
+  const [searchQuery, setSearchQuery] = useState("");
   const { customerId } = useParams();
   const navigate = useNavigate();
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  // Fetch dữ liệu đơn hàng từ API
   useEffect(() => {
     const fetchOrders = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:8080/api/shippings/customer/${customerId}`,
+          `http://localhost:8080/api/shippings/customer/${customerId}`
         );
         const orderData = res.data?.data || [];
-        console.log("res:", res.data);
-        setOrders(orderData);
-        setFilteredOrders(orderData); // Hiển thị toàn bộ đơn hàng ban đầu
+       
+        const initialFiltered = orderData.filter(
+          (order) => order.shipping_status === "Shipped" || order.shipping_status === "Pending"
+        );
+        setOrders(initialFiltered);
+        setFilteredOrders(initialFiltered);
       } catch (error) {
         console.error("Lỗi khi tải dữ liệu theo dõi đơn hàng:", error);
         setOrders([]);
@@ -54,87 +59,66 @@ const OrderTr = () => {
     fetchOrders();
   }, [customerId]);
 
-  // Lọc đơn hàng theo trạng thái, ngày và mã đơn hàng
   const applyFilters = () => {
     let filtered = [...orders];
 
-    // Lọc theo trạng thái
-    if (filter !== "All") {
+    if (filter !== "Pending" && filter !== "Shipping") {
       filtered = filtered.filter((order) => order.shipping_status === filter);
     }
 
-    // Lọc theo ngày
     if (searchDate) {
       filtered = filtered.filter(
         (order) =>
           order.createdAt &&
-          new Date(order.createdAt).toISOString().split("T")[0] === searchDate,
+          new Date(order.createdAt).toISOString().split("T")[0] === searchDate
       );
     }
 
-    // Lọc theo mã đơn hàng
     if (searchQuery.trim()) {
       filtered = filtered.filter((order) =>
-        order._id.toLowerCase().includes(searchQuery.toLowerCase()),
+        order._id.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
     setFilteredOrders(filtered);
+    setPage(0);
   };
 
-  // Hàm tìm kiếm khi nhấn nút
   const handleSearch = () => {
     applyFilters();
   };
 
-  // Hàm xóa tìm kiếm
   const handleClearSearch = () => {
     setSearchQuery("");
-    applyFilters(); // Áp dụng lại bộ lọc mà không có searchQuery
+    applyFilters();
   };
 
-  // Áp dụng bộ lọc khi thay đổi trạng thái hoặc ngày
   useEffect(() => {
     applyFilters();
   }, [filter, searchDate, orders]);
 
-  // Xác định màu và biểu tượng cho phương thức thanh toán
   const getPaymentChip = (method) => {
     switch (method?.toLowerCase()) {
       case "stripe":
         return { label: "Stripe", color: "warning", icon: <CreditCard /> };
       case "cash":
-        return {
-          label: "Tiền mặt",
-          color: "success",
-          icon: <MonetizationOn />,
-        };
+        return { label: "Tiền mặt", color: "success", icon: <MonetizationOn /> };
       default:
-        return {
-          label: method || "Không xác định",
-          color: "default",
-          icon: null,
-        };
+        return { label: method || "Không xác định", color: "default", icon: null };
     }
   };
 
-  // Hàm chuyển trạng thái sang tiếng Việt
   const getStatusLabel = (status) => {
     switch (status) {
-      case "Shipped":
+      case "Shipping":
         return "Đang vận chuyển";
       case "Pending":
         return "Chờ xử lý";
-      case "Cancelled":
-        return "Đã hủy";
-      case "Delivered":
-        return "Đã giao";
       default:
         return "Không xác định";
     }
   };
 
-  // Trạng thái loading
   if (loading) {
     return (
       <Box
@@ -150,15 +134,18 @@ const OrderTr = () => {
     );
   }
 
-  // Chuyển hướng đến chi tiết đơn hàng
   const handleViewDetails = (orderId) => {
     navigate(`/order-detail/${orderId}`);
   };
 
+  const paginatedOrders = filteredOrders.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
+  );
+
   return (
     <>
       <Paper sx={{ padding: 3, borderRadius: 3, backgroundColor: "#f8f9fa" }}>
-        {/* Header Section */}
         <Box
           sx={{
             display: "flex",
@@ -171,11 +158,8 @@ const OrderTr = () => {
         >
           <ButtonGroup variant="outlined" color="primary">
             {[
-              { value: "All", label: "Tất cả" },
               { value: "Pending", label: "Chờ xử lý" },
-              { value: "Cancelled", label: "Đã hủy" },
-              { value: "Shipped", label: "Đang vận chuyển" },
-              { value: "Delivered", label: "Đã giao" },
+              { value: "Shipping", label: "Đang vận chuyển" },
             ].map((status) => (
               <Button
                 key={status.value}
@@ -233,7 +217,6 @@ const OrderTr = () => {
           </Box>
         </Box>
 
-        {/* Bảng theo dõi đơn hàng */}
         <TableContainer
           component={Paper}
           sx={{
@@ -277,11 +260,9 @@ const OrderTr = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredOrders.length > 0 ? (
-                filteredOrders.map((order) => {
-                  const paymentInfo = getPaymentChip(
-                    order.order_id?.payment_method,
-                  );
+              {paginatedOrders.length > 0 ? (
+                paginatedOrders.map((order) => {
+                  const paymentInfo = getPaymentChip(order.order_id?.payment_method);
                   return (
                     <TableRow
                       key={order._id}
@@ -306,15 +287,11 @@ const OrderTr = () => {
                         <Chip
                           label={getStatusLabel(order.shipping_status)}
                           color={
-                            order.shipping_status === "Shipped"
+                            order.shipping_status === "Shipping"
                               ? "info"
                               : order.shipping_status === "Pending"
-                                ? "warning"
-                                : order.shipping_status === "Cancelled"
-                                  ? "error"
-                                  : order.shipping_status === "Delivered"
-                                    ? "success"
-                                    : "default"
+                              ? "warning"
+                              : "default"
                           }
                           icon={<LocalShipping />}
                           sx={{ fontWeight: "medium" }}
@@ -333,9 +310,7 @@ const OrderTr = () => {
                       </TableCell>
                       <TableCell>
                         {order.createdAt
-                          ? new Date(order.createdAt).toLocaleDateString(
-                              "vi-VN",
-                            )
+                          ? new Date(order.createdAt).toLocaleDateString("vi-VN")
                           : "Không xác định"}
                       </TableCell>
                       <TableCell>
@@ -363,6 +338,22 @@ const OrderTr = () => {
               )}
             </TableBody>
           </Table>
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25, 50]}
+            component="div"
+            count={filteredOrders.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={(event, newPage) => setPage(newPage)}
+            onRowsPerPageChange={(event) => {
+              setRowsPerPage(parseInt(event.target.value, 10));
+              setPage(0);
+            }}
+            labelRowsPerPage="Số hàng mỗi trang:"
+            labelDisplayedRows={({ from, to, count }) =>
+              `${from}–${to} trong ${count}`
+            }
+          />
         </TableContainer>
       </Paper>
     </>

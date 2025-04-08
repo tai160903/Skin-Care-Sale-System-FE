@@ -7,30 +7,52 @@ function ChangePoint() {
   const [points, setPoints] = useState(0);
   const [selectedOption, setSelectedOption] = useState(null);
   const [promotion, setPromotion] = useState(null);
+  const [redemptionOptions, setRedemptionOptions] = useState([]); // Thêm state cho options
+  const [loading, setLoading] = useState(true); // Thêm state để quản lý loading
 
   useEffect(() => {
-    fetchPoints();
+    fetchData();
   }, []);
 
-  const fetchPoints = async () => {
-    const response = await profileService.getProfile(customerId);
-    setPoints(response.data.data.point);
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      // Gọi API để lấy điểm
+      const profileResponse = await profileService.getProfile(customerId);
+      setPoints(profileResponse.data.data.point);
+
+
+      const optionsResponse = await profileService.getRedemptionOptions(); 
+      setRedemptionOptions(optionsResponse.data.data); 
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      alert("Có lỗi xảy ra khi tải dữ liệu.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleRedeem = async () => {
     if (!selectedOption) return alert("Vui lòng chọn một mức đổi điểm.");
-    const response = await profileService.redeemPoints({
-      customer_id: customerId,
-      point: selectedOption.pointCost,
-    });
-    setPromotion(response.data.data);
+    try {
+      const response = await profileService.redeemPoints({
+        customer_id: customerId,
+        point: selectedOption.point,
+      });
+      setPromotion(response.data.data);
+    } catch (error) {
+      console.error("Error redeeming points:", error);
+      alert("Có lỗi xảy ra khi đổi điểm.");
+    }
   };
 
-  const redemptionOptions = [
-    { id: 1, pointCost: 10000, discount: "5%" },
-    { id: 2, pointCost: 20000, discount: "7%" },
-    { id: 3, pointCost: 30000, discount: "10%" },
-  ];
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <p>Đang tải...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
@@ -52,7 +74,7 @@ function ChangePoint() {
             <label
               key={option.id}
               className={`flex items-center p-4 rounded-lg border cursor-pointer transition-all duration-200 ${
-                points < option.pointCost
+                points < option.point
                   ? "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed"
                   : selectedOption?.id === option.id
                     ? "bg-blue-50 border-blue-500"
@@ -64,11 +86,11 @@ function ChangePoint() {
                 name="redeemOption"
                 value={option.id}
                 onChange={() => setSelectedOption(option)}
-                disabled={points < option.pointCost}
+                disabled={points < option.point}
                 className="h-5 w-5 text-blue-600 focus:ring-blue-500"
               />
               <div className="ml-3 flex-1">
-                <p className="font-semibold">{option.pointCost} điểm</p>
+                <p className="font-semibold">{option.point} điểm</p>
                 <p className="text-sm">
                   Giảm{" "}
                   <span className="font-bold text-green-600">
@@ -86,9 +108,9 @@ function ChangePoint() {
         {/* Redeem Button */}
         <button
           onClick={handleRedeem}
-          disabled={!selectedOption || points < selectedOption?.pointCost}
+          disabled={!selectedOption || points < selectedOption?.point}
           className={`w-full py-3 rounded-lg font-semibold text-white transition-all duration-200 ${
-            !selectedOption || points < selectedOption?.pointCost
+            !selectedOption || points < selectedOption?.point
               ? "bg-gray-400 cursor-not-allowed"
               : "bg-blue-600 hover:bg-blue-700"
           }`}
