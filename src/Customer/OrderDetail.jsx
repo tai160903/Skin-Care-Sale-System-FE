@@ -57,12 +57,14 @@ const OrderDetail = () => {
     fetchDetails();
   }, [order_id]);
 
-  const [openIndex, setOpenIndex] = useState(null); // Theo dõi sản phẩm đang mở modal đánh giá
-  const [returnOpenIndex, setReturnOpenIndex] = useState(null); // Theo dõi sản phẩm đang mở modal trả hàng
+  const [openIndex, setOpenIndex] = useState(null);
+  const [returnOpenIndex, setReturnOpenIndex] = useState(null);
   const [reviews, setReviews] = useState({});
   const [ratings, setRatings] = useState({});
-  const [reason, setReason] = useState(""); // Lý do trả hàng
-  const [imageUrl, setImageUrl] = useState(""); // URL ảnh trả hàng
+  const [reason, setReason] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
+  const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
+  const [cancelReason, setCancelReason] = useState("");
 
   if (loading)
     return (
@@ -81,8 +83,6 @@ const OrderDetail = () => {
       toast.error("Vui lòng điền lý do và upload ảnh!");
       return;
     }
-    console.log("customerId:", order.customer_id);
-
     try {
       const restore = await axios.post(`http://localhost:8080/api/restore`, {
         product_id: productId,
@@ -92,17 +92,15 @@ const OrderDetail = () => {
         reason: reason,
         image: imageUrl,
       });
-      console.log("Restore response:", restore);
       toast.success("Yêu cầu trả hàng đã được gửi!");
       setReturnedProducts((prev) => {
         const updated = [...prev, productId];
-        localStorage.setItem("returnedProducts", JSON.stringify(updated)); // Lưu vào localStorage
+        localStorage.setItem("returnedProducts", JSON.stringify(updated));
         return updated;
       });
-      setReturnOpenIndex(null); // Đóng modal sau khi gửi thành công
+      setReturnOpenIndex(null);
     } catch (error) {
-      console.error("Error in return request:", error);
-      toast.error("Có lỗi xảy ra khi gửi yêu cầu trả hàng!");
+      toast.error(error.response?.data.message);
     }
   };
 
@@ -123,35 +121,38 @@ const OrderDetail = () => {
         "http://localhost:8080/api/reviews",
         reviewData,
       );
-      console.log("Đánh giá thành công:", response.data);
-      toast.success("Đánh giá của bạn đã được gửi!", {
-        position: "top-right",
-        autoClose: 3000,
-      });
+      toast.success("Đánh giá của bạn đã được gửi!");
       setOpenIndex(null);
     } catch (error) {
-      if (error.response) {
-        console.log("Error:", error.response);
-        if (error.response.status === 400) {
-          toast.error(
-            error.response.data.message || "Lỗi yêu cầu không hợp lệ!",
-            {
-              position: "top-right",
-              autoClose: 3000,
-            },
-          );
-        } else {
-          toast.error("Có lỗi xảy ra, vui lòng thử lại sau.", {
-            position: "top-right",
-            autoClose: 3000,
-          });
-        }
-      } else {
-        toast.error("Không thể kết nối đến server!", {
-          position: "top-right",
-          autoClose: 3000,
-        });
-      }
+      toast.error("Có lỗi xảy ra, vui lòng thử lại sau.");
+    }
+  };
+
+  const handleCancelOrder = async () => {
+    if (!cancelReason) {
+      toast.error("Vui lòng điền lý do hủy đơn hàng!");
+      return;
+    }
+    if (!shipping || !shipping[0]?._id) {
+      toast.error("Không tìm thấy thông tin vận chuyển để hủy đơn hàng!");
+      return;
+    }
+    try {
+      const response = await axios.put(
+        `http://localhost:8080/api/shippings/update-reason/${shipping[0]._id}`,
+        { reason: cancelReason },
+      );
+      setOrder({ ...order, order_status: "cancelled" });
+      setShipping((prev) => [
+        { ...prev[0], reason: cancelReason },
+        ...prev.slice(1),
+      ]);
+      toast.success("Đơn hàng đã được hủy thành công!");
+      setCancelDialogOpen(false);
+      setCancelReason("");
+    } catch (error) {
+      console.error("Error cancelling order:", error);
+      toast.error("Có lỗi xảy ra khi hủy đơn hàng!");
     }
   };
 
@@ -161,8 +162,6 @@ const OrderDetail = () => {
 
   if (!order) return <Typography align="center">Order not found</Typography>;
 
-  console.log("ship:", shipping);
-
   return (
     <Box maxWidth="800px" mx="auto" my={4}>
       <button
@@ -171,27 +170,43 @@ const OrderDetail = () => {
       >
         Quay về Trang Chủ
       </button>
-      {/* Khung chứa Order ID và Status */}
+      {/* Order Summary */}
       <Paper elevation={3} sx={{ p: 3, borderRadius: 3, mb: 3 }}>
-        <Typography variant="h5" fontWeight="bold" color="primary" mb={2}>
+        <Typography variant="h5" fontWeight="bold" color="primary" mb={3}>
           Order Summary
         </Typography>
 
-        <Grid container spacing={2}>
-          <Grid item xs={6}>
-            <List>
-              <ListItem>
-                <ListItemText primary="Order ID" secondary={order._id} />
+        <Grid container spacing={2} alignItems="center">
+          <Grid item xs={12} sm={6}>
+            <List disablePadding>
+              <ListItem disableGutters>
+                <ListItemText
+                  primary={
+                    <Typography variant="subtitle1" fontWeight="medium">
+                      Order ID
+                    </Typography>
+                  }
+                  secondary={
+                    <Typography variant="body2" color="textSecondary">
+                      {order._id}
+                    </Typography>
+                  }
+                />
               </ListItem>
             </List>
           </Grid>
-          <Grid item xs={6}>
-            <List>
-              <ListItem>
+          <Grid item xs={12} sm={6}>
+            <List disablePadding>
+              <ListItem disableGutters>
                 <ListItemText
-                  primary="Status"
+                  primary={
+                    <Typography variant="subtitle1" fontWeight="medium">
+                      Status
+                    </Typography>
+                  }
                   secondary={
                     <Typography
+                      variant="body2"
                       sx={{
                         color:
                           order.order_status === "pending"
@@ -221,9 +236,87 @@ const OrderDetail = () => {
               </ListItem>
             </List>
           </Grid>
+
+          {/* Lý do hủy đơn hàng */}
+          {order.order_status === "cancelled" && (
+            <Grid item xs={12}>
+              <Box
+                sx={{
+                  mt: 2,
+                  p: 2,
+                  bgcolor: "grey.100",
+                  borderRadius: 2,
+                }}
+              >
+                <Typography
+                  variant="subtitle1"
+                  fontWeight="bold"
+                  color="error.main"
+                  mb={1}
+                >
+                  Lý do hủy đơn hàng:
+                </Typography>
+                <Typography
+                  variant="body2"
+                  color="textSecondary"
+                  sx={{ wordBreak: "break-word" }}
+                >
+                  {shipping?.[0]?.reason || "Không có lý do được cung cấp"}
+                </Typography>
+              </Box>
+            </Grid>
+          )}
         </Grid>
 
-        <Divider sx={{ my: 2 }} />
+        {/* Nút Hủy đơn hàng */}
+        {(order.order_status === "pending" ||
+          order.order_status === "confirmed") && (
+          <Box sx={{ mt: 3, textAlign: "right" }}>
+            <Button
+              variant="contained"
+              color="error"
+              onClick={() => setCancelDialogOpen(true)}
+              sx={{ px: 3, py: 1 }}
+            >
+              Hủy đơn hàng
+            </Button>
+          </Box>
+        )}
+
+        {/* Dialog Lý do hủy đơn */}
+        <Dialog
+          open={cancelDialogOpen}
+          onClose={() => setCancelDialogOpen(false)}
+          maxWidth="sm"
+          fullWidth
+        >
+          <DialogTitle>Điền lý do hủy đơn hàng</DialogTitle>
+          <DialogContent>
+            <TextField
+              fullWidth
+              label="Lý do hủy đơn"
+              value={cancelReason}
+              onChange={(e) => setCancelReason(e.target.value)}
+              margin="normal"
+              variant="outlined"
+              multiline
+              rows={3}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={() => setCancelDialogOpen(false)}
+              color="secondary"
+            >
+              Hủy
+            </Button>
+            <Button onClick={handleCancelOrder} color="primary">
+              Xác nhận
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        <Divider sx={{ my: 3 }} />
 
         {/* Danh sách sản phẩm */}
         <Paper
@@ -279,7 +372,6 @@ const OrderDetail = () => {
                   />
                 </ListItem>
 
-                {/* Nút Đánh giá */}
                 <Button
                   variant="contained"
                   color="primary"
@@ -289,7 +381,6 @@ const OrderDetail = () => {
                   Đánh giá
                 </Button>
 
-                {/* Nút Trả hàng */}
                 {order.order_status === "completed" &&
                   !returnedProducts.includes(product.product_id._id) && (
                     <Button
@@ -308,7 +399,6 @@ const OrderDetail = () => {
                     </Button>
                   )}
 
-                {/* Dialog Đánh giá */}
                 <Dialog
                   open={openIndex === index}
                   onClose={() => setOpenIndex(null)}
@@ -352,7 +442,6 @@ const OrderDetail = () => {
                   </DialogActions>
                 </Dialog>
 
-                {/* Dialog Trả hàng */}
                 <Dialog
                   open={returnOpenIndex === index}
                   onClose={() => setReturnOpenIndex(null)}
@@ -392,6 +481,7 @@ const OrderDetail = () => {
             ))}
           </List>
         </Paper>
+
         <Paper
           elevation={2}
           sx={{ p: 2, bgcolor: "success.lighter", mt: 2, borderRadius: 2 }}
@@ -408,7 +498,6 @@ const OrderDetail = () => {
               currency: "VND",
             }).format(order.totalPay - order.shipping_price || 0)}
           </Typography>
-
           <Typography
             variant="h6"
             fontWeight="bold"
@@ -421,7 +510,6 @@ const OrderDetail = () => {
               currency: "VND",
             }).format(order.shipping_price || 0)}
           </Typography>
-
           <Typography
             variant="h6"
             fontWeight="bold"
@@ -437,7 +525,6 @@ const OrderDetail = () => {
         </Paper>
       </Paper>
 
-      {/* Khung chứa các thông tin còn lại */}
       <Paper elevation={3} sx={{ p: 3, borderRadius: 3 }}>
         <Typography variant="h5" fontWeight="bold" color="primary">
           Thông tin vận chuyển
