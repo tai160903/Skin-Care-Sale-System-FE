@@ -17,6 +17,7 @@ const profileService = {
     console.log(data);
     return await axiosClient.post(`/api/promotions/customer`, data);
   },
-};q
+};
+
 
 export default profileService;
