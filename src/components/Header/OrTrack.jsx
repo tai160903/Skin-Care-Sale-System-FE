@@ -39,7 +39,7 @@ const OrderTr = () => {
     const fetchOrders = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:8080/api/shippings/customer/${customerId}`
+          `http://localhost:8080/api/shippings/customer/${customerId}`,
         );
         const orderData = res.data?.data || [];
 
@@ -72,13 +72,13 @@ const OrderTr = () => {
       filtered = filtered.filter(
         (order) =>
           order.createdAt &&
-          new Date(order.createdAt).toISOString().split("T")[0] === searchDate
+          new Date(order.createdAt).toISOString().split("T")[0] === searchDate,
       );
     }
 
     if (searchQuery.trim()) {
       filtered = filtered.filter((order) =>
-        order._id.toLowerCase().includes(searchQuery.toLowerCase())
+        order._id.toLowerCase().includes(searchQuery.toLowerCase()),
       );
     }
 
@@ -104,9 +104,17 @@ const OrderTr = () => {
       case "stripe":
         return { label: "Stripe", color: "warning", icon: <CreditCard /> };
       case "cash":
-        return { label: "Tiền mặt", color: "success", icon: <MonetizationOn /> };
+        return {
+          label: "Tiền mặt",
+          color: "success",
+          icon: <MonetizationOn />,
+        };
       default:
-        return { label: method || "Không xác định", color: "default", icon: null };
+        return {
+          label: method || "Không xác định",
+          color: "default",
+          icon: null,
+        };
     }
   };
 
@@ -278,7 +286,7 @@ const OrderTr = () => {
                         },
                       }}
                     >
-                      <TableCell>{order._id || "Không xác định"}</TableCell>
+                      <TableCell>{order.order_id._id || "Không xác định"}</TableCell>
                       <TableCell>
                         {order.order_id?.totalPay
                           ? `${order.order_id.totalPay.toLocaleString("vi-VN")} VND`
@@ -314,7 +322,9 @@ const OrderTr = () => {
                       </TableCell>
                       <TableCell>
                         {order.createdAt
-                          ? new Date(order.createdAt).toLocaleDateString("vi-VN")
+                          ? new Date(order.createdAt).toLocaleDateString(
+                              "vi-VN",
+                            )
                           : "Không xác định"}
                       </TableCell>
                       <TableCell>

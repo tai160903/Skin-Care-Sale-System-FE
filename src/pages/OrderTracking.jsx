@@ -237,7 +237,7 @@ const OrderTracking = () => {
                       },
                     }}
                   >
-                    <TableCell>{order._id || "Không xác định"}</TableCell>
+                    <TableCell>{order.order_id._id || "Không xác định"}</TableCell>
                     <TableCell>
                       {order.shipping_phone || "Không xác định"}
                     </TableCell>

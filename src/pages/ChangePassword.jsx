@@ -31,14 +31,23 @@ const ChangePassword = () => {
     if (!oldPassword || !newPassword || !confirmNewPassword) {
       return "Vui lòng nhập đầy đủ thông tin!";
     }
+
     if (newPassword !== confirmNewPassword) {
       return "Mật khẩu mới và xác nhận mật khẩu không khớp!";
     }
+
+    // Regex kiểm tra mật khẩu mạnh
+    // const strongPasswordRegex =
+    //   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+
+    // if (!strongPasswordRegex.test(newPassword)) {
+    //   return "Mật khẩu phải có ít nhất 8 ký tự, gồm chữ hoa, chữ thường và số!";
+    // }
+
     return null;
   };
 
   const handleChangePassword = async () => {
-    // Kiểm tra validation trước khi gửi request
     const validationError = validateInputs();
     if (validationError) {
       toast.error(validationError);
@@ -60,7 +69,6 @@ const ChangePassword = () => {
         toast.error("Có lỗi xảy ra khi đổi mật khẩu!");
       }
     } catch (err) {
-      // Xử lý các lỗi cụ thể từ server
       const errorMessage =
         err.response?.data?.message ||
         "Đổi mật khẩu thất bại! Vui lòng thử lại.";
@@ -94,15 +102,12 @@ const ChangePassword = () => {
           variant="h5"
           fontWeight="bold"
           textAlign="center"
-          sx={{
-            mb: 3,
-            color: "primary.main",
-            letterSpacing: "0.5px",
-          }}
+          sx={{ mb: 3, color: "primary.main", letterSpacing: "0.5px" }}
         >
           Đổi Mật Khẩu
         </Typography>
 
+        {/* Mật khẩu cũ */}
         <TextField
           label="Mật khẩu cũ"
           type={showPassword.old ? "text" : "password"}
@@ -136,16 +141,13 @@ const ChangePassword = () => {
           sx={{
             "& .MuiOutlinedInput-root": {
               borderRadius: 2,
-              "&:hover fieldset": {
-                borderColor: "primary.main",
-              },
-              "&.Mui-focused fieldset": {
-                borderColor: "primary.main",
-              },
+              "&:hover fieldset": { borderColor: "primary.main" },
+              "&.Mui-focused fieldset": { borderColor: "primary.main" },
             },
           }}
         />
 
+        {/* Mật khẩu mới */}
         <TextField
           label="Mật khẩu mới"
           type={showPassword.new ? "text" : "password"}
@@ -179,16 +181,13 @@ const ChangePassword = () => {
           sx={{
             "& .MuiOutlinedInput-root": {
               borderRadius: 2,
-              "&:hover fieldset": {
-                borderColor: "primary.main",
-              },
-              "&.Mui-focused fieldset": {
-                borderColor: "primary.main",
-              },
+              "&:hover fieldset": { borderColor: "primary.main" },
+              "&.Mui-focused fieldset": { borderColor: "primary.main" },
             },
           }}
         />
 
+        {/* Xác nhận mật khẩu mới */}
         <TextField
           label="Xác nhận mật khẩu mới"
           type={showPassword.confirm ? "text" : "password"}
@@ -225,12 +224,8 @@ const ChangePassword = () => {
           sx={{
             "& .MuiOutlinedInput-root": {
               borderRadius: 2,
-              "&:hover fieldset": {
-                borderColor: "primary.main",
-              },
-              "&.Mui-focused fieldset": {
-                borderColor: "primary.main",
-              },
+              "&:hover fieldset": { borderColor: "primary.main" },
+              "&.Mui-focused fieldset": { borderColor: "primary.main" },
             },
           }}
         />
@@ -249,7 +244,7 @@ const ChangePassword = () => {
             color: "white",
             "&:hover": {
               bgcolor: "primary.dark",
-              boxShadow: "0 4px 12px rgba(0, 0, 0, 0. YO2)",
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.2)",
             },
             transition: "all 0.3s ease",
           }}
