@@ -12,7 +12,7 @@ import { Paper } from "@mui/material";
 import { Pagination } from "@mui/material";
 import { toast } from "react-toastify";
 
-const ITEMS_PER_PAGE = 10;
+const ITEMS_PER_PAGE = 5;
 
 const QuizList = () => {
   const [questions, setQuestions] = useState([]);
@@ -103,6 +103,13 @@ const QuizList = () => {
         setCurrentPage(1);
         fetchQuestions();
         toast.success("Cập nhật câu hỏi thành công!");
+        setAnswers((prev) => {
+          const updated = { ...prev };
+          delete updated[editQuestionId];
+          return updated;
+        });
+
+        setExpanded((prev) => ({ ...prev, [editQuestionId]: false }));
       } else {
         const response = await quizService.createQuiz({
           question: newQuestion,
@@ -136,6 +143,7 @@ const QuizList = () => {
     const fetchedAnswers = await quizService.getAnswer(question._id);
     setNewAnswers(
       fetchedAnswers.data.map((ans) => ({
+        _id: ans._id,
         text: ans.text,
         skinType: ans.skinType._id,
       })),
@@ -187,7 +195,7 @@ const QuizList = () => {
   );
 
   return (
-    <Paper sx={{ padding: 3, borderRadius: 3, backgroundColor: "#f8f9fa" }}>
+    <div className="max-w-6xl mx-auto p-6 bg-gray-50 min-h-screen">
       <h2 className="text-3xl font-extrabold text-gray-900 text-center mb-10">
         Quản Lý Câu Hỏi Quiz
       </h2>
@@ -318,7 +326,7 @@ const QuizList = () => {
           onChange={(e, value) => setCurrentPage(value)}
         />
       </div>
-    </Paper>
+    </div>
   );
 };
 
