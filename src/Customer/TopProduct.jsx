@@ -41,6 +41,9 @@ const TopProduct = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const customerId = useSelector((state) => state.user.customer?._id);
+  const role = useSelector((state) => state.user?.user?.role || "");
+
+  console.log("role", role);
 
   const handleBuyNow = async (product) => {
     if (!customerId) {
@@ -144,7 +147,6 @@ const TopProduct = () => {
                   >
                     {product.name}
                   </Typography>
-
                   <Rating
                     value={product.rating || 0}
                     precision={0.5}
@@ -152,7 +154,6 @@ const TopProduct = () => {
                     size="small"
                     sx={{ mb: 1 }}
                   />
-
                   <Box sx={{ mb: 2 }}>
                     {product.discountPercentage > 0 ? (
                       <Box display="flex" justifyContent="center" gap={1}>
@@ -190,23 +191,24 @@ const TopProduct = () => {
                       </Typography>
                     )}
                   </Box>
-
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    size="medium"
-                    fullWidth
-                    sx={{
-                      borderRadius: 20,
-                      textTransform: "none",
-                      fontWeight: "bold",
-                      py: 1,
-                      "&:hover": { bgcolor: "primary.dark" },
-                    }}
-                    onClick={() => handleBuyNow(product)}
-                  >
-                    Mua Ngay
-                  </Button>
+                  {role !== "admin" && role !== "staff" && (
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      size="medium"
+                      fullWidth
+                      sx={{
+                        borderRadius: 20,
+                        textTransform: "none",
+                        fontWeight: "bold",
+                        py: 1,
+                        "&:hover": { bgcolor: "primary.dark" },
+                      }}
+                      onClick={() => handleBuyNow(product)}
+                    >
+                      Mua Ngay
+                    </Button>
+                  )}
                 </CardContent>
               </Card>
             </Box>

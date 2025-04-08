@@ -26,14 +26,17 @@ import {
 } from "@mui/material";
 import { Search as SearchIcon, Clear as ClearIcon } from "@mui/icons-material";
 import { toast } from "react-toastify";
+import managementPromotionService from "../../services/managementPromotionService";
 
 const PromotionManagement = () => {
   const [promotions, setPromotions] = useState([]);
+  const [promotionOptions, setPromotionsOptions] = useState([]);
   const [filteredPromotions, setFilteredPromotions] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [startDateFilter, setStartDateFilter] = useState("");
   const [endDateFilter, setEndDateFilter] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
+  const [openDialogOptionsOptions, setOpenDialogOptions] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     code: "",
@@ -46,16 +49,24 @@ const PromotionManagement = () => {
 
   useEffect(() => {
     fetchPromotions();
+    fetchPromotionOptions();
   }, []);
+
+  const fetchPromotionOptions = async () => {
+    try {
+      const response = await managementPromotionService.getAllPromotion();
+      setPromotionsOptions(response.data.data);
+    } catch (error) {
+      console.error("Lỗi hệ thống!", error);
+    }
+  };
 
   const fetchPromotions = async () => {
     try {
-      toast.info("Đang tải danh sách khuyến mãi...");
       const data = await getPromotion();
       const promoData = Array.isArray(data) ? data : [];
       setPromotions(promoData);
       setFilteredPromotions(promoData);
-      toast.success("Tải danh sách khuyến mãi thành công!");
     } catch (error) {
       console.error("Lỗi khi tải khuyến mãi:", error);
       setPromotions([]);
@@ -65,7 +76,6 @@ const PromotionManagement = () => {
   };
 
   const handleSearch = () => {
-    toast.info("Đang tìm kiếm khuyến mãi...");
     let filtered = promotions || [];
     if (searchTerm.trim()) {
       filtered = filtered.filter((promo) =>
@@ -109,7 +119,6 @@ const PromotionManagement = () => {
         start_date: promotion.start_date?.split("T")[0] || "",
         end_date: promotion.end_date?.split("T")[0] || "",
       });
-      toast.info("Mở form chỉnh sửa khuyến mãi.");
     } else {
       setEditingId(null);
       setFormData({
@@ -130,12 +139,23 @@ const PromotionManagement = () => {
     toast.info("Đã đóng form khuyến mãi.");
   };
 
+  const handleOpenDialogOptions = () => {
+    setFormData({
+      point: "",
+      discount: "",
+    });
+
+    setOpenDialogOptions(true);
+  };
+  const handleCloseDialogOptions = () => {
+    setOpenDialogOptions(false);
+  };
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const validateForm = () => {
-    // Validate tên khuyến mãi
     if (!(formData.name || "").trim()) {
       toast.error("Tên khuyến mãi không được để trống!");
       return false;
@@ -151,7 +171,6 @@ const PromotionManagement = () => {
       return false;
     }
 
-    // Validate mã khuyến mãi
     if (!(formData.code || "").trim()) {
       toast.error("Mã khuyến mãi không được để trống!");
       return false;
@@ -167,13 +186,11 @@ const PromotionManagement = () => {
       return false;
     }
 
-    // Validate mô tả (không bắt buộc, nhưng nếu có thì kiểm tra)
     if (formData.description && formData.description.length < 5) {
       toast.error("Mô tả (nếu có) phải có ít nhất 5 ký tự!");
       return false;
     }
 
-    // Validate phần trăm giảm giá
     const discount = Number(formData.discount_percentage);
     if (formData.discount_percentage === "") {
       toast.error("Phần trăm giảm giá không được để trống!");
@@ -184,7 +201,6 @@ const PromotionManagement = () => {
       return false;
     }
 
-    // Validate ngày bắt đầu
     if (!formData.start_date) {
       toast.error("Ngày bắt đầu không được để trống!");
       return false;
@@ -222,9 +238,6 @@ const PromotionManagement = () => {
     };
 
     try {
-      toast.info(
-        editingId ? "Đang cập nhật khuyến mãi..." : "Đang thêm khuyến mãi...",
-      );
       if (editingId) {
         await updatePromotion(editingId, promoData);
         toast.success("Cập nhật khuyến mãi thành công!");
@@ -237,6 +250,39 @@ const PromotionManagement = () => {
     } catch (error) {
       console.error("Lỗi khi lưu khuyến mãi:", error);
       toast.error(error.response?.data?.message || "Không thể lưu khuyến mãi!");
+    }
+  };
+
+  const handleSubmitOptions = async () => {
+    if (!formData.point || !formData.discount) {
+      toast.error("Vui lòng nhập đầy đủ thông tin!");
+      return;
+    }
+    if (formData.point < 0 || formData.discount < 0) {
+      toast.error("Số điểm và phần trăm giảm không được âm!");
+      return;
+    }
+    if (formData.discount > 100) {
+      toast.error("Phần trăm giảm không được lớn hơn 100!");
+      return;
+    }
+    if (formData.point > 9999999) {
+      toast.error("Số điểm không được lớn hơn 999999!");
+      return;
+    }
+    const promoData = {
+      point: Number(formData.point),
+      discount: Number(formData.discount),
+    };
+    try {
+      await managementPromotionService.createPromotion(promoData);
+      toast.success("Tạo mốc đổi điểm thành công!");
+      fetchPromotionOptions();
+      handleCloseDialogOptions();
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || "Không thể lưu mốc đổi điểm!",
+      );
     }
   };
 
@@ -259,6 +305,63 @@ const PromotionManagement = () => {
     }
   };
 
+  const handleUpdateOptions = async (id) => {
+    setEditingId(id);
+    const promo = promotionOptions.find((promo) => promo._id === id);
+    setFormData({
+      point: promo.point || "",
+      discount: promo.discount || "",
+    });
+    setOpenDialogOptions(true);
+  };
+
+  const handleUpdate = async () => {
+    if (formData.point < 0 || formData.discount < 0) {
+      toast.error("Số điểm và phần trăm giảm không được âm!");
+      return;
+    }
+    if (formData.discount > 100) {
+      toast.error("Phần trăm giảm không được lớn hơn 100!");
+      return;
+    }
+    if (formData.point > 9999999) {
+      toast.error("Số điểm không được lớn hơn 999999!");
+      return;
+    }
+
+    const promoData = {
+      point: Number(formData.point),
+      discount: Number(formData.discount),
+    };
+
+    try {
+      await managementPromotionService.updatePromotion(editingId, promoData);
+      setFormData({
+        point: "",
+        discount: "",
+      });
+      toast.success("Cập nhật mốc đổi điểm thành công!");
+      fetchPromotionOptions();
+      handleCloseDialogOptions();
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || "Không thể cập nhật mốc đổi điểm!",
+      );
+    }
+  };
+
+  const handleDeleteOptions = async (id) => {
+    if (window.confirm("Bạn có chắc chắn muốn xóa mốc đổi điểm này?")) {
+      try {
+        toast.info("Đang xóa mốc đổi điểm...");
+        const result = await managementPromotionService.deletePromotion(id);
+        toast.success(result.message || "Xóa mốc đổi điểm thành công!");
+        fetchPromotionOptions();
+      } catch (error) {
+        toast.error("Lỗi khi xóa mốc đổi điểm: " + error.message);
+      }
+    }
+  };
   return (
     <Box sx={{ minHeight: "100vh", bgcolor: "#f1f5f9", p: 4 }}>
       <Paper sx={{ p: 4, borderRadius: 3, boxShadow: 3 }}>
@@ -266,7 +369,7 @@ const PromotionManagement = () => {
           variant="h5"
           sx={{ fontWeight: "bold", color: "#1e293b", mb: 3 }}
         >
-          🎉 Quản Lý Khuyến Mãi
+          Quản Lý Khuyến Mãi
         </Typography>
 
         {/* Search and Filters */}
@@ -415,6 +518,72 @@ const PromotionManagement = () => {
           </Table>
         </TableContainer>
 
+        <Box sx={{ mt: 4 }}>
+          <Typography
+            variant="h6"
+            sx={{ fontWeight: "bold", color: "#1e293b", mb: 2 }}
+          >
+            Danh Sách Khuyến Mãi
+          </Typography>
+          <Button
+            variant="contained"
+            sx={{
+              bgcolor: "#2563eb",
+              "&:hover": { bgcolor: "#1d4ed8" },
+              mb: 2,
+            }}
+            onClick={() => handleOpenDialogOptions()}
+          >
+            Thêm Mốc Đổi Điểm
+          </Button>
+
+          <TableContainer sx={{ mt: 2, borderRadius: 2, boxShadow: 2 }}>
+            <Table>
+              <TableHead>
+                <TableRow sx={{ bgcolor: "#3b82f6" }}>
+                  {["Số điểm", "Phần trăm giảm (%)", "Hành động"].map(
+                    (header) => (
+                      <TableCell
+                        align="center"
+                        key={header}
+                        sx={{ color: "white", fontWeight: "bold" }}
+                      >
+                        {header}
+                      </TableCell>
+                    ),
+                  )}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {promotionOptions.map((promo) => (
+                  <TableRow key={promo._id}>
+                    <TableCell align="center">{promo.point}</TableCell>
+                    <TableCell align="center">{promo.discount}%</TableCell>
+                    <TableCell align="center">
+                      <Button
+                        variant="outlined"
+                        color="primary"
+                        size="small"
+                        sx={{ mr: 1 }}
+                        onClick={() => handleUpdateOptions(promo._id)}
+                      >
+                        Sửa
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        color="error"
+                        size="small"
+                        onClick={() => handleDeleteOptions(promo._id)}
+                      >
+                        Xóa
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Box>
         {/* Promotion Dialog */}
         <Dialog
           open={openDialog}
@@ -503,6 +672,59 @@ const PromotionManagement = () => {
             >
               {editingId ? "Cập Nhật" : "Thêm"}
             </Button>
+          </DialogActions>
+        </Dialog>
+
+        <Dialog
+          open={openDialogOptionsOptions}
+          onClose={handleCloseDialogOptions}
+          maxWidth="sm"
+        >
+          <DialogTitle>Tạo mốc đổi điểm</DialogTitle>
+          <DialogContent>
+            <TextField
+              fullWidth
+              margin="dense"
+              label="Số điểm"
+              name="point"
+              type="number"
+              value={formData.point || ""}
+              onChange={handleChange}
+              inputProps={{ min: 0 }}
+              sx={{ mb: 2 }}
+            />
+            <TextField
+              fullWidth
+              margin="dense"
+              label="Phần trăm giảm (%)"
+              name="discount"
+              type="number"
+              value={formData.discount || ""}
+              onChange={handleChange}
+              inputProps={{ min: 0, max: 100 }}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseDialogOptions} color="primary">
+              Hủy
+            </Button>
+            {editingId ? (
+              <Button
+                onClick={() => handleUpdate(editingId)}
+                variant="contained"
+                sx={{ bgcolor: "#2563eb", "&:hover": { bgcolor: "#1d4ed8" } }}
+              >
+                Cập Nhật
+              </Button>
+            ) : (
+              <Button
+                onClick={handleSubmitOptions}
+                variant="contained"
+                sx={{ bgcolor: "#2563eb", "&:hover": { bgcolor: "#1d4ed8" } }}
+              >
+                Thêm
+              </Button>
+            )}
           </DialogActions>
         </Dialog>
       </Paper>
