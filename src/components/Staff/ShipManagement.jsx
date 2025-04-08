@@ -359,6 +359,17 @@ const ShipManagement = () => {
                       </span>
                     </TableCell>
                     <TableCell align="center">
+                      <span
+                        style={{
+                          color:
+                            statusMapping[shipment.order_id.order_status].color,
+                          fontWeight: "bold", // Làm chữ đậm
+                        }}
+                      >
+                        {statusMapping[shipment.order_id.order_status].text}
+                      </span>
+                    </TableCell>
+                    <TableCell align="center">
                       {shipment.shipping_address}
                     </TableCell>
                     <TableCell align="center">

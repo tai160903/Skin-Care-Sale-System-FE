@@ -286,7 +286,7 @@ const OrderTr = () => {
                         },
                       }}
                     >
-                      <TableCell>{order._id || "Không xác định"}</TableCell>
+                      <TableCell>{order.order_id._id || "Không xác định"}</TableCell>
                       <TableCell>
                         {order.order_id?.totalPay
                           ? `${order.order_id.totalPay.toLocaleString("vi-VN")} VND`
