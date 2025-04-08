@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../redux/slices/cartSlice";
 import cartService from "../services/cartService";
@@ -108,34 +108,36 @@ const TopProduct = () => {
                 }}
               >
                 <Box sx={{ position: "relative" }}>
-                  <CardMedia
-                    component="img"
-                    image={product.image || "https://placehold.co/400"}
-                    alt={product.name}
-                    sx={{
-                      objectFit: "cover",
-                      transition: "transform 0.3s",
-                      maxHeight: "140px",
-                    }}
-                  />
-                  {product.discountPercentage > 0 && (
-                    <Box
+                  <Link to={`/product/detail/${product._id}`}>
+                    <CardMedia
+                      component="img"
+                      image={product.image || "https://placehold.co/400"}
+                      alt={product.name}
                       sx={{
-                        position: "absolute",
-                        top: 10,
-                        left: 10,
-                        bgcolor: "error.main",
-                        color: "white",
-                        px: 1.5,
-                        py: 0.5,
-                        borderRadius: 2,
-                        fontSize: "0.9rem",
-                        fontWeight: "bold",
+                        objectFit: "cover",
+                        transition: "transform 0.3s",
+                        maxHeight: "140px",
                       }}
-                    >
-                      -{product.discountPercentage}%
-                    </Box>
-                  )}
+                    />
+                    {product.discountPercentage > 0 && (
+                      <Box
+                        sx={{
+                          position: "absolute",
+                          top: 10,
+                          left: 10,
+                          bgcolor: "error.main",
+                          color: "white",
+                          px: 1.5,
+                          py: 0.5,
+                          borderRadius: 2,
+                          fontSize: "0.9rem",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        -{product.discountPercentage}%
+                      </Box>
+                    )}
+                  </Link>
                 </Box>
 
                 <CardContent sx={{ textAlign: "center", py: 2 }}>
