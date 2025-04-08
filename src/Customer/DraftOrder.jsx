@@ -27,6 +27,7 @@ const DraftOrder = () => {
 
   const [promotionId, setPromotionId] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState("cash");
+  const [name, setName] = useState(customer?.name || "");
   const [phone, setPhone] = useState(customer?.phone || "");
   const [coupon, setCoupon] = useState("");
   const [discountAmount, setDiscountAmount] = useState(0);
@@ -80,7 +81,7 @@ const DraftOrder = () => {
   };
 
   const validateOrderData = () => {
-    if (!address || !phone || !/^(0[1-9][0-9]{8})$/.test(phone)) {
+    if (!address || !phone || !/^(0[1-9][0-9]{8})$/.test(phone) || !name) {
       toast.error("Vui lòng nhập thông tin giao hàng hợp lệ!");
       return false;
     }
@@ -97,6 +98,7 @@ const DraftOrder = () => {
         totalPay: totalAmount,
         address: `${address.street}, ${address.ward.WardName}, ${address.district.DistrictName}, ${address.province.ProvinceName}`,
         phone,
+        name,
         discounted: discount,
         shipping_price: shippingFee,
         payment_method: paymentType,
@@ -200,6 +202,21 @@ const DraftOrder = () => {
             Thông Tin Giao Hàng
           </Typography>
           <AddressForm onAddressChange={setAddress} />
+          <TextField
+            fullWidth
+            label="Tên người nhận"
+            variant="outlined"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            sx={{
+              mt: 2,
+              "& .MuiOutlinedInput-root": {
+                borderRadius: 2,
+                "&:hover fieldset": { borderColor: "primary.main" },
+                "&.Mui-focused fieldset": { borderColor: "primary.main" },
+              },
+            }}
+          />
           <TextField
             fullWidth
             label="Số điện thoại"

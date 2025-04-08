@@ -138,6 +138,24 @@ function ListProduct() {
                     -{item.discountPercentage}%
                   </Box>
                 )}
+                {item.stock === 0 && (
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      top: 10,
+                      right: 10,
+                      bgcolor: "grey.800",
+                      color: "white",
+                      px: 1.5,
+                      py: 0.5,
+                      borderRadius: 1,
+                      fontSize: "0.85rem",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Hết hàng
+                  </Box>
+                )}
               </Box>
 
               <CardContent sx={{ textAlign: "center", py: 3 }}>
