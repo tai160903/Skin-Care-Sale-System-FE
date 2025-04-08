@@ -193,6 +193,15 @@ const SuccessPayment = () => {
             Thông tin ship hàng
           </Typography>
           <Box className="space-y-2">
+            {data?.data?.shipping?.shipping_name && (
+              <Box className="flex justify-between">
+                <Typography variant="body1">Người nhận:</Typography>
+                <Typography variant="body1" fontWeight="bold">
+                  {data?.data?.shipping?.shipping_name}
+                </Typography>
+              </Box>
+            )}
+
             {data?.data?.shipping?.shipping_phone && (
               <Box className="flex justify-between">
                 <Typography variant="body1">Số điện thoại:</Typography>
