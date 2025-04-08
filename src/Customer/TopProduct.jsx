@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../redux/slices/cartSlice";
 import cartService from "../services/cartService";
@@ -41,6 +41,9 @@ const TopProduct = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const customerId = useSelector((state) => state.user.customer?._id);
+  const role = useSelector((state) => state.user?.user?.role || "");
+
+  console.log("role", role);
 
   const handleBuyNow = async (product) => {
     if (!customerId) {
@@ -105,34 +108,36 @@ const TopProduct = () => {
                 }}
               >
                 <Box sx={{ position: "relative" }}>
-                  <CardMedia
-                    component="img"
-                    image={product.image || "https://placehold.co/400"}
-                    alt={product.name}
-                    sx={{
-                      objectFit: "cover",
-                      transition: "transform 0.3s",
-                      maxHeight: "140px",
-                    }}
-                  />
-                  {product.discountPercentage > 0 && (
-                    <Box
+                  <Link to={`/product/detail/${product._id}`}>
+                    <CardMedia
+                      component="img"
+                      image={product.image || "https://placehold.co/400"}
+                      alt={product.name}
                       sx={{
-                        position: "absolute",
-                        top: 10,
-                        left: 10,
-                        bgcolor: "error.main",
-                        color: "white",
-                        px: 1.5,
-                        py: 0.5,
-                        borderRadius: 2,
-                        fontSize: "0.9rem",
-                        fontWeight: "bold",
+                        objectFit: "cover",
+                        transition: "transform 0.3s",
+                        maxHeight: "140px",
                       }}
-                    >
-                      -{product.discountPercentage}%
-                    </Box>
-                  )}
+                    />
+                    {product.discountPercentage > 0 && (
+                      <Box
+                        sx={{
+                          position: "absolute",
+                          top: 10,
+                          left: 10,
+                          bgcolor: "error.main",
+                          color: "white",
+                          px: 1.5,
+                          py: 0.5,
+                          borderRadius: 2,
+                          fontSize: "0.9rem",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        -{product.discountPercentage}%
+                      </Box>
+                    )}
+                  </Link>
                 </Box>
 
                 <CardContent sx={{ textAlign: "center", py: 2 }}>
@@ -144,7 +149,6 @@ const TopProduct = () => {
                   >
                     {product.name}
                   </Typography>
-
                   <Rating
                     value={product.rating || 0}
                     precision={0.5}
@@ -152,7 +156,6 @@ const TopProduct = () => {
                     size="small"
                     sx={{ mb: 1 }}
                   />
-
                   <Box sx={{ mb: 2 }}>
                     {product.discountPercentage > 0 ? (
                       <Box display="flex" justifyContent="center" gap={1}>
@@ -190,23 +193,24 @@ const TopProduct = () => {
                       </Typography>
                     )}
                   </Box>
-
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    size="medium"
-                    fullWidth
-                    sx={{
-                      borderRadius: 20,
-                      textTransform: "none",
-                      fontWeight: "bold",
-                      py: 1,
-                      "&:hover": { bgcolor: "primary.dark" },
-                    }}
-                    onClick={() => handleBuyNow(product)}
-                  >
-                    Mua Ngay
-                  </Button>
+                  {role !== "admin" && role !== "staff" && (
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      size="medium"
+                      fullWidth
+                      sx={{
+                        borderRadius: 20,
+                        textTransform: "none",
+                        fontWeight: "bold",
+                        py: 1,
+                        "&:hover": { bgcolor: "primary.dark" },
+                      }}
+                      onClick={() => handleBuyNow(product)}
+                    >
+                      Mua Ngay
+                    </Button>
+                  )}
                 </CardContent>
               </Card>
             </Box>

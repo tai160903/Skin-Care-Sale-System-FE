@@ -21,9 +21,8 @@ function ChangePoint() {
       const profileResponse = await profileService.getProfile(customerId);
       setPoints(profileResponse.data.data.point);
 
-
-      const optionsResponse = await profileService.getRedemptionOptions(); 
-      setRedemptionOptions(optionsResponse.data.data); 
+      const optionsResponse = await profileService.getRedemptionOptions();
+      setRedemptionOptions(optionsResponse.data.data);
     } catch (error) {
       console.error("Error fetching data:", error);
       alert("Có lỗi xảy ra khi tải dữ liệu.");

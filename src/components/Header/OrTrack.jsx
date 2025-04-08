@@ -42,9 +42,11 @@ const OrderTr = () => {
           `http://localhost:8080/api/shippings/customer/${customerId}`
         );
         const orderData = res.data?.data || [];
-       
+
         const initialFiltered = orderData.filter(
-          (order) => order.shipping_status === "Shipped" || order.shipping_status === "Pending"
+          (order) =>
+            order.shipping_status === "Shipping" ||
+            order.shipping_status === "Pending",
         );
         setOrders(initialFiltered);
         setFilteredOrders(initialFiltered);
@@ -140,7 +142,7 @@ const OrderTr = () => {
 
   const paginatedOrders = filteredOrders.slice(
     page * rowsPerPage,
-    page * rowsPerPage + rowsPerPage
+    page * rowsPerPage + rowsPerPage,
   );
 
   return (
@@ -262,7 +264,9 @@ const OrderTr = () => {
             <TableBody>
               {paginatedOrders.length > 0 ? (
                 paginatedOrders.map((order) => {
-                  const paymentInfo = getPaymentChip(order.order_id?.payment_method);
+                  const paymentInfo = getPaymentChip(
+                    order.order_id?.payment_method,
+                  );
                   return (
                     <TableRow
                       key={order._id}
@@ -290,8 +294,8 @@ const OrderTr = () => {
                             order.shipping_status === "Shipping"
                               ? "info"
                               : order.shipping_status === "Pending"
-                              ? "warning"
-                              : "default"
+                                ? "warning"
+                                : "default"
                           }
                           icon={<LocalShipping />}
                           sx={{ fontWeight: "medium" }}
