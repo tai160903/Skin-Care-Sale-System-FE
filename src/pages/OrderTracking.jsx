@@ -40,14 +40,15 @@ const OrderTracking = () => {
     const fetchOrders = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:8080/api/shippings?customer_id=${customerId}`,
+          `http://localhost:8080/api/shippings/customer/${customerId}`,
         );
-        const orderData = res.data?.data?.data || [];
+        const orderData = res.data?.data || [];
         const filteredData = orderData.filter(
           (order) =>
             order.shipping_status === "Delivered" ||
             order.shipping_status === "Cancelled",
         );
+        console.log("order:", orderData);
         setOrders(filteredData);
         setFilteredOrders(filteredData);
       } catch (error) {

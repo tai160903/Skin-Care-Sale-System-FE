@@ -9,10 +9,14 @@ const profileService = {
     return await axiosClient.get(`/api/promotions/customer/${customerId}`);
   },
 
+  getRedemptionOptions: async () => {
+    return await axiosClient.get(`/api/promotionConditions`);
+  },
+
   redeemPoints: async (data) => {
     console.log(data);
     return await axiosClient.post(`/api/promotions/customer`, data);
   },
-};
+};q
 
 export default profileService;
