@@ -21,7 +21,6 @@ import {
 
 const AdminDashboard = () => {
   const [dashboardData, setDashboardData] = useState(null);
-  const [timeFilter, setTimeFilter] = useState("daily");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [isLoading, setIsLoading] = useState(false);
