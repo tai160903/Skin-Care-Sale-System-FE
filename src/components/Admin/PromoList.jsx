@@ -125,7 +125,7 @@ const PromoList = () => {
       }
       await updatePointCondition({
         id: pointInfo[0]._id,
-        condition : updatedValue,
+        condition: updatedValue,
       });
       setPointInfo((prev) => ({
         ...prev,

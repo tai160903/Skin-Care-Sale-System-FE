@@ -71,7 +71,7 @@ const updatePointCondition = async (promoData) => {
     console.log("id", promoData.id);
     const response = await axiosClient.put(
       `/api/conditionPoints/${promoData.id}`,
-     {codition : promoData.condition},
+      { codition: promoData.condition },
       {
         headers: { "Content-Type": "application/json" },
       },

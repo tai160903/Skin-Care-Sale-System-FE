@@ -46,7 +46,9 @@ const OrderTr = () => {
         const initialFiltered = orderData.filter(
           (order) =>
             order.shipping_status === "Shipping" ||
-            order.shipping_status === "Pending",
+            order.shipping_status === "Pending" ||
+            order.shipping_status === "Cancelled"||
+            order.shipping_status === "Delivered",
         );
         setOrders(initialFiltered);
         setFilteredOrders(initialFiltered);
@@ -124,6 +126,10 @@ const OrderTr = () => {
         return "Đang vận chuyển";
       case "Pending":
         return "Chờ xử lý";
+      case "Cancelled":
+        return "Đã hủy";
+      case "Delivered":
+        return "Đã giao";
       default:
         return "Không xác định";
     }

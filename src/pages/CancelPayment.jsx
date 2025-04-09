@@ -6,7 +6,7 @@ import draftOrderService from "../services/draftOrderService";
 
 const CancelPayment = () => {
   const [searchParams] = useSearchParams();
-  const orderId = searchParams.get("order_id"); 
+  const orderId = searchParams.get("order_id");
 
   useEffect(() => {
     const deleteOrder = async () => {
@@ -14,7 +14,6 @@ const CancelPayment = () => {
         if (!orderId) return;
         console.log(`Deleted order with ID: ${orderId}`);
         await draftOrderService.deleteOrder(orderId);
-        
       } catch (error) {
         console.error("Error deleting order:", error);
       }
