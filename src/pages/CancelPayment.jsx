@@ -1,17 +1,20 @@
 import { useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useSearchParams } from "react-router-dom";
 import { FaTimesCircle, FaShoppingCart, FaHome } from "react-icons/fa";
 import { Button, Typography, Box, Paper, Divider } from "@mui/material";
 import draftOrderService from "../services/draftOrderService";
 
 const CancelPayment = () => {
-  const orderId = useSelector((state) => state.order?.order?._id);
+  const [searchParams] = useSearchParams();
+  const orderId = searchParams.get("order_id"); 
 
   useEffect(() => {
     const deleteOrder = async () => {
       try {
         if (!orderId) return;
+        console.log(`Deleted order with ID: ${orderId}`);
         await draftOrderService.deleteOrder(orderId);
+        
       } catch (error) {
         console.error("Error deleting order:", error);
       }

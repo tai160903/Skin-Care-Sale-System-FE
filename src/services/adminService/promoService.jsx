@@ -65,11 +65,17 @@ const updatePromotion = async (id, promoData) => {
     throw error;
   }
 };
-const updatePointCondition = async (id, promoData) => {
+const updatePointCondition = async (promoData) => {
   try {
-    const response = await axiosClient.put(`/api/conditionPoints/${id}`, promoData, {
-      headers: { "Content-Type": "application/json" },
-    });
+    console.log("promoData", promoData);
+    console.log("id", promoData.id);
+    const response = await axiosClient.put(
+      `/api/conditionPoints/${promoData.id}`,
+     {codition : promoData.condition},
+      {
+        headers: { "Content-Type": "application/json" },
+      },
+    );
     return response.data;
   } catch (error) {
     console.error(
@@ -102,5 +108,5 @@ export {
   updatePromotion,
   deletePromotion,
   getPointCondition,
-  updatePointCondition
+  updatePointCondition,
 };
