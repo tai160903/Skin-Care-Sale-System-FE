@@ -11,6 +11,15 @@ const getPromotion = async () => {
     return [];
   }
 };
+const getPointCondition = async () => {
+  try {
+    const response = await axiosClient.get("/api/conditionPoints");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching points:", error);
+    return [];
+  }
+};
 
 const getPromotionById = async (id) => {
   try {
@@ -56,6 +65,26 @@ const updatePromotion = async (id, promoData) => {
     throw error;
   }
 };
+const updatePointCondition = async (promoData) => {
+  try {
+    console.log("promoData", promoData);
+    console.log("id", promoData.id);
+    const response = await axiosClient.put(
+      `/api/conditionPoints/${promoData.id}`,
+     {codition : promoData.condition},
+      {
+        headers: { "Content-Type": "application/json" },
+      },
+    );
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Lỗi khi cập nhật khuyến.maxcdn:",
+      error.response ? error.response.data : error,
+    );
+    throw error;
+  }
+};
 
 const deletePromotion = async (id) => {
   try {
@@ -78,4 +107,6 @@ export {
   createPromotion,
   updatePromotion,
   deletePromotion,
+  getPointCondition,
+  updatePointCondition,
 };
