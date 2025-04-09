@@ -183,18 +183,14 @@ const RoutineManager = () => {
                   </div>
                 </div>
               ) : (
-                // Routine Display
                 <div>
                   <div
                     className="flex justify-between items-center cursor-pointer"
                     onClick={() => toggleExpand(routine._id)}
                   >
                     <div>
-                      <h2 className="text-xl font-semibold text-gray-800">
-                        Routine ID: {routine._id}
-                      </h2>
                       <p className="text-gray-600 mt-1">
-                        <strong>Loại da:</strong> {routine.skinType}
+                        <strong>Loại da:</strong> {routine?.skinType?.VNname}
                       </p>
                     </div>
                     <span className="text-sm text-indigo-600 font-medium">
