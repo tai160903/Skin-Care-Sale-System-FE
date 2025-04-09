@@ -8,7 +8,6 @@ import {
   Trash2,
   PlusCircle,
 } from "react-feather";
-import { Paper } from "@mui/material";
 import { Pagination } from "@mui/material";
 import { toast } from "react-toastify";
 
