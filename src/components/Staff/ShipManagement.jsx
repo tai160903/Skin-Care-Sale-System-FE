@@ -317,6 +317,7 @@ const ShipManagement = () => {
               <TableRow sx={{ bgcolor: "#1976d2" }}>
                 {[
                   "Mã Đơn Hàng",
+                  "Tên Khách Hàng",
                   "Tổng Giá",
                   "Trạng Thái Đơn Hàng",
                   "Địa Chỉ Giao Hàng",
@@ -343,6 +344,9 @@ const ShipManagement = () => {
                   >
                     <TableCell align="center">
                       {shipment.order_id._id}
+                    </TableCell>
+                    <TableCell align="center">
+                      {shipment?.shipping_name}
                     </TableCell>
                     <TableCell align="center">
                       {formatCurrency(shipment.order_id.totalPay)}
