@@ -46,7 +46,7 @@ const AdminDashboard = () => {
 
     setStartDate(today.toISOString().split("T")[0]);
     setEndDate(tomorrow.toISOString().split("T")[0]);
-    setSelectedRange(today.toISOString().split("T")[0]); 
+    setSelectedRange(today.toISOString().split("T")[0]);
 
     fetchDashboardData(
       today.toISOString().split("T")[0],
@@ -72,26 +72,26 @@ const AdminDashboard = () => {
       const selectedOption =
         e.target.options[e.target.selectedIndex].text.toLowerCase();
 
-        switch (selectedOption) {
-          case "today":
-            endDateObj.setDate(startDateObj.getDate() + 1);
-            break;
-          case "7 ngày vừa qua":
-            endDateObj.setDate(startDateObj.getDate() + 7);
-            break;
-          case "tháng này":
-            endDateObj.setFullYear(startDateObj.getFullYear());
-            endDateObj.setMonth(startDateObj.getMonth() + 1);
-            endDateObj.setDate(0); 
-            break;
-          case "năm nay":
-            endDateObj.setFullYear(startDateObj.getFullYear() +1 );
-            endDateObj.setMonth(11);
-            endDateObj.setDate(31); 
-            break;
-          default:
-            endDateObj.setDate(startDateObj.getDate() + 1);
-        }
+      switch (selectedOption) {
+        case "today":
+          endDateObj.setDate(startDateObj.getDate() + 1);
+          break;
+        case "7 ngày vừa qua":
+          endDateObj.setDate(startDateObj.getDate() + 7);
+          break;
+        case "tháng này":
+          endDateObj.setFullYear(startDateObj.getFullYear());
+          endDateObj.setMonth(startDateObj.getMonth() + 1);
+          endDateObj.setDate(0);
+          break;
+        case "năm nay":
+          endDateObj.setFullYear(startDateObj.getFullYear() + 1);
+          endDateObj.setMonth(11);
+          endDateObj.setDate(31);
+          break;
+        default:
+          endDateObj.setDate(startDateObj.getDate() + 1);
+      }
 
       return endDateObj.toISOString().split("T")[0];
     };

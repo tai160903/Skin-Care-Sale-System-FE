@@ -17,6 +17,7 @@ const AddressForm = ({ onAddressChange }) => {
   const [district, setDistrict] = useState(null);
   const [ward, setWard] = useState(null);
   const [street, setStreet] = useState("");
+  const [streetError, setStreetError] = useState(false);
 
   useEffect(() => {
     const fetchProvinces = async () => {
@@ -75,6 +76,11 @@ const AddressForm = ({ onAddressChange }) => {
   };
 
   const handleStreetChange = (street) => {
+    if (street.trim() === "") {
+      setStreetError(true);
+    } else {
+      setStreetError(false);
+    }
     setStreet(street);
     updateAddress("street", street);
   };
@@ -139,6 +145,9 @@ const AddressForm = ({ onAddressChange }) => {
         variant="outlined"
         value={street}
         onChange={(e) => handleStreetChange(e.target.value)}
+        required
+        error={streetError}
+        helperText={streetError ? "Vui lòng nhập số nhà, đường" : ""}
       />
     </div>
   );

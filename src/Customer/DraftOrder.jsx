@@ -81,7 +81,13 @@ const DraftOrder = () => {
   };
 
   const validateOrderData = () => {
-    if (!address || !phone || !/^(0[1-9][0-9]{8})$/.test(phone) || !name) {
+    if (
+      !address ||
+      !address.street ||
+      !phone ||
+      !/^(0[1-9][0-9]{8})$/.test(phone) ||
+      !name
+    ) {
       toast.error("Vui lòng nhập thông tin giao hàng hợp lệ!");
       return false;
     }
