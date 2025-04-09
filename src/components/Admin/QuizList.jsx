@@ -8,7 +8,6 @@ import {
   Edit2,
   Trash2,
 } from "react-feather";
-import { Paper } from "@mui/material";
 import { Pagination } from "@mui/material";
 import { toast } from "react-toastify";
 
